@@ -1,32 +1,28 @@
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import * as SplashScreen from "expo-splash-screen";
 import { useFonts } from "expo-font";
+import { Details } from "./screens"
+import { useCallback } from "react";
+import BottomTabNavigation from "./navigations/BottomTabNavigation";
 
-import { Details } from "./screens";
-import { useCallback } from 'react';
-import BottomTabNavigation from './navigations/BottomTabNavigation';
-
-SplashScreen.preventAutoHideAsync();
-
-const Stack = createNativeStackNavigator();
-
+const Stack = createNativeStackNavigator()
 export default function App() {
 
   const [fontsLoaded] = useFonts({
     black: require("./assets/fonts/Inter-Black.ttf"),
     bold: require("./assets/fonts/Inter-Bold.ttf"),
-    medium: require("./assets/fonts/Inter-Medium.ttf"),
-    regular: require("./assets/fonts/Inter-Regular.ttf")
-  });
+    regular: require("./assets/fonts/Inter-Regular.ttf"),
+    medium: require("./assets/fonts/Inter-Medium.ttf")
+  })
 
-  const onLayoutRootView = useCallback(async()=>{
-    if(fontsLoaded){
-      await SplashScreen.hideAsync();
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync()
     }
-  },[fontsLoaded]);
+  }, [fontsLoaded]);
 
-  if(!fontsLoaded){
+  if (!fontsLoaded) {
     return null
   }
   return (
