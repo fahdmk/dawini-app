@@ -13,18 +13,49 @@ import COLORS from "../constants/colors";
 import { Ionicons } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox";
 import Button from "../components/Button";
-import DateTimePicker from '@react-native-community/datetimepicker';
+import { enGB, registerTranslation } from 'react-native-paper-dates'
+registerTranslation('en-GB', enGB)
+import { TimePickerModal } from 'react-native-paper-dates';
+
 const SignupPatient = ({ navigation }) => {
+ 
+ 
   const [isPasswordShown, setIsPasswordShown] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [birthday, setBirthday] = useState(null);
 
   const handleDateChange = (event, date) => {
     setShowDatePicker(false);
     if (date) {
       setSelectedDate(date);
      
+    }
+  };
+  const [visible, setVisible] = React.useState(true)
+  const onDismiss = React.useCallback(() => {
+    setVisible(false)
+  }, [setVisible])
+
+  const onConfirm = ({ hours, minutes }) => {
+    setVisible(false);
+    const newBirthday = new Date();
+    newBirthday.setHours(hours);
+    newBirthday.setMinutes(minutes);
+    setBirthday(newBirthday); // Update birthday state with selected date
+  };
+  const handleBirthdayPress = () => {
+    setVisible(true); // Show the TimePickerModal when birthday field is pressed
+  };
+
+  const handleSubmit = () => {
+    // Logic to handle form submission
+    if (birthday) {
+      console.log("Selected Birthday:", birthday);
+      // Perform any additional actions with the selected birthday
+    } else {
+      console.log("Please select a birthday");
     }
   };
 
@@ -248,7 +279,8 @@ const SignupPatient = ({ navigation }) => {
               >
                 Birthday
               </Text>
-
+              <TouchableOpacity onPress={handleBirthdayPress}>
+              
               <View
                 style={{
                   width: "100%",
@@ -262,13 +294,22 @@ const SignupPatient = ({ navigation }) => {
                   paddingLeft: 22,
                 }}
               >
-                <DateTimePicker
+                 <Text>{birthday ? birthday.toDateString() : 'Select birthday'}</Text>
+                {/* <DateTimePicker
             value={selectedDate}
             mode="date"
             display="spinner"
             onChange={(event, date) => handleDateChange(date)}
-                />
+                /> */}
+                <TimePickerModal
+          visible={visible}
+          onDismiss={onDismiss}
+          onConfirm={onConfirm}
+          hours={12}
+          minutes={14}
+            />
               </View>
+            </TouchableOpacity>
             </View>
           </View>
 
