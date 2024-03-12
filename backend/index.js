@@ -6,6 +6,7 @@ const User = require('./Models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const app = express();
+const Caretaker = require('./Models/Caretaker');
 const PORT = process.env.PORT || 3000;
 
 const sequelize = new Sequelize(
@@ -39,7 +40,15 @@ app.post('/login', async (req, res) => {
       return res.status(400).json({ error: 'Email and password are required' });
     }
 
-    const user = await User.findOne({ where: { email } });
+    // Check if the email exists in the User table
+    let user = await User.findOne({ where: { email } });
+    let userType = 'user';
+
+    // If the email doesn't exist in the User table, check the Caretaker table
+    if (!user) {
+      user = await Caretaker.findOne({ where: { email } });
+      userType = 'caretaker';
+    }
 
     if (!user) {
       return res.status(401).json({ error: 'Invalid email' });
@@ -47,8 +56,10 @@ app.post('/login', async (req, res) => {
 
     console.log('Entered password:', password);
     console.log('Stored hashed password:', user.password);
-    const isPasswordValid = password==user.password;
-    // const isPasswordValid = await bcrypt.compare(password, user.password);
+    
+    // Compare the entered password with the stored hashed password
+    const isPasswordValid = (password==user.password);
+
     console.log('Is password valid?', isPasswordValid);
     if (!isPasswordValid) {
       return res.status(401).json({ error: 'Invalid password' });
@@ -56,11 +67,9 @@ app.post('/login', async (req, res) => {
 
     // Create a JWT token
     const token = jwt.sign(
-      { userId: user.id, email: user.email },
+      { userId: user.id, email: user.email, userType },
       'your-secret-key',
-      {
-        expiresIn: '1h', // Adjust the expiration time as needed
-      }
+      { expiresIn: '1h' }
     );
 
     console.log('Generated token:', token);
@@ -70,6 +79,7 @@ app.post('/login', async (req, res) => {
     res.status(500).json({ error: 'Error logging in' });
   }
 });
+
 
 app.get('/users', async (req, res) => {
   try {

@@ -24,7 +24,7 @@ const LoginPatient = ({ navigation }) => {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch("http://localhost:3000/login", {
+      const response = await fetch("http://192.168.100.25:3000/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -65,23 +65,15 @@ const LoginPatient = ({ navigation }) => {
           <View style={{ marginVertical: 22 }}>
             <Text
               style={{
-                fontSize: 22,
+                fontSize: 35,
                 fontWeight: "bold",
                 marginVertical: 12,
                 color: COLORS.black,
               }}
             >
-              Hi Patient ! 👋
+             Sign in
             </Text>
 
-            <Text
-              style={{
-                fontSize: 20,
-                color: COLORS.black,
-              }}
-            >
-              Sign in
-            </Text>
           </View>
 
           <View style={{ marginBottom: 12 }}>

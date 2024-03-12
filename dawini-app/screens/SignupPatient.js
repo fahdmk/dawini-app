@@ -13,8 +13,7 @@ import COLORS from "../constants/colors";
 import { Ionicons } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox";
 import Button from "../components/Button";
-import { DatePicker } from 'expo-datepicker';
-
+import DateTimePicker from '@react-native-community/datetimepicker';
 const SignupPatient = ({ navigation }) => {
   const [isPasswordShown, setIsPasswordShown] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
@@ -25,7 +24,7 @@ const SignupPatient = ({ navigation }) => {
     setShowDatePicker(false);
     if (date) {
       setSelectedDate(date);
-      // You can do additional logic with the selected date if needed
+     
     }
   };
 
@@ -239,15 +238,38 @@ const SignupPatient = ({ navigation }) => {
                 />
               </View>
             </View>
-            <View>
-      <Text>Birthday</Text>
-      <DatePicker
-        value={selectedDate}
-        mode="date"
-        display="spinner"
-        onChange={(event, date) => handleDateChange(date)}
-      />
-    </View>
+            <View style={{ marginBottom: 12 }}>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: 400,
+                  marginVertical: 8,
+                }}
+              >
+                Birthday
+              </Text>
+
+              <View
+                style={{
+                  width: "100%",
+                  height: 48,
+                  borderColor: COLORS.black,
+                  borderWidth: 1,
+                  borderRadius: 8,
+                  alignItems: "center",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  paddingLeft: 22,
+                }}
+              >
+                <DateTimePicker
+            value={selectedDate}
+            mode="date"
+            display="spinner"
+            onChange={(event, date) => handleDateChange(date)}
+                />
+              </View>
+            </View>
           </View>
 
           <View
