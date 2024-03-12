@@ -13,21 +13,21 @@ import COLORS from "../constants/colors";
 import { Ionicons } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox";
 import Button from "../components/Button";
-// import DateTimePicker from '@react-native-community/datetimepicker';
+import { DatePicker } from 'expo-datepicker';
 
 const SignupPatient = ({ navigation }) => {
   const [isPasswordShown, setIsPasswordShown] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
-  // const [showDatePicker, setShowDatePicker] = useState(false);
-  // const [selectedDate, setSelectedDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
-  // const handleDateChange = (event, date) => {
-  //   setShowDatePicker(false);
-  //   if (date) {
-  //     setSelectedDate(date);
-  //     // You can do additional logic with the selected date if needed
-  //   }
-  // };
+  const handleDateChange = (event, date) => {
+    setShowDatePicker(false);
+    if (date) {
+      setSelectedDate(date);
+      // You can do additional logic with the selected date if needed
+    }
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
@@ -239,42 +239,15 @@ const SignupPatient = ({ navigation }) => {
                 />
               </View>
             </View>
-            {/* <View style={{ marginBottom: 12 }}>
-      <Text style={{
-        fontSize: 16,
-        fontWeight: 400,
-        marginVertical: 8
-      }}>Birthday</Text>
-
-      <View style={{
-        width: "100%",
-        height: 48,
-        borderColor: 'black',
-        borderWidth: 1,
-        borderRadius: 8,
-        alignItems: "center",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        paddingLeft: 22
-      }}>
-        <TextInput
-          placeholder='Enter your Birthday'
-          placeholderTextColor='black'
-          value={selectedDate.toISOString().split('T')[0]}
-          editable={false}
-          style={{ width: '80%' }}
-          onPress={() => setShowDatePicker(true)}
-        />
-        {showDatePicker && (
-          <DateTimePicker
-            value={selectedDate}
-            mode="date"
-            display="default"
-            onChange={handleDateChange}
-          />
-        )}
-      </View> */}
-    {/* </View> */}
+            <View>
+      <Text>Birthday</Text>
+      <DatePicker
+        value={selectedDate}
+        mode="date"
+        display="spinner"
+        onChange={(event, date) => handleDateChange(date)}
+      />
+    </View>
           </View>
 
           <View

@@ -3,7 +3,8 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const { Sequelize } = require('sequelize');
 const User = require('./Models/User');
-
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -29,6 +30,46 @@ sequelize
 
 app.use(cors());
 app.use(bodyParser.json());
+app.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Check if email and password are present in the request body
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
+
+    const user = await User.findOne({ where: { email } });
+
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid email' });
+    }
+
+    console.log('Entered password:', password);
+    console.log('Stored hashed password:', user.password);
+    
+    const isPasswordValid = password==user.password;
+    console.log('Is password valid?', isPasswordValid);
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: 'Invalid password' });
+    }
+
+    // Create a JWT token
+    const token = jwt.sign(
+      { userId: user.id, email: user.email },
+      'your-secret-key',
+      {
+        expiresIn: '1h', // Adjust the expiration time as needed
+      }
+    );
+
+    console.log('Generated token:', token);
+    res.json({ token });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error logging in' });
+  }
+});
 
 app.get('/users', async (req, res) => {
   try {
