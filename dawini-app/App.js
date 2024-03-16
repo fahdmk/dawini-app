@@ -9,15 +9,15 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName='Welcome'
+        initialRouteName='LoginPatient'
       >
-        <Stack.Screen
+        {/* <Stack.Screen
           name="Welcome"
           component={Welcome}
           options={{
             headerShown: false
           }}
-        />
+        /> */}
         <Stack.Screen
           name="LoginPatient"
           component={LoginPatient}

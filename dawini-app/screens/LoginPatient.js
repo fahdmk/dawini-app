@@ -9,6 +9,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Alert,
+  ScrollView
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -24,7 +25,7 @@ const LoginPatient = ({ navigation }) => {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch("http://192.168.100.25:3000/login", {
+      const response = await fetch("http://10.0.2.2:3000/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -61,11 +62,24 @@ const LoginPatient = ({ navigation }) => {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
+        <ScrollView>
         <View style={{ flex: 1, marginHorizontal: 22 }}>
-          <View style={{ marginVertical: 22 }}>
-            <Text
+          <View style={{ marginVertical: 22, alignItems: 'center' }}>
+            <Image
+              source={require("../assets/logo-white.png")}
+              resizeMode='contain'
               style={{
-                fontSize: 35,
+                  width: "60%",
+                  height: 175, // Adjust height as needed
+              }}
+            />
+
+            
+
+          </View>
+          <Text
+              style={{
+                fontSize: 20,
                 fontWeight: "bold",
                 marginVertical: 12,
                 color: COLORS.black,
@@ -73,9 +87,6 @@ const LoginPatient = ({ navigation }) => {
             >
              Sign in
             </Text>
-
-          </View>
-
           <View style={{ marginBottom: 12 }}>
             <Text
               style={{
@@ -283,6 +294,7 @@ const LoginPatient = ({ navigation }) => {
             </Pressable>
           </View>
         </View>
+        </ScrollView>
       </SafeAreaView>
     </TouchableWithoutFeedback>
   );

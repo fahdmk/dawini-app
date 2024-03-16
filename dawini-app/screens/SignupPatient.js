@@ -13,52 +13,47 @@ import COLORS from "../constants/colors";
 import { Ionicons } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox";
 import Button from "../components/Button";
-import { enGB, registerTranslation } from 'react-native-paper-dates'
-registerTranslation('en-GB', enGB)
-import { TimePickerModal } from 'react-native-paper-dates';
+import axios from 'axios';
+// import DatePicker from 'react-native-date-picker'
+
 
 const SignupPatient = ({ navigation }) => {
- 
- 
+   
+  
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
+    const [adress, setAddress] = useState('');
+    const [password, setPassword] = useState('');
+    
+    
+    const handleSubmit = async () => {
+      try {
+        const [Birthday, setbirthday] = useState('1990-01-01');
+        const response = await axios.post('http://10.0.2.2:3000/api/new-user', {
+          username: name,
+          role: 'patient', 
+          fullname: name,
+          password,
+          email,
+          phone,
+          adress,
+          Birthday:'1990-01-01',
+        });
+        // Handle response from backend
+        Alert.alert('Success', 'Form submitted successfully');
+      } catch (error) {
+        // Handle error
+        console.error('Error submitting form:', error);
+        Alert.alert('Error', 'Failed to submit form. Please try again later.');
+      }
+    };
+  
+
   const [isPasswordShown, setIsPasswordShown] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [birthday, setBirthday] = useState(null);
-
-  const handleDateChange = (event, date) => {
-    setShowDatePicker(false);
-    if (date) {
-      setSelectedDate(date);
-     
-    }
-  };
-  const [visible, setVisible] = React.useState(true)
-  const onDismiss = React.useCallback(() => {
-    setVisible(false)
-  }, [setVisible])
-
-  const onConfirm = ({ hours, minutes }) => {
-    setVisible(false);
-    const newBirthday = new Date();
-    newBirthday.setHours(hours);
-    newBirthday.setMinutes(minutes);
-    setBirthday(newBirthday); // Update birthday state with selected date
-  };
-  const handleBirthdayPress = () => {
-    setVisible(true); // Show the TimePickerModal when birthday field is pressed
-  };
-
-  const handleSubmit = () => {
-    // Logic to handle form submission
-    if (birthday) {
-      console.log("Selected Birthday:", birthday);
-      // Perform any additional actions with the selected birthday
-    } else {
-      console.log("Please select a birthday");
-    }
-  };
-
+  
+  
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
       <ScrollView>
@@ -105,6 +100,7 @@ const SignupPatient = ({ navigation }) => {
                 style={{
                   width: "100%",
                 }}
+                onChangeText={setName}
               />
             </View>
           </View>
@@ -130,8 +126,7 @@ const SignupPatient = ({ navigation }) => {
                 alignItems: "center",
                 justifyContent: "center",
                 paddingLeft: 22,
-              }}
-            >
+              }}>
               <TextInput
                 placeholder="Enter your email address"
                 placeholderTextColor={COLORS.black}
@@ -139,6 +134,7 @@ const SignupPatient = ({ navigation }) => {
                 style={{
                   width: "100%",
                 }}
+                onChangeText={setEmail}
               />
             </View>
           </View>
@@ -173,6 +169,7 @@ const SignupPatient = ({ navigation }) => {
                 style={{
                   width: "100%",
                 }}
+                onChangeText={setPassword}
               />
 
               <TouchableOpacity
@@ -223,6 +220,7 @@ const SignupPatient = ({ navigation }) => {
                     borderLeftColor: COLORS.grey,
                     height: "100%",
                   }}
+                  
                 />
 
                 <TextInput
@@ -232,6 +230,7 @@ const SignupPatient = ({ navigation }) => {
                   style={{
                     width: "80%",
                   }}
+                  onChangeText={setPhone}
                 />
               </View>
             </View>
@@ -245,7 +244,6 @@ const SignupPatient = ({ navigation }) => {
               >
                 Adress
               </Text>
-
               <View
                 style={{
                   width: "100%",
@@ -266,6 +264,7 @@ const SignupPatient = ({ navigation }) => {
                   style={{
                     width: "80%",
                   }}
+                  onChangeText={setAddress}
                 />
               </View>
             </View>
@@ -279,7 +278,8 @@ const SignupPatient = ({ navigation }) => {
               >
                 Birthday
               </Text>
-              <TouchableOpacity onPress={handleBirthdayPress}>
+              {/* <DatePicker date={date} onDateChange={setDate} /> */}
+              <TouchableOpacity>
               
               <View
                 style={{
@@ -294,20 +294,14 @@ const SignupPatient = ({ navigation }) => {
                   paddingLeft: 22,
                 }}
               >
-                 <Text>{birthday ? birthday.toDateString() : 'Select birthday'}</Text>
-                {/* <DateTimePicker
-            value={selectedDate}
-            mode="date"
-            display="spinner"
-            onChange={(event, date) => handleDateChange(date)}
-                /> */}
-                <TimePickerModal
-          visible={visible}
-          onDismiss={onDismiss}
-          onConfirm={onConfirm}
-          hours={12}
-          minutes={14}
-            />
+                 
+                 <Button title="Open" onPress={() => setOpen(true)} />
+                
+                 
+             <View>
+      
+      
+    </View>
               </View>
             </TouchableOpacity>
             </View>
@@ -336,6 +330,7 @@ const SignupPatient = ({ navigation }) => {
               marginTop: 18,
               marginBottom: 4,
             }}
+            onPress={handleSubmit}
           />
 
           <View
@@ -363,7 +358,6 @@ const SignupPatient = ({ navigation }) => {
               }}
             />
           </View>
-
           <View
             style={{
               flexDirection: "row",

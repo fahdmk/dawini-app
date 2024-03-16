@@ -31,6 +31,43 @@ sequelize
 
 app.use(cors());
 app.use(bodyParser.json());
+app.post('/api/new-user', async (req, res) => {
+  try {
+    // Destructure user data from request body
+    const {
+      username,
+      role,
+      fullname,
+      password,
+      email,
+      phone,
+      Adress,
+      birthday
+    } = req.body;
+
+    // Check if username and role are provided
+    if (!username || !role) {
+      return res.status(400).json({ error: 'Username and role are required' });
+    }
+
+    // Create a new user record in the database
+    const newUser = await User.create({
+      username,
+      role,
+      fullname,
+      password,
+      email,
+      phone,
+      Adress,
+      birthday
+    });
+
+    res.status(201).json(newUser);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error creating user' });
+  }
+});
 app.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
