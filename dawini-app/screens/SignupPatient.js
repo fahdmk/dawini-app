@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  StyleSheet
 } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -14,7 +15,8 @@ import { Ionicons } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox";
 import Button from "../components/Button";
 import axios from 'axios';
-// import DatePicker from 'react-native-date-picker'
+import DateTimePicker from 'react-native-ui-datepicker';
+import dayjs from 'dayjs';
 
 
 const SignupPatient = ({ navigation }) => {
@@ -23,13 +25,13 @@ const SignupPatient = ({ navigation }) => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
-    const [adress, setAddress] = useState('');
+    const [Adress, setAddress] = useState('');
     const [password, setPassword] = useState('');
-    
+    const [birthday, setbirthday] = useState('1990-01-01');
     
     const handleSubmit = async () => {
       try {
-        const [Birthday, setbirthday] = useState('1990-01-01');
+       
         const response = await axios.post('http://10.0.2.2:3000/api/new-user', {
           username: name,
           role: 'patient', 
@@ -37,27 +39,28 @@ const SignupPatient = ({ navigation }) => {
           password,
           email,
           phone,
-          adress,
-          Birthday:'1990-01-01',
+          Adress,
+          birthday,
         });
-        // Handle response from backend
-        Alert.alert('Success', 'Form submitted successfully');
+        navigation.navigate("LoginPatient")
+       
       } catch (error) {
         // Handle error
         console.error('Error submitting form:', error);
-        Alert.alert('Error', 'Failed to submit form. Please try again later.');
+        
       }
     };
   
-
+   const [date, setDate] = useState(dayjs());
   const [isPasswordShown, setIsPasswordShown] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
-  
+  const [showDatePicker, setShowDatePicker] = useState(false);
   
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
       <ScrollView>
         <View style={{ flex: 1, marginHorizontal: 22 }}>
+        
           <View style={{ marginVertical: 22 }}>
             <Text
               style={{
@@ -278,32 +281,39 @@ const SignupPatient = ({ navigation }) => {
               >
                 Birthday
               </Text>
-              {/* <DatePicker date={date} onDateChange={setDate} /> */}
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => setShowDatePicker(!showDatePicker)}>
+            <View
+              style={{
+                width: "100%",
+                height: 48,
+                borderColor: COLORS.black,
+                borderWidth: 1,
+                borderRadius: 8,
+                alignItems: "center",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                paddingLeft: 22,
+              }}
+            >
+              <TextInput
+                placeholder="Select your birthday"
+                placeholderTextColor={COLORS.black}
+                editable={false}
+                style={{ width: "80%" }}
+                value={dayjs(date).format('YYYY-MM-DD')}
+              />
+            </View>
+          </TouchableOpacity>
+          {showDatePicker && (
+            <DateTimePicker
+            mode="single"
+            date={date}
+            onChange={(params) =>{ setDate(params.date)
+            setbirthday(params.date)}}
+          />
+          )}
               
-              <View
-                style={{
-                  width: "100%",
-                  height: 48,
-                  borderColor: COLORS.black,
-                  borderWidth: 1,
-                  borderRadius: 8,
-                  alignItems: "center",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  paddingLeft: 22,
-                }}
-              >
-                 
-                 <Button title="Open" onPress={() => setOpen(true)} />
-                
-                 
-             <View>
-      
-      
-    </View>
-              </View>
-            </TouchableOpacity>
+              
             </View>
           </View>
 
@@ -429,7 +439,7 @@ const SignupPatient = ({ navigation }) => {
             <Text style={{ fontSize: 16, color: COLORS.black }}>
               Already have an account
             </Text>
-            <Pressable onPress={() => navigation.navigate("Login")}>
+            <Pressable onPress={() => navigation.navigate("LoginPatient")}>
               <Text
                 style={{
                   fontSize: 16,
@@ -446,6 +456,12 @@ const SignupPatient = ({ navigation }) => {
       </ScrollView>
     </SafeAreaView>
   );
+  
 };
-
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F5FCFF',
+  },
+});
 export default SignupPatient;

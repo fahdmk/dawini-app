@@ -38,7 +38,7 @@ const User = sequelize.define('User', {
     defaultValue: DataTypes.NOW,
   },
   birthday: {
-    type: DataTypes.STRING,
+    type: DataTypes.DATE,
     allowNull: false,
   },
   description: {

@@ -198,7 +198,7 @@ const LoginPatient = ({ navigation }) => {
                 marginHorizontal: 10,
               }}
             />
-            <Text style={{ fontSize: 14 }}>Or Login with</Text>
+            <Text style={{ fontSize: 14 }}> Don't have an account ?</Text>
             <View
               style={{
                 flex: 1,
@@ -216,7 +216,7 @@ const LoginPatient = ({ navigation }) => {
             }}
           >
             <TouchableOpacity
-              onPress={() => console.log("Pressed")}
+              onPress={() => navigation.navigate("SignupPatient")}
               style={{
                 flex: 1,
                 alignItems: "center",
@@ -239,11 +239,11 @@ const LoginPatient = ({ navigation }) => {
                 resizeMode="contain"
               />
 
-              <Text>Facebook</Text>
+              <Text>Register As Patient</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              onPress={() => console.log("Pressed")}
+              onPress={() => navigation.navigate("SignupNurse")}
               style={{
                 flex: 1,
                 alignItems: "center",
@@ -266,33 +266,12 @@ const LoginPatient = ({ navigation }) => {
                 resizeMode="contain"
               />
 
-              <Text>Google</Text>
+              <Text>Register As Nurse</Text>
             </TouchableOpacity>
           </View>
 
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "center",
-              marginVertical: 22,
-            }}
-          >
-            <Text style={{ fontSize: 16, color: COLORS.black }}>
-              Don't have an account ?{" "}
-            </Text>
-            <Pressable onPress={() => navigation.navigate("SignupPatient")}>
-              <Text
-                style={{
-                  fontSize: 16,
-                  color: COLORS.primary,
-                  fontWeight: "bold",
-                  marginLeft: 6,
-                }}
-              >
-                Register
-              </Text>
-            </Pressable>
-          </View>
+         
+         
         </View>
         </ScrollView>
       </SafeAreaView>
