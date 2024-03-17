@@ -52,7 +52,7 @@ const LoginPatient = ({ navigation }) => {
       // For example, you can save it to AsyncStorage in a real-world scenario
 
       // Navigate to the next screen or perform other actions
-      navigation.navigate("Home");
+      navigation.navigate("MainScreen");
     } catch (error) {
       console.error("Login error:", error.message);
       Alert.alert("Error", "Invalid credentials. Please try again.");
