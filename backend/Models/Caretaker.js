@@ -30,10 +30,10 @@ const Caretaker = sequelize.define('Caretaker', {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  workingArea: {
+  working_Area: {
     type: DataTypes.STRING,
     allowNull: false,
-    field: 'Working area', // Map to the column name in the database
+    field: 'working_Area', // Map to the column name in the database
   },
   email: {
     type: DataTypes.STRING,

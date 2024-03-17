@@ -27,20 +27,22 @@ const SignupNurse = ({ navigation }) => {
     const [phone, setPhone] = useState('');
     const [Adress, setAddress] = useState('');
     const [password, setPassword] = useState('');
-    const [birthday, setbirthday] = useState('1990-01-01');
-    
+    const [CIN, setCIN] = useState('');
+    const [working_Area, setWorking_Area] = useState('');
     const handleSubmit = async () => {
       try {
        
-        const response = await axios.post('http://10.0.2.2:3000/api/new-user', {
+        const response = await axios.post('http://10.0.2.2:3000/api/new-nurse', {
           username: name,
-          role: 'patient', 
+          role:"nurse",
           fullname: name,
           password,
           email,
           phone,
-          Adress,
-          birthday,
+          working_Area,
+          CIN: CIN,
+          adress: Adress,
+          cv:"aaa"
         });
         navigation.navigate("LoginPatient")
        
@@ -138,6 +140,39 @@ const SignupNurse = ({ navigation }) => {
                   width: "100%",
                 }}
                 onChangeText={setEmail}
+              />
+            </View>
+          </View>
+          <View style={{ marginBottom: 12 }}>
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: 400,
+                marginVertical: 8,
+              }}
+            >
+              National identity card number
+            </Text>
+
+            <View
+              style={{
+                width: "100%",
+                height: 48,
+                borderColor: COLORS.black,
+                borderWidth: 1,
+                borderRadius: 8,
+                alignItems: "center",
+                justifyContent: "center",
+                paddingLeft: 22,
+              }}>
+              <TextInput
+                placeholder="Enter your CIN number"
+                placeholderTextColor={COLORS.black}
+                keyboardType="numeric"
+                style={{
+                  width: "100%",
+                }}
+                onChangeText={setCIN}
               />
             </View>
           </View>
@@ -245,7 +280,41 @@ const SignupNurse = ({ navigation }) => {
                   marginVertical: 8,
                 }}
               >
-                Adress
+                Working area
+              </Text>
+              <View
+                style={{
+                  width: "100%",
+                  height: 48,
+                  borderColor: COLORS.black,
+                  borderWidth: 1,
+                  borderRadius: 8,
+                  alignItems: "center",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  paddingLeft: 22,
+                }}
+              >
+                <TextInput
+                  placeholder="Enter your working area"
+                  placeholderTextColor={COLORS.black}
+                  keyboardType="email-address"
+                  style={{
+                    width: "80%",
+                  }}
+                  onChangeText={setWorking_Area}
+                />
+              </View>
+            </View>
+            <View style={{ marginBottom: 12 }}>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: 400,
+                  marginVertical: 8,
+                }}
+              >
+                Address
               </Text>
               <View
                 style={{
@@ -263,7 +332,7 @@ const SignupNurse = ({ navigation }) => {
                 <TextInput
                   placeholder="Enter your home Adress"
                   placeholderTextColor={COLORS.black}
-                  keyboardType="numeric"
+                  keyboardType="email-address"
                   style={{
                     width: "80%",
                   }}
@@ -271,7 +340,7 @@ const SignupNurse = ({ navigation }) => {
                 />
               </View>
             </View>
-            <View style={{ marginBottom: 12 }}>
+            {/* <View style={{ marginBottom: 12 }}>
               <Text
                 style={{
                   fontSize: 16,
@@ -314,7 +383,7 @@ const SignupNurse = ({ navigation }) => {
           )}
               
               
-            </View>
+            </View> */}
           </View>
 
           <View
@@ -358,7 +427,7 @@ const SignupNurse = ({ navigation }) => {
                 marginHorizontal: 10,
               }}
             />
-            <Text style={{ fontSize: 14 }}>Or Sign up with</Text>
+            <Text style={{ fontSize: 14 }}>Already have an account</Text>
             <View
               style={{
                 flex: 1,
@@ -368,66 +437,7 @@ const SignupNurse = ({ navigation }) => {
               }}
             />
           </View>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "center",
-            }}
-          >
-            <TouchableOpacity
-              onPress={() => console.log("Pressed")}
-              style={{
-                flex: 1,
-                alignItems: "center",
-                justifyContent: "center",
-                flexDirection: "row",
-                height: 52,
-                borderWidth: 1,
-                borderColor: COLORS.grey,
-                marginRight: 4,
-                borderRadius: 10,
-              }}
-            >
-              <Image
-                source={require("../assets/facebook.png")}
-                style={{
-                  height: 36,
-                  width: 36,
-                  marginRight: 8,
-                }}
-                resizeMode="contain"
-              />
-
-              <Text>Facebook</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => console.log("Pressed")}
-              style={{
-                flex: 1,
-                alignItems: "center",
-                justifyContent: "center",
-                flexDirection: "row",
-                height: 52,
-                borderWidth: 1,
-                borderColor: COLORS.grey,
-                marginRight: 4,
-                borderRadius: 10,
-              }}
-            >
-              <Image
-                source={require("../assets/google.png")}
-                style={{
-                  height: 36,
-                  width: 36,
-                  marginRight: 8,
-                }}
-                resizeMode="contain"
-              />
-
-              <Text>Google</Text>
-            </TouchableOpacity>
-          </View>
+          
 
           <View
             style={{
@@ -436,9 +446,7 @@ const SignupNurse = ({ navigation }) => {
               marginVertical: 22,
             }}
           >
-            <Text style={{ fontSize: 16, color: COLORS.black }}>
-              Already have an account
-            </Text>
+            
             <Pressable onPress={() => navigation.navigate("LoginPatient")}>
               <Text
                 style={{

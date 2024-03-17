@@ -358,7 +358,7 @@ const SignupPatient = ({ navigation }) => {
                 marginHorizontal: 10,
               }}
             />
-            <Text style={{ fontSize: 14 }}>Or Sign up with</Text>
+            <Text style={{ fontSize: 14 }}>Already have an account</Text>
             <View
               style={{
                 flex: 1,
@@ -368,67 +368,7 @@ const SignupPatient = ({ navigation }) => {
               }}
             />
           </View>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "center",
-            }}
-          >
-            <TouchableOpacity
-              onPress={() => console.log("Pressed")}
-              style={{
-                flex: 1,
-                alignItems: "center",
-                justifyContent: "center",
-                flexDirection: "row",
-                height: 52,
-                borderWidth: 1,
-                borderColor: COLORS.grey,
-                marginRight: 4,
-                borderRadius: 10,
-              }}
-            >
-              <Image
-                source={require("../assets/facebook.png")}
-                style={{
-                  height: 36,
-                  width: 36,
-                  marginRight: 8,
-                }}
-                resizeMode="contain"
-              />
-
-              <Text>Facebook</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => console.log("Pressed")}
-              style={{
-                flex: 1,
-                alignItems: "center",
-                justifyContent: "center",
-                flexDirection: "row",
-                height: 52,
-                borderWidth: 1,
-                borderColor: COLORS.grey,
-                marginRight: 4,
-                borderRadius: 10,
-              }}
-            >
-              <Image
-                source={require("../assets/google.png")}
-                style={{
-                  height: 36,
-                  width: 36,
-                  marginRight: 8,
-                }}
-                resizeMode="contain"
-              />
-
-              <Text>Google</Text>
-            </TouchableOpacity>
-          </View>
-
+          
           <View
             style={{
               flexDirection: "row",
@@ -436,9 +376,7 @@ const SignupPatient = ({ navigation }) => {
               marginVertical: 22,
             }}
           >
-            <Text style={{ fontSize: 16, color: COLORS.black }}>
-              Already have an account
-            </Text>
+            
             <Pressable onPress={() => navigation.navigate("LoginPatient")}>
               <Text
                 style={{

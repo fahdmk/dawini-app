@@ -3,7 +3,6 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const { Sequelize } = require('sequelize');
 const User = require('./Models/User');
-const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const app = express();
 const Caretaker = require('./Models/Caretaker');
@@ -31,6 +30,47 @@ sequelize
 
 app.use(cors());
 app.use(bodyParser.json());
+app.post('/api/new-nurse', async (req, res) => {
+  try {
+    // Destructure user data from request body
+    const {
+      username,
+      role,
+      fullname,
+      password,
+      email,
+      phone,
+      working_Area,
+      CIN,
+      adress,
+      cv
+    } = req.body;
+
+    // Check if username and role are provided
+    if (!username || !role) {
+      return res.status(400).json({ error: 'Username and role are required' });
+    }
+
+    // Create a new nurse record in the database using the Nurse model
+    const newNurse = await Caretaker.create({
+      username,
+      role,
+      fullName: fullname, 
+      password,
+      email,
+      phone,
+      working_Area,
+      CIN,
+      adress,
+      cv
+    });
+
+    res.status(201).json(newNurse);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error creating Nurse' });
+  }
+});
 app.post('/api/new-user', async (req, res) => {
   try {
     // Destructure user data from request body

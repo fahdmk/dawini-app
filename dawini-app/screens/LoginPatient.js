@@ -232,8 +232,8 @@ const LoginPatient = ({ navigation }) => {
               <Image
                 source={require("../assets/facebook.png")}
                 style={{
-                  height: 36,
-                  width: 36,
+                  height: 25,
+                  width: 20,
                   marginRight: 8,
                 }}
                 resizeMode="contain"
@@ -259,8 +259,8 @@ const LoginPatient = ({ navigation }) => {
               <Image
                 source={require("../assets/google.png")}
                 style={{
-                  height: 36,
-                  width: 36,
+                  height: 25,
+                  width: 25,
                   marginRight: 8,
                 }}
                 resizeMode="contain"
@@ -270,8 +270,6 @@ const LoginPatient = ({ navigation }) => {
             </TouchableOpacity>
           </View>
 
-         
-         
         </View>
         </ScrollView>
       </SafeAreaView>
