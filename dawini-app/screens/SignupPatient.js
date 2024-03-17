@@ -32,7 +32,7 @@ const SignupPatient = ({ navigation }) => {
     const handleSubmit = async () => {
       try {
        
-        const response = await axios.post('http://10.0.2.2:3000/api/new-user', {
+        const response = await axios.post('http://localhost:3000/api/new-user', {
           username: name,
           role: 'patient', 
           fullname: name,
