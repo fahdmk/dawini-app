@@ -51,7 +51,8 @@ export default function App() {
 // Define your MainScreen component to wrap the bottom tab navigator
 const MainScreen = () => {
   return (
-    <Tab.Navigator>
+    <Tab.Navigator
+    screenOptions={{ headerShown: false }} >
       <Tab.Screen
         name='Home'
         component={HomeScreen}
@@ -69,7 +70,7 @@ const MainScreen = () => {
         component={BookingScreen}
         options={{
           tabBarLabel: ({ color }) => (
-            <Text style={{ color: color, fontSize: 12 }}>Booking</Text>
+            <Text style={{ color: color, fontSize: 12 }}>Appointments</Text>
           ),
           tabBarIcon: ({ color, size }) => (
             <AntDesign name="book" size={size} color={color} />

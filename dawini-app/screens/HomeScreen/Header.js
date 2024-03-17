@@ -1,4 +1,4 @@
-import { View, Text, TextInput, StyleSheet } from 'react-native'
+import { View, Text, TextInput, StyleSheet, Image } from 'react-native'
 import React from 'react'
 import { FontAwesome } from '@expo/vector-icons';
 
@@ -8,13 +8,17 @@ import { FontAwesome } from '@expo/vector-icons';
 export default function Header() {
   return (
     <View style={styles.Container}>
-        <View>
-            <Text style={{color:"#ffffff",fontSize:30,fontFamily:'outfit'}}>Welcome To Dawini,</Text>
-        </View>
-    <View style={styles.searchBarContainer}>
-    <TextInput placeholder='Search..'style={styles.textInput}></TextInput>
-    <FontAwesome name="search" style={styles.searchBTN} size={24} color="black" />
-    </View>
+    
+    <Image
+              source={require("../../assets/logo.png")}
+              resizeMode='contain'
+              style={{
+                  width: 200,
+                  height: 55, // Adjust height as needed
+              }}
+            />
+    {/* <TextInput placeholder='Search..'style={styles.textInput}></TextInput>
+    <FontAwesome name="search" style={styles.searchBTN} size={24} color="black" /> */}
     </View>
 
   )
@@ -39,9 +43,9 @@ const styles = StyleSheet.create({
         borderRadius:8,
     },
     Container:{
-        padding:20,
-        paddingTop:40,
-        backgroundColor:'#007F73',
+        padding:10,
+        paddingTop:20,
+        backgroundColor:'#009F4D',
     }
 
     }

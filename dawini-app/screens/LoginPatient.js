@@ -69,8 +69,8 @@ const LoginPatient = ({ navigation }) => {
               source={require("../assets/logo-white.png")}
               resizeMode='contain'
               style={{
-                  width: "60%",
-                  height: 175, // Adjust height as needed
+                  width: "90%",
+                  height: 140, // Adjust height as needed
               }}
             />
 
