@@ -183,6 +183,11 @@ app.post('/api/users', async (req, res) => {
   }
 });
 
+app.get('/api/nurses', async (req, res) => {
+  const nurses = await Caretaker.findAll();
+  res.json(nurses);
+});
+
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
