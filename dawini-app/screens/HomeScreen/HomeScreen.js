@@ -56,7 +56,7 @@ export default function HomeScreen({ navigation }) {
 
   const fetchNurses = async () => {
     try {
-      const response = await fetch('http://192.168.18.107:3000/api/nurses');
+      const response = await fetch('http://10.0.2.2:3000/api/nurses');
       if (!response.ok) {
         throw new Error('Failed to fetch nurses');
       }
@@ -147,7 +147,7 @@ export default function HomeScreen({ navigation }) {
             </Text>
           </View>
         )}
-      <Card
+      {/* <Card
    style={{paddingLeft:5,
            paddingRight:5}}>
       <FlatList
@@ -195,7 +195,7 @@ export default function HomeScreen({ navigation }) {
          )
         }
       />
-  </Card> 
+  </Card>  */}
       </View>
       <View style={{ marginBottom: 15, padding: 5 }}>
         <Text style={{ ...FONTS.h3, marginVertical: SIZES.padding * 2 }}>All Nurses</Text>
