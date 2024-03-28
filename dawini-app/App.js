@@ -52,7 +52,12 @@ export default function App() {
 const MainScreen = () => {
   return (
     <Tab.Navigator
-    screenOptions={{ headerShown: false }} >
+    screenOptions={{ headerShown: false }}
+    tabBarOptions={{
+      activeTintColor: 'green',
+      inactiveTintColor: 'black',
+      showLabel: false
+    }} >
       <Tab.Screen
         name='Home'
         component={HomeScreen}
