@@ -19,7 +19,7 @@ export default function Chatscreen({ navigation }) {
 
   useEffect(() => {
     socket.emit("getAllGroups");
-    setCurrentUser("fahd"); // Setting initial value for currentUser
+    setCurrentUser("fahd1"); // Setting initial value for currentUser
     socket.on("groupList", (groups) => {
       console.log(groups, "hhhhhhhhhhhhhhhhhhhhhhh");
       setAllChatRooms(groups);

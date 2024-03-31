@@ -66,7 +66,9 @@ socketIO.on("connection", (socket) => {
 app.get("/api", (req, res) => {
   res.json(chatgroups);
 });
-
+app.get("/api", (req, res) => {
+  res.json(rooms);
+});
 http.listen(PORT, () => {
   console.log(`Server is listeing on ${PORT}`);
 });

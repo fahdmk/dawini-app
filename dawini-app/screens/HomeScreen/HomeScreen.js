@@ -140,12 +140,13 @@ export default function HomeScreen({ navigation }) {
       <View>
         <Header />
       </View>
+     
       <View style={{ marginBottom: 12 }}>
-        <Text style={{ ...FONTS.h3, marginVertical: SIZES.padding * 2 }}>Closest Nurses</Text>
+        {/* <Text style={{ ...FONTS.h3, marginVertical: SIZES.padding * 2 }}>Closest Nurses</Text> */}
         {location && (
           <View>
-            <Text>Timestamp: {location.timestamp}</Text>
-            <Text>Mocked: {location.mocked ? 'Yes' : 'No'}</Text>
+            {/* <Text>Timestamp: {location.timestamp}</Text>
+            <Text>Mocked: {location.mocked ? 'Yes' : 'No'}</Text> */}
             <Text>
               Latitude: {location.coords.latitude}, Longitude: {location.coords.longitude}
             </Text>
@@ -159,55 +160,7 @@ export default function HomeScreen({ navigation }) {
     </View>
      
      
-      {/* <Card
-   style={{paddingLeft:5,
-           paddingRight:5}}>
-      <FlatList
-        horizontal={true}
-        data={latestList}
-        keyExtractor={item=>item.id}
-        renderItem={
-          ({ item, index })=>(
-              <View style={{
-                  marginRight: SIZES.padding
-              }}>
-                  <TouchableOpacity
-                   onPress={()=>navigation.navigate("Details")}
-                  >
-                      <Image
-                       source={item.image}
-                       style={{
-                          height: 140,
-                          width: 140
-                       }}
-                      />
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    onPress={()=>navigation.navigate("Details")}
-                  >
-                      <Text style={{
-                          fontSize: 14,
-                          color: COLORS.black,
-                          fontWeight: "bold"
-                      }}>
-                          {item.fullname}
-                      </Text>
-                  </TouchableOpacity>
-                  <Text style={{
-                      fontSize: 10,
-                      color: COLORS.black
-                  }}>
-                      {item.working_Area}
-                  </Text>
-
-                
-              </View>
-         
-         )
-        }
-      />
-  </Card>  */}
+      
       </View>
       <View style={{ marginBottom: 15, padding: 5 }}>
         <Text style={{ ...FONTS.h3, marginVertical: SIZES.padding * 2 }}>All Nurses</Text>
@@ -238,6 +191,7 @@ export default function HomeScreen({ navigation }) {
           />
         </View>
       </View>
+     
       </>
   );
 }
