@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Image, ScrollView, TextInput, StyleSheet } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Image, ScrollView, TextInput, StyleSheet ,List} from 'react-native';
 import { Card } from 'react-native-paper';
 import * as Location from 'expo-location';
 import Header from './Header';
 import { COLORS, SIZES, FONTS } from '../../constants1';
-import { latestList, shoesList1, shoesList2 } from '../../constants1/data';
+import { useNavigation } from '@react-navigation/native';
 
 export default function HomeScreen({ navigation }) {
   const [location, setLocation] = useState(null);
@@ -117,6 +117,10 @@ export default function HomeScreen({ navigation }) {
     setFilteredDataSource(filteredNurses);
   };
 
+
+  const handleChatNavigation = () => {
+    navigation.navigate('Chat');
+  };
   const renderNurseItem = ({ item }) => (
     <TouchableOpacity onPress={() => navigation.navigate("Details")}>
       <Card style={{ padding: 10, width: "99%", marginLeft: 2 }}>
@@ -132,7 +136,7 @@ export default function HomeScreen({ navigation }) {
   );
 
   return (
-    <ScrollView>
+  <>
       <View>
         <Header />
       </View>
@@ -147,6 +151,14 @@ export default function HomeScreen({ navigation }) {
             </Text>
           </View>
         )}
+         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>Home Screen</Text>
+      <TouchableOpacity onPress={handleChatNavigation}>
+        <Text>Go to Chat Screen</Text>
+      </TouchableOpacity>
+    </View>
+     
+     
       {/* <Card
    style={{paddingLeft:5,
            paddingRight:5}}>
@@ -220,14 +232,13 @@ export default function HomeScreen({ navigation }) {
           </View>
           <FlatList
             ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
-            horizontal={false}
             data={filteredDataSource}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => item['idCare taker']}
             renderItem={renderNurseItem}
           />
         </View>
       </View>
-    </ScrollView>
+      </>
   );
 }
 

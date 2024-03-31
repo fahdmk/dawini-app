@@ -1,63 +1,74 @@
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from "@react-navigation/native-stack"
-import { LoginPatient, SignupPatient, SignupNurse} from "./screens";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Entypo, AntDesign, SimpleLineIcons } from '@expo/vector-icons';
+import { Text } from 'react-native';
+import React from 'react';
+import GlobalState from "./context";
+import LoginPatient from "./screens/LoginPatient";
+import SignupPatient from "./screens/SignupPatient";
+import SignupNurse from "./screens/SignupNurse";
 import HomeScreen from './screens/HomeScreen/HomeScreen';
 import BookingScreen from './screens/BookingScreen/BookingScreen';
 import ProfileScreen from './screens/ProfileScreen/ProfileScreen';
 import ShopScreen from './screens/ShopScreen/ShopScreen';
-import { Entypo } from '@expo/vector-icons';
-import { AntDesign } from '@expo/vector-icons';
-import { SimpleLineIcons } from '@expo/vector-icons';
-import { View, Text } from 'react-native'
-import React from 'react'
+import Chatscreen from "./screens/Chatscreen";
+import Messagescreen from "./screens/Messagescreen";
+
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName='LoginPatient'>
-        <Stack.Screen
-          name="LoginPatient"
-          component={LoginPatient}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="SignupPatient"
-          component={SignupPatient}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="SignupNurse"
-          component={SignupNurse}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Main"
-          component={MainScreen} // This will be the wrapper component for your bottom tab navigator
-          options={{ headerShown: false }}
-        />
-      <Stack.Screen
-          name="MainScreen" // Corrected name to match the component name
-          component={MainScreen} // This will be the wrapper component for your bottom tab navigator
-          options={{ headerShown: false }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <GlobalState> 
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName='LoginPatient'>
+          <Stack.Screen
+            name="LoginPatient"
+            component={LoginPatient}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="SignupPatient"
+            component={SignupPatient}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="SignupNurse"
+            component={SignupNurse}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Main"
+            component={MainScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="MainScreen"
+            component={MainScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Messagescreen"
+            component={Messagescreen}
+            options={({ route }) => ({ title: route.params.currentGroupName })}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </GlobalState>
   );
 }
 
-// Define your MainScreen component to wrap the bottom tab navigator
 const MainScreen = () => {
   return (
     <Tab.Navigator
-    screenOptions={{ headerShown: false }}
-    tabBarOptions={{
-      activeTintColor: 'green',
-      inactiveTintColor: 'black',
-      showLabel: false
-    }} >
+      screenOptions={{ headerShown: false }}
+      tabBarOptions={{
+        activeTintColor: 'green',
+        inactiveTintColor: 'black',
+        showLabel: false
+      }}
+    >
       <Tab.Screen
         name='Home'
         component={HomeScreen}
@@ -79,6 +90,18 @@ const MainScreen = () => {
           ),
           tabBarIcon: ({ color, size }) => (
             <AntDesign name="book" size={size} color={color} />
+          )
+        }}
+      />
+      <Tab.Screen
+        name='Chatscreen'
+        component={Chatscreen}
+        options={{
+          tabBarLabel: ({ color }) => (
+            <Text style={{ color: color, fontSize: 12 }}>Chats</Text>
+          ),
+          tabBarIcon: ({ color, size }) => (
+            <SimpleLineIcons name="bubbles" size={size} color={color} />
           )
         }}
       />
