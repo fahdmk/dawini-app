@@ -1,10 +1,12 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
-import { GlobalContext } from "../context";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import Chatcomponent from "../components/Chatcomponent";
 import NewGroupModal from "../components/Modal";
 import { socket } from "../utils";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import { GlobalContext } from "../context"; // Importing GlobalContext from "../context"
 
 export default function Chatscreen({ navigation }) {
   const {
@@ -18,22 +20,41 @@ export default function Chatscreen({ navigation }) {
   } = useContext(GlobalContext);
 
   useEffect(() => {
-    socket.emit("getAllGroups");
-    setCurrentUser("fahd1"); // Setting initial value for currentUser
-    socket.on("groupList", (groups) => {
-      console.log(groups, "hhhhhhhhhhhhhhhhhhhhhhh");
-      setAllChatRooms(groups);
-    });
-  }, [socket]);
+    const fetchData = async () => {
+      try {
+        // Fetch user data from AsyncStorage
+        const storedUser = await AsyncStorage.getItem('user');
+        setCurrentUser(storedUser || "DefaultUser"); // Setting initial value for currentUser
+
+        // Emit socket event to get all groups
+        socket.emit('getAllGroups');
+
+        // Listen for groupList event from socket
+        socket.on('groupList', (groups) => {
+          console.log(groups);
+          setAllChatRooms(groups);
+        });
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchData();
+
+    // Clean up socket event listener on component unmount
+    return () => {
+      socket.off('groupList');
+    };
+  }, []); // Empty dependency array to run effect only once on mount
+
+  useEffect(() => {
+    if (currentUser.trim() === "") navigation.navigate("Homescreen");
+  }, [currentUser, navigation]);
 
   function handleLogout() {
     setCurrentUser(""); // Logout action to set currentUser to an empty string
     setShowLoginView(false);
   }
-
-  useEffect(() => {
-    if (currentUser.trim() === "") navigation.navigate("Homescreen");
-  }, [currentUser]);
 
   return (
     <View style={styles.mainWrapper}>

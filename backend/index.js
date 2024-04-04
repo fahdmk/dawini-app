@@ -136,7 +136,7 @@ app.post('/login', async (req, res) => {
     console.log('Stored hashed password:', user.password);
     
     // Compare the entered password with the stored hashed password
-    const isPasswordValid = (password==user.password);
+    const isPasswordValid = (password == user.password);
 
     console.log('Is password valid?', isPasswordValid);
     if (!isPasswordValid) {
@@ -151,13 +151,14 @@ app.post('/login', async (req, res) => {
     );
 
     console.log('Generated token:', token);
-    res.json({ token });
+
+    // Return user details along with the token
+    res.json({ token, user });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Error logging in' });
   }
 });
-
 
 app.get('/users', async (req, res) => {
   try {
@@ -191,5 +192,5 @@ app.get('/api/nurses', async (req, res) => {
 
 
 app.listen(PORT, () => {
-    console.log(`Server is running on http://10.0.2.2:${PORT}`);
+    console.log(`Server is running on http:/10.255.255.172:${PORT}`);
 });

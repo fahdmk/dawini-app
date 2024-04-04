@@ -22,15 +22,15 @@ export default function HomeScreen({ navigation }) {
     const locationSubscription = Location.watchPositionAsync({ accuracy: Location.Accuracy.High, timeInterval: 5000, distanceInterval: 10 }, (newLocation) => {
       setLocation(newLocation);
     });
-
+  
     return () => {
       // Clean up location subscription
       if (locationSubscription) {
-        locationSubscription.remove();
+        // locationSubscription.remove();
       }
     };
   }, []);
-  useEffect(() => {
+  useEffect(() => { 
     fetchLocation();
     fetchNurses();
   }, []);
@@ -56,7 +56,7 @@ export default function HomeScreen({ navigation }) {
 
   const fetchNurses = async () => {
     try {
-      const response = await fetch('http://10.0.2.2:3000/api/nurses');
+      const response = await fetch('http:/10.255.255.172:3000/api/nurses');
       if (!response.ok) {
         throw new Error('Failed to fetch nurses');
       }
@@ -123,16 +123,23 @@ export default function HomeScreen({ navigation }) {
   };
   const renderNurseItem = ({ item }) => (
     <TouchableOpacity onPress={() => navigation.navigate("Details")}>
-      <Card style={{ padding: 10, width: "99%", marginLeft: 2 }}>
-        <Image source={item.image} style={{ height: 140, width: 140 }} />
+    <Card style={{ ...styles.cardContainer, padding: 10, width: "99%", marginLeft: 2 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <View style={styles.imageContainer}>
+          <Image
+            source={{ uri: "https://i.ibb.co/cgrKXWk/beautiful-young-female-doctor-looking-camera-office-1301-7807.jpg" }}
+            style={styles.image}
+          />
+        </View>
         <View style={{ padding: SIZES.padding }}>
           <Text style={{ fontSize: 14, color: COLORS.black, fontWeight: "bold" }}>
             {item.fullName}
           </Text>
           <Text style={{ fontSize: 12, marginVertical: 4 }}>{item.working_Area}</Text>
         </View>
-      </Card>
-    </TouchableOpacity>
+      </View>
+    </Card>
+  </TouchableOpacity>
   );
 
   return (
@@ -140,7 +147,6 @@ export default function HomeScreen({ navigation }) {
       <View>
         <Header />
       </View>
-     
       <View style={{ marginBottom: 12 }}>
         {/* <Text style={{ ...FONTS.h3, marginVertical: SIZES.padding * 2 }}>Closest Nurses</Text> */}
         {location && (
@@ -152,12 +158,12 @@ export default function HomeScreen({ navigation }) {
             </Text>
           </View>
         )}
-         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+         {/* <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <Text>Home Screen</Text>
       <TouchableOpacity onPress={handleChatNavigation}>
         <Text>Go to Chat Screen</Text>
       </TouchableOpacity>
-    </View>
+    </View> */}
      
      
       
@@ -184,7 +190,7 @@ export default function HomeScreen({ navigation }) {
             </TouchableOpacity>
           </View>
           <FlatList
-            ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+            ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
             data={filteredDataSource}
             keyExtractor={(item) => item['idCare taker']}
             renderItem={renderNurseItem}
@@ -197,6 +203,21 @@ export default function HomeScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  cardContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    width: '99%',
+    marginLeft: 2,
+  },
+  imageContainer: {
+    borderRadius: 8, // Adjust border radius as needed
+    overflow: 'hidden', // Clip the image to the border radius
+  },
+  image: {
+    height: 70,
+    width: 70,
+  },
   container: {
     backgroundColor: 'white',
   },

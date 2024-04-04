@@ -9,14 +9,16 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Alert,
-  ScrollView
+  ScrollView,
+  
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox";
 import Button from "../components/Button";
 import COLORS from "../constants/colors";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as AuthSession from 'expo-auth-session';
 const LoginPatient = ({ navigation }) => {
   const [isPasswordShown, setIsPasswordShown] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
@@ -25,7 +27,7 @@ const LoginPatient = ({ navigation }) => {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch("http://10.0.2.2:3000/login", {
+      const response = await fetch("http://10.255.255.172:3000/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -35,30 +37,35 @@ const LoginPatient = ({ navigation }) => {
           password,
         }),
       });
-
+  
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || "Login failed");
       }
-
-      // Assuming the server responds with a token
-      const { token } = await response.json();
-
+  
+      const { token, user } = await response.json();
+  
+      // Now 'user' contains the details of the logged-in user
+      console.log("User:", user);
+  
+      // Store the token in local storage or context for further use
+  
       // Clear input fields after successful login
       setEmail("");
       setPassword("");
-
-      // You can now use the token for further authenticated requests or store it locally
-      // For example, you can save it to AsyncStorage in a real-world scenario
-
+  
       // Navigate to the next screen or perform other actions
       navigation.navigate("MainScreen");
+
+      // Store the token in AsyncStorage
+      await AsyncStorage.setItem('user', user.fullName);
+    
     } catch (error) {
       console.error("Login error:", error.message);
       Alert.alert("Error", "Invalid credentials. Please try again.");
     }
+   
   };
-
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
