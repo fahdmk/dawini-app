@@ -14,7 +14,7 @@ import ProfileScreen from './screens/ProfileScreen/ProfileScreen';
 import ShopScreen from './screens/ShopScreen/ShopScreen';
 import Chatscreen from "./screens/Chatscreen";
 import Messagescreen from "./screens/Messagescreen";
-
+import ProfileView from "./screens/Profile";
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
@@ -53,6 +53,11 @@ export default function App() {
             component={Messagescreen}
             options={({ route }) => ({ title: route.params.currentGroupName })}
           />
+          <Stack.Screen
+            name="ProfileView"
+            component={ProfileView}
+            options={{ headerShown: false }}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </GlobalState>
@@ -62,12 +67,15 @@ export default function App() {
 const MainScreen = () => {
   return (
     <Tab.Navigator
-      screenOptions={{ headerShown: false }}
-      tabBarOptions={{
-        activeTintColor: 'green',
-        inactiveTintColor: 'black',
-        showLabel: false
-      }}
+    screenOptions={{
+      headerShown: false,
+      tabBarActiveTintColor: 'green',
+      tabBarInactiveTintColor: 'black',
+      tabBarShowLabel: false,
+      tabBarStyle: {
+        display: 'flex',
+      },
+    }}
     >
       <Tab.Screen
         name='Home'

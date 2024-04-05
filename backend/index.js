@@ -189,8 +189,20 @@ app.get('/api/nurses', async (req, res) => {
   const nurses = await Caretaker.findAll();
   res.json(nurses);
 });
-
+app.get('/api/nurses/:idCareTaker', async (req, res) => {
+  try {
+    const { idCareTaker } = req.params;
+    const nurse = await Caretaker.findByPk(idCareTaker);
+    if (!nurse) {
+      return res.status(404).json({ error: 'Nurse not found' });
+    }
+    res.json(nurse);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error fetching nurse information' });
+  }
+});
 
 app.listen(PORT, () => {
-    console.log(`Server is running on http:/10.255.255.172:${PORT}`);
+    console.log(`Server is running on http://10.0.2.2:${PORT}`);
 });

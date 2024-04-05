@@ -47,23 +47,14 @@ export default function Chatscreen({ navigation }) {
     };
   }, []); // Empty dependency array to run effect only once on mount
 
-  useEffect(() => {
-    if (currentUser.trim() === "") navigation.navigate("Homescreen");
-  }, [currentUser, navigation]);
 
-  function handleLogout() {
-    setCurrentUser(""); // Logout action to set currentUser to an empty string
-    setShowLoginView(false);
-  }
-
+ 
   return (
     <View style={styles.mainWrapper}>
       <View style={styles.topContainer}>
         <View style={styles.header}>
           <Text style={styles.heading}>Welcome {currentUser}!</Text>
-          <Pressable onPress={handleLogout}>
-            <AntDesign name="logout" size={30} color={"black"} />
-          </Pressable>
+          
         </View>
       </View>
       <View style={styles.listContainer}>

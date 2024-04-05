@@ -56,7 +56,7 @@ export default function HomeScreen({ navigation }) {
 
   const fetchNurses = async () => {
     try {
-      const response = await fetch('http:/10.255.255.172:3000/api/nurses');
+      const response = await fetch('http://10.0.2.2:3000/api/nurses');
       if (!response.ok) {
         throw new Error('Failed to fetch nurses');
       }
@@ -122,7 +122,16 @@ export default function HomeScreen({ navigation }) {
     navigation.navigate('Chat');
   };
   const renderNurseItem = ({ item }) => (
-    <TouchableOpacity onPress={() => navigation.navigate("Details")}>
+<TouchableOpacity onPress={() => {
+  if (item && typeof item === 'object' && 'idCare taker' in item) {
+    navigation.navigate("ProfileView", { 
+      'idCare taker': item['idCare taker'], 
+      message: 'Hello from HomeScreen!'
+    })
+  } else {
+    console.error('Error: item is undefined or idCare taker property is not present:', item);
+  }
+}}>
     <Card style={{ ...styles.cardContainer, padding: 10, width: "99%", marginLeft: 2 }}>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <View style={styles.imageContainer}>
@@ -135,6 +144,7 @@ export default function HomeScreen({ navigation }) {
           <Text style={{ fontSize: 14, color: COLORS.black, fontWeight: "bold" }}>
             {item.fullName}
           </Text>
+
           <Text style={{ fontSize: 12, marginVertical: 4 }}>{item.working_Area}</Text>
         </View>
       </View>
@@ -190,11 +200,11 @@ export default function HomeScreen({ navigation }) {
             </TouchableOpacity>
           </View>
           <FlatList
-            ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
-            data={filteredDataSource}
-            keyExtractor={(item) => item['idCare taker']}
-            renderItem={renderNurseItem}
-          />
+  ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
+  data={filteredDataSource}
+  keyExtractor={(item) => item['idCare taker'].toString()}
+  renderItem={renderNurseItem}
+/>
         </View>
       </View>
      
