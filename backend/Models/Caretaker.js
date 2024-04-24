@@ -1,7 +1,7 @@
 // models/Caretaker.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../sequelize-config');
-
+const Review = require('./Review');
 const Caretaker = sequelize.define('Caretaker', {
   "idCare taker": {
     type: DataTypes.INTEGER,
@@ -79,5 +79,14 @@ const Caretaker = sequelize.define('Caretaker', {
   tableName: 'caretaker', // Specify the actual table name
   timestamps: false, // Set to true if you have createdAt and updatedAt fields
 });
+Caretaker.hasMany(Review, {
+  foreignKey: 'idCare taker', // Matches the foreign key in Review
+  as: 'reviews' // Alias for clarity
+});
 
+// models/Review.js 
+Review.belongsTo(Caretaker, {
+  foreignKey: 'idCare taker',
+  as: 'Caretaker' // Alias for clarity
+});
 module.exports = Caretaker;

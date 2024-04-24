@@ -8,11 +8,11 @@ const ProfileView = (route) => {
     const selectedNurse = route.route.params['idCare taker'];
 const [nurse, setNurse] = useState(null);
 const { currentUser} = useContext(GlobalContext);
-
+const [reviews, setReviews] = useState([]);
 useEffect(() => {
   const fetchNurse = async () => {
     try {
-      const response = await fetch(`http://192.168.100.25:3000/api/nurses/${selectedNurse}`);
+      const response = await fetch(`http://192.168.16.238:3000/api/nurses/${selectedNurse}`);
       if (!response.ok) {
         throw new Error('Failed to fetch nurse information');
       }
@@ -24,7 +24,21 @@ useEffect(() => {
     }
   };
 
+  const fetchReviews = async () => {
+    try {
+      const response = await fetch(`http://192.168.16.238:3000/api/reviews/caretaker/${selectedNurse}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch reviews');
+      }
+      const data = await response.json();
+      setReviews(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   fetchNurse();
+  fetchReviews();
 }, []);
 console.log(nurse)
 const handleSendMessage = () => {
@@ -43,14 +57,14 @@ const handleSendMessage = () => {
     <ScrollView style={styles.container}>
         <View style={styles.headerContainer}>
             <Image
-                style={styles.coverPhoto}
-                source={{uri: 'https://www.bootdey.com/image/250x250/9400D3/9400D3'}}
-            />
+          source={require("../assets/green.png")} 
+          resizeMode='contain'
+          style={styles.logo}
+        />
             <View style={styles.profileContainer}>
                 <Image
                 style={styles.profilePhoto}
-                source={{uri: 'https://www.bootdey.com/img/Content/avatar/avatar1.png'}}
-                />
+                source={{ uri: nurse?.photo_uri || 'https://via.placeholder.com/150' }}                />
                 <Text style={styles.nameText}>{nurse && nurse.fullName}</Text>
             </View>
         </View>
@@ -79,9 +93,19 @@ const handleSendMessage = () => {
                 <Text style={styles.buttonText}>Send Message</Text>
             </TouchableOpacity>
         </View>
-        <Card>
-    <Card.Cover source={{ uri: 'https://picsum.photos/700' }} />
-  </Card>
+        <Text style={styles.reviewsTitle}>Reviews</Text>
+        {reviews.length > 0 ? (
+        reviews.map(review => (
+          <Card key={review.idReview} style={styles.reviewCard}>
+            <Card.Content>
+              <Text style={styles.reviewContent}>{review.description}</Text>
+              <Text style={styles.reviewAuthor}>{review.User.username}</Text>
+            </Card.Content>
+          </Card>
+        ))
+      ) : (
+        <Text>No reviews available.</Text>
+      )}
     </ScrollView>
     
   </>
@@ -89,6 +113,10 @@ const handleSendMessage = () => {
 };
 
 const styles = {
+  reviewsTitle: {
+    fontWeight: 'bold', // Makes the text bold
+    fontSize: 24,       // Increases the size of the text
+  },
   container: {
     backgroundColor: '#fff',
   },
@@ -140,7 +168,7 @@ const styles = {
     marginLeft:4
   },
   button: {
-    backgroundColor: '#9400D3',
+    backgroundColor: 'green',
     borderRadius: 5,
     padding: 10,
     marginHorizontal: 20,

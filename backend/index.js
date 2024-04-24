@@ -6,7 +6,9 @@ const User = require('./Models/User');
 const jwt = require('jsonwebtoken');
 const app = express();
 const Caretaker = require('./Models/Caretaker');
+const Review = require('./Models/Review'); 
 const PORT = process.env.PORT || 3000;
+
 
 const sequelize = new Sequelize(
   'dawini4',
@@ -202,7 +204,37 @@ app.get('/api/nurses/:idCareTaker', async (req, res) => {
     res.status(500).json({ error: 'Error fetching nurse information' });
   }
 });
+app.get('/api/reviews/caretaker/:idCareTaker', async (req, res) => {
+  try {
+    const { idCareTaker } = req.params;
+    // Fetch all reviews where the idCareTaker matches the caretaker's ID in the request parameters
+    const reviews = await Review.findAll({
+      where: {
+        "idCare taker": idCareTaker
+      },
+      include: [
+        {
+          model: Caretaker,
+          as: 'Caretaker',
+          attributes: ['username', 'full Name', 'email', 'photo_uri'], // Include relevant caretaker details
+        },
+        {
+          model: User,
+          as: 'User',
+          attributes: ['username', 'fullName', 'email'] // Include relevant user details who wrote the review
+        }
+      ]
+    });
 
+    if (reviews.length === 0) {
+      return res.status(404).json({ message: 'No reviews found for this caretaker' });
+    }
+    res.json(reviews);
+  } catch (error) {
+    console.error('Error fetching reviews: ', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 app.listen(PORT, () => {
-    console.log(`Server is running on http://192.168.100.25:${PORT}`);
+    console.log(`Server is running on http://192.168.16.238:${PORT}`);
 });

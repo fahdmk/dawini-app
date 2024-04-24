@@ -1,7 +1,7 @@
 // models/User.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../sequelize-config');
-
+const Review = require('./Review');
 const User = sequelize.define('User', {
   idUser: {
     type: DataTypes.INTEGER,
@@ -60,6 +60,14 @@ const User = sequelize.define('User', {
 }, {
   tableName: 'user', // Make sure to specify the actual table name
   timestamps: false, // Set to true if you have createdAt and updatedAt fields
+});
+User.hasMany(Review, {
+  foreignKey: 'idUser',
+  as: 'Reviews' // Alias for easier identification
+});
+Review.belongsTo(User, {
+  foreignKey: 'idUser',
+  as: 'User' // Alias for easier identification
 });
 
 module.exports = User;
