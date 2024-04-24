@@ -1,18 +1,17 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
-import { AntDesign } from "@expo/vector-icons";
-import Chatcomponent from "../components/Chatcomponent";
-import NewGroupModal from "../components/Modal";
 import { socket } from "../utils";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-import { GlobalContext } from "../context"; // Importing GlobalContext from "../context"
+import NewGroupModal from "../components/Modal";
+import { GlobalContext } from "../context";
+import Chatcomponent from "../components/Chatcomponent";
+import Header from "./HomeScreen/Header";
 
 export default function Chatscreen({ navigation }) {
   const {
     currentUser,
-    allChatRooms,
-    setAllChatRooms,
+    allConversations,
+    setAllConversations,
     modalVisible,
     setModalVisible,
     setCurrentUser,
@@ -23,19 +22,27 @@ export default function Chatscreen({ navigation }) {
     const fetchData = async () => {
       try {
         // Fetch user data from AsyncStorage
-        const storedUser = await AsyncStorage.getItem('user');
-        setCurrentUser(storedUser || "DefaultUser"); // Setting initial value for currentUser
+        const storedUser = await AsyncStorage.getItem("user");
+        setCurrentUser(storedUser || "DefaultUser");
 
-        // Emit socket event to get all groups
-        socket.emit('getAllGroups');
+        // Emit socket event to get all conversations
+        socket.emit("getAllConversations");
 
-        // Listen for groupList event from socket
-        socket.on('groupList', (groups) => {
-          console.log(groups);
-          setAllChatRooms(groups);
-        });
+        // Listen for conversationList event from socket
+       socket.on("conversationList", (conversations) => {
+  //  console.log(conversations);
+  // Modify the conversation list to include participants
+  const modifiedConversations = conversations.map((conversation) => {
+    const participants = conversation.split("-"); // Split conversation ID into participants
+    return {
+      id: conversation, // Keep the original conversation ID
+      participants: participants, // Assign participants array
+    };
+  });
+  setAllConversations(modifiedConversations);
+});
       } catch (error) {
-        console.error('Error fetching user data:', error);
+        console.error("Error fetching user data:", error);
       }
     };
 
@@ -43,37 +50,33 @@ export default function Chatscreen({ navigation }) {
 
     // Clean up socket event listener on component unmount
     return () => {
-      socket.off('groupList');
+      socket.off("conversationList");
     };
-  }, []); // Empty dependency array to run effect only once on mount
+  }, []);
 
 
- 
+  const filteredConversations = allConversations.filter(conversation =>
+    conversation.participants.includes(currentUser)
+    
+  );
+// console.log(filteredConversations);
   return (
     <View style={styles.mainWrapper}>
-      <View style={styles.topContainer}>
-        <View style={styles.header}>
-          <Text style={styles.heading}>Welcome {currentUser}!</Text>
-          
-        </View>
-      </View>
+     <Header />
+    
       <View style={styles.listContainer}>
-        {allChatRooms && allChatRooms.length > 0 ? (
-          <FlatList
-            data={allChatRooms}
-            renderItem={({ item }) => <Chatcomponent item={item} />}
-            keyExtractor={(item) => item.id}
-          />
-        ) : null}
+        {filteredConversations.map((conversation, index) => (
+          <Chatcomponent key={index} item={conversation} currentUser={currentUser} />
+        ))}
       </View>
-      <View style={styles.bottomContainer}>
+      {/* <View style={styles.bottomContainer}>
         <Pressable onPress={() => setModalVisible(true)} style={styles.button}>
           <View>
-            <Text style={styles.buttonText}>Create New Group</Text>
+            <Text style={styles.buttonText}>Create New Conversation</Text>
           </View>
         </Pressable>
-      </View>
-      {modalVisible && <NewGroupModal />}
+      </View> */}
+     
     </View>
   );
 }

@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import React, { createContext, useState } from "react";
 
 export const GlobalContext = createContext(null);
 
@@ -7,12 +7,11 @@ function GlobalState({ children }) {
   const [currentUserName, setCurrentUserName] = useState("");
   const [currentUser, setCurrentUser] = useState("");
   const [allUsers, setAllUsers] = useState([]);
-  const [allChatRooms, setAllChatRooms] = useState([]);
+  const [allConversations, setAllConversations] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [currentGroupName, setCurrentGroupName] = useState("");
+  const [currentConversation, setCurrentConversation] = useState(null);
+  const [currentChatMessage, setCurrentChatMessage] = useState(""); 
   const [allChatMessages, setAllChatMessages] = useState([]);
-  const [currentChatMesage, setCurrentChatMessage] = useState('')
-
   return (
     <GlobalContext.Provider
       value={{
@@ -24,15 +23,16 @@ function GlobalState({ children }) {
         setCurrentUser,
         allUsers,
         setAllUsers,
-        allChatRooms,
-        setAllChatRooms,
+        allConversations,
+        setAllConversations,
         modalVisible,
         setModalVisible,
-        currentGroupName,
-        setCurrentGroupName,
+        currentConversation,
+        setCurrentConversation,
+        currentChatMessage, 
+        setCurrentChatMessage, 
         allChatMessages,
-        setAllChatMessages,
-        currentChatMesage, setCurrentChatMessage
+        setAllChatMessages, 
       }}
     >
       {children}

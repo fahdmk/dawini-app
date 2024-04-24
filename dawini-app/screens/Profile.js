@@ -1,15 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect ,useContext} from 'react';
 import { View, Text, Image, ScrollView, TouchableOpacity } from 'react-native';
-
+import { socket } from "../utils";
+import { GlobalContext } from "../context";
+import { Card } from 'react-native-paper';
 const ProfileView = (route) => {
     console.log(route.route.params['idCare taker'])
     const selectedNurse = route.route.params['idCare taker'];
 const [nurse, setNurse] = useState(null);
+const { currentUser} = useContext(GlobalContext);
 
 useEffect(() => {
   const fetchNurse = async () => {
     try {
-      const response = await fetch(`http://10.0.2.2:3000/api/nurses/${selectedNurse}`);
+      const response = await fetch(`http://192.168.100.25:3000/api/nurses/${selectedNurse}`);
       if (!response.ok) {
         throw new Error('Failed to fetch nurse information');
       }
@@ -24,51 +27,19 @@ useEffect(() => {
   fetchNurse();
 }, []);
 console.log(nurse)
-    const friends = [
-        {
-            id:1,
-            avatar :'https://bootdey.com/img/Content/avatar/avatar2.png',
-            name:'John Doe',
-            age:'30',
-        },
-        {
-            id:2,
-            avatar :'https://bootdey.com/img/Content/avatar/avatar3.png',
-            name:'John Doe',
-            age:'30',
-        },
-        {
-            id:3,
-            avatar :'https://bootdey.com/img/Content/avatar/avatar4.png',
-            name:'John Doe',
-            age:'30',
-        },
-        {
-            id:4,
-            avatar :'https://bootdey.com/img/Content/avatar/avatar5.png',
-            name:'John Doe',
-            age:'30',
-        },
-        {
-            id:5,
-            avatar :'https://bootdey.com/img/Content/avatar/avatar5.png',
-            name:'John Doe',
-            age:'30',
-        },
-        {
-            id:6,
-            avatar :'https://bootdey.com/img/Content/avatar/avatar6.png',
-            name:'John Doe',
-            age:'30',
-        },
-    ]
+const handleSendMessage = () => {
+  // Emit socket event to start a conversation with the nurse
+  socket.emit("startConversation", [currentUser, nurse.fullName]);
+};
 
+   
   const handleEditPress = () => {
 
   }
 
  
   return (
+    <>
     <ScrollView style={styles.container}>
         <View style={styles.headerContainer}>
             <Image
@@ -84,12 +55,8 @@ console.log(nurse)
             </View>
         </View>
 
-        <View style={styles.section}>
-            <Text style={styles.statCount}>1234</Text>
-            <Text style={styles.statLabel}>Friends</Text>
-        </View>
-
-        <View style={styles.section}>
+       
+        {/* <View style={styles.section}>
             <View>
                 <ScrollView horizontal contentContainerStyle={styles.friendsScroll}>
                     {friends.map(({avatar, id}) => (
@@ -99,30 +66,30 @@ console.log(nurse)
                     ))}
                 </ScrollView>
             </View>
-        </View>
+        </View> */}
 
-        <View style={styles.section}>
-            <Text style={styles.bioText}>
-                {/* {{selectedFriend}} */}
-            </Text>
-        </View>
+        
 
         <View style={styles.section}>
             <TouchableOpacity style={styles.button} onPress={handleEditPress}>
                 <Text style={styles.buttonText}>View Profile</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.button} onPress={handleEditPress}>
+            <TouchableOpacity style={styles.button} onPress={handleSendMessage}>
                 <Text style={styles.buttonText}>Send Message</Text>
             </TouchableOpacity>
         </View>
+        <Card>
+    <Card.Cover source={{ uri: 'https://picsum.photos/700' }} />
+  </Card>
     </ScrollView>
+    
+  </>
   );
 };
 
 const styles = {
   container: {
-    flex: 1,
     backgroundColor: '#fff',
   },
   headerContainer: {

@@ -4,7 +4,7 @@ const http = require("http").Server(app);
 const cors = require("cors");
 const socketIO = require("socket.io")(http, {
   cors: {
-    origin: "http://10.0.2.2:3000/",
+    origin: "http://192.168.100.25:3000/",
   },
 });
 
@@ -14,7 +14,7 @@ function createUniqueId() {
   return Math.random().toString(20).substring(2, 10);
 }
 
-let chatgroups = [];
+let conversations = {};
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -23,52 +23,62 @@ app.use(cors());
 socketIO.on("connection", (socket) => {
   console.log(`${socket.id} user is just connected`);
 
-  socket.on("getAllGroups", () => {
-    socket.emit("groupList", chatgroups);
+  socket.on("getAllConversations", () => {
+    socket.emit("conversationList", Object.keys(conversations));
   });
 
-  socket.on("createNewGroup", (currentGroupName) => {
-    console.log(currentGroupName);
-    chatgroups.unshift({
-      id: chatgroups.length + 1,
-      currentGroupName,
-      messages: [],
-    });
-    socket.emit("groupList", chatgroups);
+  socket.on("startConversation", (participants) => {
+    const conversationId = participants.sort().join("-");
+    if (!conversations[conversationId]) {
+      const newConversation = {
+        id: conversationId,
+        participants: participants,
+        messages: []
+      };
+      conversations[conversationId] = newConversation;
+    }
+    socket.join(conversationId);
+    socket.emit("conversationList", Object.keys(conversations));
   });
 
-  socket.on("findGroup", (id) => {
-    const filteredGroup = chatgroups.filter((item) => item.id === id);
-    socket.emit("foundGroup", filteredGroup[0].messages);
+  socket.on("getConversation", (conversationId) => {
+    socket.emit("foundConversation", conversations[conversationId] || {});
   });
-
+  socket.on("findGroup", (conversationId) => {
+    const conversation = conversations[conversationId];
+    if (conversation) {
+      socket.emit("foundGroup", conversation);
+    } else {
+      console.error(`Conversation ${conversationId} not found.`);
+      // Optionally, emit an error event or handle it appropriately
+    }
+  });
   socket.on("newChatMessage", (data) => {
-    const { currentChatMesage, groupIdentifier, currentUser, timeData } = data;
-    const filteredGroup = chatgroups.filter(
-      (item) => item.id === groupIdentifier
-    );
+    const { message, conversationId, currentUser, timeData } = data;
+     
+    if (!conversations[conversationId]) {
+      console.error(`Conversation ${conversationId} not found.`);
+      return;
+    }
+  
     const newMessage = {
       id: createUniqueId(),
-      text: currentChatMesage,
-      currentUser,
+      text: message,
+      sender: currentUser,
       time: `${timeData.hr}:${timeData.mins}`,
     };
-
-    socket
-      .to(filteredGroup[0].currentGroupName)
-      .emit("groupMessage", newMessage);
-    filteredGroup[0].messages.push(newMessage);
-    socket.emit("groupList", chatgroups);
-    socket.emit("foundGroup", filteredGroup[0].messages);
+  
+    // Push the new message to the messages array of the conversation
+    conversations[conversationId].messages.push(newMessage);
+  
+    // Emit an event to notify all clients in the conversation about the new message
+    socketIO.to(conversationId).emit("newMessage", newMessage);
+  
+    // Log the new message
+    console.log(`New message added to conversation ${conversationId}:`, newMessage);
   });
 });
 
-app.get("/api", (req, res) => {
-  res.json(chatgroups);
-});
-app.get("/api", (req, res) => {
-  res.json(rooms);
-});
 http.listen(PORT, () => {
-  console.log(`Server is listeing on ${PORT}`);
+  console.log(`Server is listening on ${PORT}`);
 });

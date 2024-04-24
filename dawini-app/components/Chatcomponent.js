@@ -1,22 +1,22 @@
+import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-import { useContext, useEffect } from "react";
-import { GlobalContext } from "../context";
 import { useNavigation } from "@react-navigation/native";
 
-export default function Chatcomponent({ item }) {
+
+export default function Chatcomponent({ item, currentUser }) {
+  // console.log(currentUser);
   const navigation = useNavigation();
 
-  console.log(item.messages[item.messages.length - 1]);
-
-
-
+  // Find the other participant in the conversation
+  const otherParticipant = item.participants.find(participant => participant !== currentUser);
+// console.log(item.participants)
   function handleNavigateToMessageScreen() {
     navigation.navigate("Messagescreen", {
-      currentGroupName: item.currentGroupName,
-      currentGroupID: item.id,
+      currentGroupName: otherParticipant, // Pass the other participant's ID as the group name
+      currentGroupID: item.id, // Pass the conversation ID as the group ID
     });
-  }
+  } 
 
   return (
     <Pressable style={styles.chat} onPress={handleNavigateToMessageScreen}>
@@ -25,20 +25,21 @@ export default function Chatcomponent({ item }) {
       </View>
       <View style={styles.rightContainer}>
         <View>
-          <Text style={styles.userName}>{item.currentGroupName}</Text>
+          <Text style={styles.userName}>{otherParticipant}</Text>
           <Text style={styles.message}>
-            {item && item.messages && item.messages.length ? item.messages[item.messages.length - 1].text : "Tap to start messaging"}
+            {item.latestMessage ? item.latestMessage.text : "Tap to start messaging"}
           </Text>
         </View>
         <View>
           <Text style={styles.time}>
-            {item && item.messages && item.messages.length ? item.messages[item.messages.length - 1].time : "Now"}
+            {item.latestMessage ? item.latestMessage.time : "Now"}
           </Text>
         </View>
       </View>
     </Pressable>
   );
 }
+
 
 const styles = StyleSheet.create({
   chat: {

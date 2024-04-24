@@ -18,8 +18,9 @@ import Checkbox from "expo-checkbox";
 import Button from "../components/Button";
 import COLORS from "../constants/colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as AuthSession from 'expo-auth-session';
+
 const LoginPatient = ({ navigation }) => {
+ 
   const [isPasswordShown, setIsPasswordShown] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [email, setEmail] = useState("");
@@ -27,7 +28,7 @@ const LoginPatient = ({ navigation }) => {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch("http://10.0.2.2:3000/login", {
+      const response = await fetch("http://192.168.100.25:3000/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

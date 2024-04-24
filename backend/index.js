@@ -204,5 +204,5 @@ app.get('/api/nurses/:idCareTaker', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`Server is running on http://10.0.2.2:${PORT}`);
+    console.log(`Server is running on http://192.168.100.25:${PORT}`);
 });

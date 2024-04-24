@@ -1,29 +1,15 @@
 import { StyleSheet, Text, View } from "react-native";
 
 export default function Messagecomponent({ currentUser, item }) {
-  const currentUserStatus = item.currentUser !== currentUser;
-
-  console.log(currentUserStatus , item);
+  const isCurrentUser = item.sender === currentUser;
 
   return (
-    <View style={currentUserStatus ? {} : { alignItems: "flex-end" }}>
+    <View style={isCurrentUser ? styles.currentUserContainer : styles.otherUserContainer}>
       <View style={styles.messageItemWrapper}>
-        <View style={styles.messageItemInnerWrapper}>
-          <View
-            style={
-              currentUserStatus
-                ? styles.messageItem
-                : [styles.messageItem, { backgroundColor: "#703efe" }]
-            }
-          >
-            <Text
-              style={
-                currentUserStatus ? { color: "#000" } : { color: "#e5c1fe" }
-              }
-            >
-              {item.text}
-            </Text>
-          </View>
+        <View style={[styles.messageItem, isCurrentUser && styles.currentUserMessage]}>
+          <Text style={isCurrentUser ? styles.currentUserText : styles.otherUserText}>
+            {item.text}
+          </Text>
         </View>
         <Text style={styles.messageTime}>{item.time}</Text>
       </View>
@@ -32,22 +18,32 @@ export default function Messagecomponent({ currentUser, item }) {
 }
 
 const styles = StyleSheet.create({
+  currentUserContainer: {
+    alignItems: "flex-end",
+  },
+  otherUserContainer: {
+    alignItems: "flex-start",
+  },
   messageItemWrapper: {
     maxWidth: "50%",
     marginBottom: 15,
   },
-  messageItemInnerWrapper: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
   messageItem: {
-    width: "100%",
     backgroundColor: "#ffffff",
     padding: 20,
     borderRadius: 10,
     marginBottom: 2,
   },
-  messageTime : {
-    marginLeft : 10
+  currentUserMessage: {
+    backgroundColor: "#703efe",
+  },
+  currentUserText: {
+    color: "#e5c1fe",
+  },
+  otherUserText: {
+    color: "#000",
+  },
+  messageTime: {
+    marginLeft: 10,
   }
 });
