@@ -3,8 +3,10 @@ import { View, Text, Image, ScrollView, TouchableOpacity } from 'react-native';
 import { socket } from "../utils";
 import { GlobalContext } from "../context";
 import { Card } from 'react-native-paper';
+import { useNavigation } from "@react-navigation/native";
+
 const ProfileView = (route) => {
-    console.log(route.route.params['idCare taker'])
+  const navigation = useNavigation();
     const selectedNurse = route.route.params['idCare taker'];
 const [nurse, setNurse] = useState(null);
 const { currentUser} = useContext(GlobalContext);
@@ -12,7 +14,7 @@ const [reviews, setReviews] = useState([]);
 useEffect(() => {
   const fetchNurse = async () => {
     try {
-      const response = await fetch(`http://192.168.16.238:3000/api/nurses/${selectedNurse}`);
+      const response = await fetch(`http://192.168.195.229:3000/api/nurses/${selectedNurse}`);
       if (!response.ok) {
         throw new Error('Failed to fetch nurse information');
       }
@@ -23,12 +25,13 @@ useEffect(() => {
       // Handle error
     }
   };
-
+  
+ 
   const fetchReviews = async () => {
     try {
-      const response = await fetch(`http://192.168.16.238:3000/api/reviews/caretaker/${selectedNurse}`);
+      const response = await fetch(`http://192.168.195.229:3000/api/reviews/caretaker/${selectedNurse}`);
       if (!response.ok) {
-        throw new Error('Failed to fetch reviews');
+        console.log("no reviews")
       }
       const data = await response.json();
       setReviews(data);
@@ -40,12 +43,23 @@ useEffect(() => {
   fetchNurse();
   fetchReviews();
 }, []);
-console.log(nurse)
 const handleSendMessage = () => {
   // Emit socket event to start a conversation with the nurse
   socket.emit("startConversation", [currentUser, nurse.fullName]);
-};
 
+  // Get the conversationId from the socket response
+  socket.on("conversationList", (conversationDetails) => {
+    const conversationId = conversationDetails.find(
+      (conv) => conv.id === [currentUser, nurse.fullName].sort().join("-")
+    ).id;
+
+    // Navigate to Messagescreen with conversationId
+    navigation.navigate("Messagescreen", {
+      currentGroupName: nurse.fullName,
+      currentGroupID: conversationId,
+    });
+  });
+};
    
   const handleEditPress = () => {
 

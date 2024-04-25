@@ -1,33 +1,65 @@
-import React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import { FontAwesome } from "@expo/vector-icons";
+import React, { useEffect, useState, useContext } from "react";
+import { Pressable, StyleSheet, Text, View, Image } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-
+import { GlobalContext } from "../context";
 
 export default function Chatcomponent({ item, currentUser }) {
-  // console.log(currentUser);
+  const [nurses, setNurses] = useState([]);
+  const { allConversations } = useContext(GlobalContext);
   const navigation = useNavigation();
 
-  // Find the other participant in the conversation
+  useEffect(() => {
+    const fetchNurses = async () => {
+      try {
+        const response = await fetch("http://192.168.195.229:3000/api/nurses");
+        if (!response.ok) {
+          throw new Error("Failed to fetch nurses");
+        }
+        const data = await response.json();
+        setNurses(data);
+      } catch (error) {
+        console.error("Error fetching nurses:", error);
+      }
+    };
+
+    fetchNurses();
+  }, []);
+
   const otherParticipant = item.participants.find(participant => participant !== currentUser);
-// console.log(item.participants)
+  const nurseData = nurses.find(nurse => nurse.fullName === otherParticipant);
+
   function handleNavigateToMessageScreen() {
     navigation.navigate("Messagescreen", {
       currentGroupName: otherParticipant, // Pass the other participant's ID as the group name
       currentGroupID: item.id, // Pass the conversation ID as the group ID
     });
-  } 
+  }
+
+  let messageDisplay = item.latestMessage 
+    ? `${item.latestMessage.sender}: ${item.latestMessage.text}`
+    : "No messages yet";
 
   return (
     <Pressable style={styles.chat} onPress={handleNavigateToMessageScreen}>
       <View style={styles.circle}>
-        <FontAwesome name="group" size={24} color={"black"} />
+        {nurseData && nurseData.photo_uri ?
+          <Image
+            source={{ uri: nurseData.photo_uri }}
+            style={styles.image}
+          />
+      : <Image
+      source={nurseData && nurseData.photo_uri ? 
+        { uri: nurseData.photo_uri } : 
+        require('../assets/hero1.jpg')} // Correctly reference local images
+      style={styles.image}
+    />}
       </View>
       <View style={styles.rightContainer}>
+        
         <View>
           <Text style={styles.userName}>{otherParticipant}</Text>
           <Text style={styles.message}>
-            {item.latestMessage ? item.latestMessage.text : "Tap to start messaging"}
+            {messageDisplay}
           </Text>
         </View>
         <View>
@@ -39,7 +71,6 @@ export default function Chatcomponent({ item, currentUser }) {
     </Pressable>
   );
 }
-
 
 const styles = StyleSheet.create({
   chat: {
@@ -54,8 +85,8 @@ const styles = StyleSheet.create({
   },
   userName: {
     fontSize: 18,
-    marginBottom: 5,
     fontWeight: "bold",
+    marginBottom: 5,
   },
   message: {
     fontSize: 14,
@@ -70,12 +101,17 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   circle: {
-    width: 50,
-    borderRadius: 50,
-    height: 50,
+    width: 55,
+    height: 55,
+    borderRadius: 25,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 2,
     marginRight: 10,
+  },
+  image: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
   },
 });

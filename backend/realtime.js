@@ -4,7 +4,7 @@ const http = require("http").Server(app);
 const cors = require("cors");
 const socketIO = require("socket.io")(http, {
   cors: {
-    origin: "http://192.168.16.238:3000/",
+    origin: "http://192.168.195.229:3000/",
   },
 });
 
@@ -24,23 +24,31 @@ socketIO.on("connection", (socket) => {
   console.log(`${socket.id} user is just connected`);
 
   socket.on("getAllConversations", () => {
-    socket.emit("conversationList", Object.keys(conversations));
+    // Emit detailed information for each conversation
+    const conversationDetails = Object.values(conversations).map(conv => ({
+      id: conv.id,
+      latestMessage: conv.latestMessage || {}  // Ensure latestMessage is not null
+    }));
+    socket.emit("conversationList", conversationDetails);
   });
-
   socket.on("startConversation", (participants) => {
     const conversationId = participants.sort().join("-");
     if (!conversations[conversationId]) {
-      const newConversation = {
+      conversations[conversationId] = {
         id: conversationId,
         participants: participants,
-        messages: []
+        messages: [],
+        latestMessage: null,
       };
-      conversations[conversationId] = newConversation;
     }
     socket.join(conversationId);
-    socket.emit("conversationList", Object.keys(conversations));
+    // Emit updated conversation list when a new conversation is started
+    const conversationDetails = Object.values(conversations).map(conv => ({
+      id: conv.id,
+      latestMessage: conv.latestMessage || {}
+    }));
+    socket.emit("conversationList", conversationDetails);
   });
-
   socket.on("getConversation", (conversationId) => {
     socket.emit("foundConversation", conversations[conversationId] || {});
   });
@@ -70,10 +78,13 @@ socketIO.on("connection", (socket) => {
   
     // Push the new message to the messages array of the conversation
     conversations[conversationId].messages.push(newMessage);
-  
+    conversations[conversationId].latestMessage = newMessage;
     // Emit an event to notify all clients in the conversation about the new message
     socketIO.to(conversationId).emit("newMessage", newMessage);
-  
+    socketIO.to(conversationId).emit("latestMessageUpdate", {
+      conversationId: conversationId,
+      latestMessage: newMessage
+    });
     // Log the new message
     console.log(`New message added to conversation ${conversationId}:`, newMessage);
   });

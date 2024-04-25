@@ -13,7 +13,6 @@ import { Card } from "react-native-paper";
 import * as Location from "expo-location";
 import Header from "./Header";
 import { COLORS, SIZES, FONTS } from "../../constants1";
-import { useNavigation } from "@react-navigation/native";
 import Slider from "@react-native-community/slider";
 import { Ionicons } from '@expo/vector-icons';
 import { TextInput } from 'react-native-paper';
@@ -28,8 +27,11 @@ export default function HomeScreen({ navigation }) {
   const [filteredDataSource, setFilteredDataSource] = useState([]);
   const [maxDistance, setMaxDistance] = useState(""); // Added state for maximum distance
   const [showSlider, setShowSlider] = useState(false);
+ 
   useEffect(() => {
-    // Fetch the initial location
+ 
+   
+    // // Fetch the initial location
     fetchLocation();
 
     // Subscribe to location updates
@@ -77,7 +79,7 @@ export default function HomeScreen({ navigation }) {
 
   const fetchNurses = async () => {
     try {
-      const response = await fetch("http://192.168.16.238:3000/api/nurses");
+      const response = await fetch("http://192.168.195.229:3000/api/nurses");
       if (!response.ok) {
         throw new Error("Failed to fetch nurses");
       }
@@ -224,12 +226,13 @@ export default function HomeScreen({ navigation }) {
             <Slider
               style={{ flex: 1 }}
               minimumValue={0}
-              maximumValue={10000} // Maximum distance
+              maximumValue={20000} // Maximum distance
               step={100} // Step interval
               value={parseInt(maxDistance) || 0}
               onValueChange={value => setMaxDistance(value.toString())}
-              minimumTrackTintColor="#009688"
-              maximumTrackTintColor="#000000"
+              minimumTrackTintColor="green"
+              maximumTrackTintColor="grey"
+              thumbTintColor='green'
             />
             <Text style={{ minWidth: 40, textAlign: "center" }}>
               {`${maxDistance} m`}
@@ -248,7 +251,7 @@ export default function HomeScreen({ navigation }) {
         <FlatList
           ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
           data={filteredDataSource}
-          keyExtractor={(item) => item["idCare taker"].toString()}
+          keyExtractor={(item) => item["idCare taker"]}
           renderItem={renderNurseItem}
         />
       </View>
@@ -285,14 +288,14 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   textInputStyle: {
-    width:"90%",
+    width:"85%",
     height: 40,
   
-    paddingLeft: 20,
-    margin: 5,
+    paddingLeft: 10,
+    margin: 10,
   },
   searchButton: {
-    backgroundColor: "#009688",
+    backgroundColor: "green",
     padding: 10,
     borderRadius: 5,
     marginLeft: 5,

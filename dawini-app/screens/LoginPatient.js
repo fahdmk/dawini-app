@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState ,useContext} from "react";
 import {
   View,
   Text,
@@ -18,9 +18,12 @@ import Checkbox from "expo-checkbox";
 import Button from "../components/Button";
 import COLORS from "../constants/colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import {GlobalContext} from "../context"
 const LoginPatient = ({ navigation }) => {
- 
+  const {
+    role,
+    setRole
+  } = useContext(GlobalContext);
   const [isPasswordShown, setIsPasswordShown] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [email, setEmail] = useState("");
@@ -28,7 +31,7 @@ const LoginPatient = ({ navigation }) => {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch("http://192.168.16.238:3000/login", {
+      const response = await fetch("http://192.168.195.229:3000/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -46,9 +49,12 @@ const LoginPatient = ({ navigation }) => {
   
       const { token, user } = await response.json();
   
-      // Now 'user' contains the details of the logged-in user
+     
       console.log("User:", user);
-  
+      
+      setRole(user.role);
+      
+
       // Store the token in local storage or context for further use
   
       // Clear input fields after successful login

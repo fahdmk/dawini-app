@@ -1,8 +1,7 @@
-import React, { createContext, useState, useContext, useEffect } from "react";
-import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import React, {  useContext, useEffect } from "react";
+import {  StyleSheet, Text, View } from "react-native";
 import { socket } from "../utils";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import NewGroupModal from "../components/Modal";
 import { GlobalContext } from "../context";
 import Chatcomponent from "../components/Chatcomponent";
 import Header from "./HomeScreen/Header";
@@ -12,54 +11,61 @@ export default function Chatscreen({ navigation }) {
     currentUser,
     allConversations,
     setAllConversations,
-    modalVisible,
-    setModalVisible,
     setCurrentUser,
-    setShowLoginView,
   } = useContext(GlobalContext);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch user data from AsyncStorage
         const storedUser = await AsyncStorage.getItem("user");
         setCurrentUser(storedUser || "DefaultUser");
-
-        // Emit socket event to get all conversations
+        socket.on("latestMessageUpdate", ({ conversationId, latestMessage }) => {
+          setAllConversations(prevConversations => 
+            prevConversations.map(conv => 
+              conv.id === conversationId ? { ...conv, latestMessage } : conv
+            )
+          );
+        });
+        // Listen for conversation list updates
+        socket.on("conversationList", (conversations) => {
+          const modifiedConversations = conversations.map(conversation => {
+            // Assuming `conversation` is a structure { id: "user1-user2", latestMessage: {...} }
+            const participants = conversation.id.split("-"); 
+            return {
+              id: conversation.id, // This assumes conversation object includes an id field
+              participants: participants,
+              latestMessage: conversation.latestMessage // Assuming latestMessage is properly structured
+            };
+          });
+          setAllConversations(modifiedConversations);
+        });
+  
+        // Emit initial request
         socket.emit("getAllConversations");
-
-        // Listen for conversationList event from socket
-       socket.on("conversationList", (conversations) => {
-  //  console.log(conversations);
-  // Modify the conversation list to include participants
-  const modifiedConversations = conversations.map((conversation) => {
-    const participants = conversation.split("-"); // Split conversation ID into participants
-    return {
-      id: conversation, // Keep the original conversation ID
-      participants: participants, // Assign participants array
-    };
-  });
-  setAllConversations(modifiedConversations);
-});
+        
+  
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
     };
-
+  
     fetchData();
-
-    // Clean up socket event listener on component unmount
+  
+    // Clean up socket event listeners on component unmount
     return () => {
       socket.off("conversationList");
+      socket.off("latestMessageUpdate");
     };
-  }, []);
+  }, []); // This ensures the effect runs only once on component mount
+  
+ 
 
 
   const filteredConversations = allConversations.filter(conversation =>
     conversation.participants.includes(currentUser)
     
   );
-// console.log(filteredConversations);
+
   return (
     <View style={styles.mainWrapper}>
      <Header />
@@ -69,13 +75,7 @@ export default function Chatscreen({ navigation }) {
           <Chatcomponent key={index} item={conversation} currentUser={currentUser} />
         ))}
       </View>
-      {/* <View style={styles.bottomContainer}>
-        <Pressable onPress={() => setModalVisible(true)} style={styles.button}>
-          <View>
-            <Text style={styles.buttonText}>Create New Conversation</Text>
-          </View>
-        </Pressable>
-      </View> */}
+     
      
     </View>
   );

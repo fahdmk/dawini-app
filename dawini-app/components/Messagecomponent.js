@@ -30,15 +30,15 @@ const styles = StyleSheet.create({
   },
   messageItem: {
     backgroundColor: "#ffffff",
-    padding: 20,
+    padding: 15,
     borderRadius: 10,
     marginBottom: 2,
   },
   currentUserMessage: {
-    backgroundColor: "#703efe",
+    backgroundColor: "green",
   },
   currentUserText: {
-    color: "#e5c1fe",
+    color: "white",
   },
   otherUserText: {
     color: "#000",

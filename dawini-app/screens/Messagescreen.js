@@ -3,8 +3,7 @@ import { FlatList, Keyboard, Pressable, StyleSheet, Text, TextInput, View } from
 import { GlobalContext } from "../context";
 import Messagecomponent from "../components/Messagecomponent";
 import { socket } from "../utils/index";
-import { Socket } from "socket.io-client";
-
+import { MaterialIcons } from '@expo/vector-icons';
 export default function Messagescreen({ navigation, route }) {
   const messagesEndRef = useRef(false);
   const { currentGroupName, currentGroupID } = route.params;
@@ -28,7 +27,6 @@ export default function Messagescreen({ navigation, route }) {
     const handleNewMessage = (newMessage) => {
       setAllChatMessages((prevMessages) => [...prevMessages, newMessage]);
       messagesEndRef.current = true;
-      // console.log(allChatMessages);
     };
 
     socket.on('foundGroup', handleFoundGroup);
@@ -41,14 +39,7 @@ export default function Messagescreen({ navigation, route }) {
     };
    
   }, [allChatMessages]); 
-  useEffect(() => {
-    // Scroll to bottom whenever a new message is added
-    if (messagesEndRef.current && flatListRef.current) {
-      flatListRef.current.scrollToEnd({ animated: false });
-      messagesEndRef.current = false; // Reset the ref after scrolling
-    }
-  }, [allChatMessages]);
-
+  
   function handleAddNewMessage() {
     const timeData = {
       hr:
@@ -93,6 +84,7 @@ export default function Messagescreen({ navigation, route }) {
           )}
           keyExtractor={(item) => item.id} // Use the improved keyExtractor
           extraData={allChatMessages.length} // Add extraData prop
+          onContentSizeChange={() => flatListRef.current.scrollToEnd({ animated: false })} // Add this line
         />
         ) : (
           <Text>No messages available</Text>
@@ -106,8 +98,8 @@ export default function Messagescreen({ navigation, route }) {
           placeholder="Enter your message"
         />
         <Pressable onPress={handleAddNewMessage} style={styles.button}>
-          <Text style={styles.buttonText}>SEND</Text>
-        </Pressable>
+        <MaterialIcons name="send" size={24} color="white" />
+                </Pressable>
       </View>
     </View>
   );
@@ -121,21 +113,21 @@ const styles = StyleSheet.create({
   messageInputContainer: {
     width: "100%",
     backgroundColor: "#fff",
-    paddingVertical: 30,
+    paddingVertical: 20,
     paddingHorizontal: 15,
     justifyContent: "center",
     flexDirection: "row",
   },
   messageInput: {
     borderWidth: 1,
-    padding: 15,
+    padding: 7,
     flex: 1,
     borderRadius: 50,
     marginRight: 10,
   },
   button: {
-    width: "30%",
-    backgroundColor: "#703efe",
+    width: "15%",
+    backgroundColor: "green",
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 50,

@@ -125,7 +125,7 @@ const MainScreen = () => {
           )
         }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name='Shop'
         component={ShopScreen}
         options={{
@@ -136,7 +136,7 @@ const MainScreen = () => {
             <Entypo name="shop" size={size} color={color} />
           )
         }}
-      />
+      /> */}
     </Tab.Navigator>
   );
 };

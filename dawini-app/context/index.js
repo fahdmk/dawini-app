@@ -12,9 +12,12 @@ function GlobalState({ children }) {
   const [currentConversation, setCurrentConversation] = useState(null);
   const [currentChatMessage, setCurrentChatMessage] = useState(""); 
   const [allChatMessages, setAllChatMessages] = useState([]);
+  const [role, setRole] = useState("");
   return (
     <GlobalContext.Provider
       value={{
+        role,
+        setRole,
         showLoginView,
         setShowLoginView,
         currentUserName,
