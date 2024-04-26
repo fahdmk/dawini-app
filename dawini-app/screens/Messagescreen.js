@@ -9,7 +9,7 @@ import {
   TextInput,
   View,
   TouchableOpacity,
-  UIManager
+  UIManager,
 } from "react-native";
 import { GlobalContext } from "../context";
 import Messagecomponent from "../components/Messagecomponent";
@@ -38,37 +38,49 @@ export default function Messagescreen({ navigation, route }) {
   const [duration, setDuration] = useState("");
   const handleDateChange = (params) => {
     setTempDate(params.date);
-    
   };
   const confirmDate = () => {
     setDate(tempDate);
-    setShowDatePicker(false); 
-    console.log(duration)
+    setShowDatePicker(false);
+    console.log(duration);
   };
   const showModal = () => {
     setVisible(true);
   };
   function handleBookAppointment() {
     const timeData = {
-      hr: new Date().getHours() < 10 ? `0${new Date().getHours()}` : new Date().getHours(),
-      mins: new Date().getMinutes() < 10 ? `0${new Date().getMinutes()}` : new Date().getMinutes(),
+      hr:
+        new Date().getHours() < 10
+          ? `0${new Date().getHours()}`
+          : new Date().getHours(),
+      mins:
+        new Date().getMinutes() < 10
+          ? `0${new Date().getMinutes()}`
+          : new Date().getMinutes(),
     };
-  
+
     const appointmentData = {
       date: date,
       duration: duration,
       sender: currentUser,
       conversationId: currentGroupID,
       timeData: timeData,
-      status:"pending",
-      price:""
+      status: "pending",
+      price: "",
     };
-  
+
     socket.emit("newAppointment", appointmentData);
     setVisible(false);
-    }
+  }
   useEffect(() => {
-    
+    const handleUpdateMessage = (updatedMessage) => {
+      setAllChatMessages((prevMessages) => {
+        return prevMessages.map((msg) =>
+          msg.id === updatedMessage.id ? updatedMessage : msg
+        );
+      });
+    };
+
     // Fetch initial messages on component mount
     socket.emit("findGroup", currentGroupID);
 
@@ -80,16 +92,17 @@ export default function Messagescreen({ navigation, route }) {
       setAllChatMessages((prevMessages) => [...prevMessages, newMessage]);
       messagesEndRef.current = true;
     };
-
+    socket.on("updateMessage", handleUpdateMessage);
     socket.on("foundGroup", handleFoundGroup);
     socket.on("newMessage", handleNewMessage);
 
     return () => {
       socket.off("foundGroup", handleFoundGroup);
       socket.off("newMessage", handleNewMessage);
+      socket.off("updateMessage", handleUpdateMessage);
     };
   }, [allChatMessages]);
-  
+
   function handleAddNewMessage() {
     const timeData = {
       hr:
@@ -119,34 +132,41 @@ export default function Messagescreen({ navigation, route }) {
     <>
       <View style={styles.wrapper}>
         <View
-          style={[styles.wrapper, { paddingVertical: 15, paddingHorizontal: 10 }]}
+          style={[
+            styles.wrapper,
+            { paddingVertical: 15, paddingHorizontal: 10 },
+          ]}
         >
           {allChatMessages[2] && allChatMessages[2].length > 0 ? (
             <FlatList
               ref={flatListRef}
               data={allChatMessages[2]}
               renderItem={({ item }) => (
-                <Messagecomponent item={item} currentUser={currentUser} />
+                <Messagecomponent
+                  item={item}
+                  currentUser={currentUser}
+                  socket={socket}
+                  currentGroupID={currentGroupID}
+                />
               )}
               keyExtractor={(item) => item.id}
               extraData={allChatMessages.length}
               onContentSizeChange={() =>
                 flatListRef.current.scrollToEnd({ animated: false })
-              } 
+              }
             />
           ) : (
             <Text>No messages available</Text>
           )}
         </View>
         {visible && (
-        <View
-          Style={containerStyle}
-        >
-          
+          <View Style={containerStyle}>
             <View style={styles.modalContent}>
               <Text style={styles.modalTitle}>Book an appointment</Text>
               <Text>Date and time</Text>
-              <TouchableOpacity onPress={() => setShowDatePicker(!showDatePicker)}>
+              <TouchableOpacity
+                onPress={() => setShowDatePicker(!showDatePicker)}
+              >
                 <View
                   style={{
                     width: "100%",
@@ -167,22 +187,24 @@ export default function Messagescreen({ navigation, route }) {
                     editable={false}
                     style={{ width: "80%" }}
                     value={date}
-                    
                   />
                 </View>
               </TouchableOpacity>
 
               {showDatePicker && (
                 <DateTimePicker
-                mode="single"
-                date={tempDate}
-                onChange={handleDateChange}
-                timePicker="true"
-                selectedItemColor="green"
-              />
+                  mode="single"
+                  date={tempDate}
+                  onChange={handleDateChange}
+                  timePicker="true"
+                  selectedItemColor="green"
+                />
               )}
               {showDatePicker && (
-                <TouchableOpacity onPress={confirmDate} style={styles.confirmButton}>
+                <TouchableOpacity
+                  onPress={confirmDate}
+                  style={styles.confirmButton}
+                >
                   <Text style={styles.confirmButtonText}>Confirm Date</Text>
                 </TouchableOpacity>
               )}
@@ -214,13 +236,17 @@ export default function Messagescreen({ navigation, route }) {
                   onChangeText={setDuration}
                 />
               </View>
-           
             </View>
-         
-            <TouchableOpacity onPress={handleBookAppointment} style={styles.confirmButton1}>
-               <Text style={styles.confirmButtonText}>Book This appointment</Text>
-           </TouchableOpacity>
-        </View>
+
+            <TouchableOpacity
+              onPress={handleBookAppointment}
+              style={styles.confirmButton1}
+            >
+              <Text style={styles.confirmButtonText}>
+                Book This appointment
+              </Text>
+            </TouchableOpacity>
+          </View>
         )}
         <View style={styles.messageInputContainer}>
           <Pressable onPress={showModal}>
@@ -247,18 +273,16 @@ export default function Messagescreen({ navigation, route }) {
 }
 
 const containerStyle = {
-  flex:1,
+  flex: 1,
   backgroundColor: "white",
   padding: 20,
   margin: 4,
-  borderColor:"black"
-
+  borderColor: "black",
 };
 const styles = StyleSheet.create({
   wrapper: {
-    flex:1,
+    flex: 1,
     backgroundColor: "#eee",
-    
   },
   messageInputContainer: {
     width: "100%",
@@ -293,10 +317,10 @@ const styles = StyleSheet.create({
     padding: 10,
     alignItems: "center",
     borderRadius: 10,
-    width:"70%",
-    alignSelf:"center",
+    width: "70%",
+    alignSelf: "center",
     borderWidth: 1,
-    margin:4
+    margin: 4,
   },
   confirmButtonText: {
     color: "white",
@@ -307,12 +331,12 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   modalContent: {
-    borderColor:"black",
+    borderColor: "black",
     backgroundColor: "white",
     padding: 7,
     borderRadius: 10,
     borderWidth: 1,
-    margin:4
+    margin: 4,
   },
   modalTitle: {
     fontSize: 24,

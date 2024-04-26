@@ -204,8 +204,8 @@ export default function HomeScreen({ navigation }) {
         )}
       </View>
       <View style={{ marginBottom: 15, padding: 5 }}>
-        <Text style={{ ...FONTS.h3, marginVertical: SIZES.padding * 2 }}>
-          All Nurses
+        <Text style={{ ...FONTS.h3, marginVertical: SIZES.padding * 2,fontWeight: "bold" }}>
+          Nurses
         </Text>
         <View style={{ flexDirection: "row", alignItems: "center", marginLeft: 1 }}>
           <TextInput

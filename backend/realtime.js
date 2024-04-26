@@ -32,7 +32,7 @@ socketIO.on("connection", (socket) => {
         text: `Appointment on ${date} for ${duration} hours.`,
         sender: sender,
         time: `${timeData.hr}:${timeData.mins}`,
-        date: date,
+         date: date,
         duration: duration,
         status:status,
         price :price 
@@ -45,7 +45,9 @@ socketIO.on("connection", (socket) => {
         console.error(`Conversation ${conversationId} not found.`);
     }
 });
- 
+socket.on("appointmentAction", ({ action, appointmentId, conversationId }) => {
+  handleAppointmentAction(action, appointmentId, conversationId, socket);
+});
   socket.on("getAllConversations", () => {
     // Emit detailed information for each conversation
     const conversationDetails = Object.values(conversations).map(conv => ({
@@ -112,7 +114,33 @@ socketIO.on("connection", (socket) => {
     console.log(`New message added to conversation ${conversationId}:`, newMessage);
   });
 });
+function handleAppointmentAction(action, appointmentId, conversationId, socket) {
+  const conversation = conversations[conversationId];
+  if (!conversation) {
+    console.error(`Conversation ${conversationId} not found.`);
+    return;
+  }
 
+  const appointmentIndex = conversation.messages.findIndex(msg => msg.id === appointmentId);
+  if (appointmentIndex === -1) {
+    console.error(`Appointment ${appointmentId} not found in conversation ${conversationId}`);
+    return;
+  }
+
+  conversation.messages[appointmentIndex].status = action === "accept" ? "accepted" : "declined";
+
+  // Update latestMessage if needed
+  if (conversation.latestMessage.id === appointmentId) {
+    conversation.latestMessage.status = conversation.messages[appointmentIndex].status;
+  }
+
+  // Emit updated message and latestMessage to all clients in the conversation
+  socketIO.to(conversationId).emit("updateMessage", conversation.messages[appointmentIndex]);
+  socketIO.to(conversationId).emit("latestMessageUpdate", {
+    conversationId,
+    latestMessage: conversation.latestMessage 
+  });
+}
 http.listen(PORT, () => {
   console.log(`Server is listening on ${PORT}`);
 });

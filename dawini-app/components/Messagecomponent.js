@@ -1,50 +1,89 @@
-import { StyleSheet, Text, View,Button,TouchableOpacity } from "react-native";
-
-export default function Messagecomponent({ currentUser, item }) {
+import { StyleSheet, Text, View, Button, TouchableOpacity } from "react-native";
+export default function Messagecomponent({
+  currentUser,
+  item,
+  socket,
+  currentGroupID,
+}) {
   const isCurrentUser = item.sender === currentUser;
-
+  const handleAction = (action, appointment) => {
+    socket.emit("appointmentAction", {
+      action,
+      appointmentId: appointment.id,
+      conversationId: currentGroupID,
+    });
+  };
+  // console.log(item.status)
   // Function to determine if the message is an appointment based on its properties
-  const isAppointment = item => item.date;
-// console.log(item)
+  const isAppointment = (item) => item.date;
+  const isacepted = item.status == "accepted";
   const renderContent = () => {
     if (isAppointment(item)) {
-      
-      return (<>
-      {isCurrentUser ?(
-        <View>
-          <Text style={styles.appointmentTitle1}>Appointment</Text>
-          <Text style={styles.currentUserText}>
-            Date: {item.date}
-          </Text>
-          <Text style={styles.currentUserText}>
-            Duration: {item.duration} hours
-          </Text>
-         
-        </View>
-      ):(
-         <View>
-         <Text style={styles.appointmentTitle}>Appointment</Text>
-         <Text style={isCurrentUser ? styles.currentUserText : styles.otherUserText}>
-           Date: {item.date}
-         </Text>
-         <Text style={isCurrentUser ? styles.currentUserText : styles.otherUserText}>
-           Duration: {item.duration} hours
-         </Text>
-         <View style={styles.fixToText}>
-         <TouchableOpacity  style={styles.Dbutton}>
-    <Text >Decline</Text>
-  </TouchableOpacity>
-  <TouchableOpacity  style={styles.Abutton}>
-    <Text style={{color:"white"}}>Accept</Text>
-  </TouchableOpacity>
-      </View>
-       </View>)}
-       </>
+      return (
+        <>
+          {isCurrentUser ? (
+            <View>
+              <Text style={styles.appointmentTitle1}>Appointment</Text>
+              <Text style={styles.currentUserText}>Date: {item.date}</Text>
+              <Text style={styles.currentUserText}>
+                Duration: {item.duration} hours
+              </Text>
+            </View>
+          ) : (
+            <View>
+              <Text style={styles.appointmentTitle}>Appointment</Text>
+              <Text
+                style={
+                  isCurrentUser ? styles.currentUserText : styles.otherUserText
+                }
+              >
+                Date: {item.date}
+              </Text>
+              <Text
+                style={
+                  isCurrentUser ? styles.currentUserText : styles.otherUserText
+                }
+              >
+                Duration: {item.duration} hours
+              </Text>
+              <View style={styles.fixToText}>
+                {item.status === "accepted" && (
+                  <TouchableOpacity style={styles.Abutton}>
+                    <Text style={{ color: "white" }}>Accepted</Text>
+                  </TouchableOpacity>
+                )}
+                {item.status === "declined" && (
+                  <TouchableOpacity style={styles.Dbutton}>
+                    <Text style={{ color: "black" }}>Declined</Text>
+                  </TouchableOpacity>
+                )}
+                {item.status !== "accepted" && item.status !== "declined" && (
+                  <>
+                    <TouchableOpacity
+                      onPress={() => handleAction("decline", item)}
+                      style={styles.Dbutton}
+                    >
+                      <Text>Decline</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => handleAction("accept", item)}
+                      style={styles.Abutton}
+                    >
+                      <Text style={{ color: "white" }}>Accept</Text>
+                    </TouchableOpacity>
+                  </>
+                )}
+              </View>
+            </View>
+          )}
+        </>
       );
     } else {
       // Render regular text message
       return (
-        <Text style={isCurrentUser ? styles.currentUserText : styles.otherUserText}>
+        <Text
+          style={isCurrentUser ? styles.currentUserText : styles.otherUserText}
+        >
           {item.text}
         </Text>
       );
@@ -52,9 +91,18 @@ export default function Messagecomponent({ currentUser, item }) {
   };
 
   return (
-    <View style={isCurrentUser ? styles.currentUserContainer : styles.otherUserContainer}>
+    <View
+      style={
+        isCurrentUser ? styles.currentUserContainer : styles.otherUserContainer
+      }
+    >
       <View style={styles.messageItemWrapper}>
-        <View style={[styles.messageItem, isCurrentUser && styles.currentUserMessage]}>
+        <View
+          style={[
+            styles.messageItem,
+            isCurrentUser && styles.currentUserMessage,
+          ]}
+        >
           {renderContent()}
         </View>
         <Text style={styles.messageTime}>{item.time}</Text>
@@ -65,30 +113,30 @@ export default function Messagecomponent({ currentUser, item }) {
 
 const styles = StyleSheet.create({
   Dbutton: {
-    backgroundColor: 'white', 
+    backgroundColor: "white",
     padding: 10,
-    borderRadius: 10, 
-    borderColor: 'green',
-    borderWidth: 2, 
-    alignItems: 'center',
-    justifyContent: 'center', 
-    height: 45, 
-    margin: 3 
+    borderRadius: 10,
+    borderColor: "green",
+    borderWidth: 2,
+    alignItems: "center",
+    justifyContent: "center",
+    height: 45,
+    margin: 3,
   },
   Abutton: {
-    backgroundColor: 'green', 
+    backgroundColor: "green",
     padding: 10,
-    borderRadius: 10, 
-    borderColor: 'green',
-    borderWidth: 2, 
-    alignItems: 'center',
-    justifyContent: 'center', 
-    height: 45, 
-    margin: 3 
+    borderRadius: 10,
+    borderColor: "green",
+    borderWidth: 2,
+    alignItems: "center",
+    justifyContent: "center",
+    height: 45,
+    margin: 3,
   },
   fixToText: {
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
+    flexDirection: "row",
+    justifyContent: "space-evenly",
   },
   currentUserContainer: {
     alignItems: "flex-end",
@@ -97,7 +145,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
   },
   messageItemWrapper: {
-    maxWidth: "75%", 
+    maxWidth: "75%",
     marginBottom: 15,
   },
   messageItem: {
@@ -121,11 +169,11 @@ const styles = StyleSheet.create({
   appointmentTitle: {
     fontWeight: "bold",
     marginBottom: 5,
-    color: "green", 
+    color: "green",
   },
-   appointmentTitle1: {
+  appointmentTitle1: {
     fontWeight: "bold",
     marginBottom: 5,
-    color: "white", 
-  }
+    color: "white",
+  },
 });
