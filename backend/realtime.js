@@ -4,7 +4,7 @@ const http = require("http").Server(app);
 const cors = require("cors");
 const socketIO = require("socket.io")(http, {
   cors: {
-    origin: "http://192.168.17.55:3000/",
+    origin: "http://192.168.100.25:3000/",
   },
 });
 
@@ -22,7 +22,30 @@ app.use(cors());
 
 socketIO.on("connection", (socket) => {
   console.log(`${socket.id} user is just connected`);
-
+ 
+  
+  socket.on("newAppointment", (appointmentData) => {
+    const { date, duration, sender, conversationId, timeData, status, price } = appointmentData;
+  
+    const messageWithAppointment = {
+        id: createUniqueId(),
+        text: `Appointment on ${date} for ${duration} hours.`,
+        sender: sender,
+        time: `${timeData.hr}:${timeData.mins}`,
+        date: date,
+        duration: duration,
+        status:status,
+        price :price 
+    };
+  
+    if (conversations[conversationId]) {
+        conversations[conversationId].messages.push(messageWithAppointment);
+        socketIO.to(conversationId).emit("newMessage", messageWithAppointment);
+    } else {
+        console.error(`Conversation ${conversationId} not found.`);
+    }
+});
+ 
   socket.on("getAllConversations", () => {
     // Emit detailed information for each conversation
     const conversationDetails = Object.values(conversations).map(conv => ({

@@ -29,12 +29,11 @@ export default function Chatscreen({ navigation }) {
         // Listen for conversation list updates
         socket.on("conversationList", (conversations) => {
           const modifiedConversations = conversations.map(conversation => {
-            // Assuming `conversation` is a structure { id: "user1-user2", latestMessage: {...} }
             const participants = conversation.id.split("-"); 
             return {
-              id: conversation.id, // This assumes conversation object includes an id field
+              id: conversation.id, 
               participants: participants,
-              latestMessage: conversation.latestMessage // Assuming latestMessage is properly structured
+              latestMessage: conversation.latestMessage 
             };
           });
           setAllConversations(modifiedConversations);
