@@ -11,7 +11,7 @@ export default function Chatcomponent({ item, currentUser }) {
   useEffect(() => {
     const fetchNurses = async () => {
       try {
-        const response = await fetch("http://192.168.195.229:3000/api/nurses");
+        const response = await fetch("http://192.168.17.55:3000/api/nurses");
         if (!response.ok) {
           throw new Error("Failed to fetch nurses");
         }

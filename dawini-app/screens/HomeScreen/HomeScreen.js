@@ -79,7 +79,7 @@ export default function HomeScreen({ navigation }) {
 
   const fetchNurses = async () => {
     try {
-      const response = await fetch("http://192.168.195.229:3000/api/nurses");
+      const response = await fetch("http://192.168.17.55:3000/api/nurses");
       if (!response.ok) {
         throw new Error("Failed to fetch nurses");
       }
@@ -104,7 +104,7 @@ export default function HomeScreen({ navigation }) {
   };
 
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
-    const R = 6371e3; // meters
+    const R = 6371e3;
     const φ1 = lat1 * (Math.PI / 180);
     const φ2 = lat2 * (Math.PI / 180);
     const Δφ = (lat2 - lat1) * (Math.PI / 180);

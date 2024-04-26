@@ -11,7 +11,6 @@ import SignupNurse from "./screens/SignupNurse";
 import HomeScreen from './screens/HomeScreen/HomeScreen';
 import BookingScreen from './screens/BookingScreen/BookingScreen';
 import ProfileScreen from './screens/ProfileScreen/ProfileScreen';
-import ShopScreen from './screens/ShopScreen/ShopScreen';
 import Chatscreen from "./screens/Chatscreen";
 import Messagescreen from "./screens/Messagescreen";
 import ProfileView from "./screens/Profile";

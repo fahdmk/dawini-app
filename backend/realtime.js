@@ -4,7 +4,7 @@ const http = require("http").Server(app);
 const cors = require("cors");
 const socketIO = require("socket.io")(http, {
   cors: {
-    origin: "http://192.168.195.229:3000/",
+    origin: "http://192.168.17.55:3000/",
   },
 });
 

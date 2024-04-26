@@ -1,9 +1,17 @@
-import React, { useContext, useEffect, useRef } from "react";
-import { FlatList, Keyboard, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import React, { useContext, useEffect, useRef,useState } from "react";
+import { ScrollView,FlatList, Keyboard, Pressable, StyleSheet, Text, TextInput, View ,TouchableOpacity} from "react-native";
 import { GlobalContext } from "../context";
 import Messagecomponent from "../components/Messagecomponent";
 import { socket } from "../utils/index";
 import { MaterialIcons } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
+import { Modal } from 'react-native-paper';
+import COLORS from "../constants/colors";
+import dayjs from 'dayjs';
+import DateTimePicker from 'react-native-ui-datepicker';
+
+
+
 export default function Messagescreen({ navigation, route }) {
   const messagesEndRef = useRef(false);
   const { currentGroupName, currentGroupID } = route.params;
@@ -15,6 +23,20 @@ export default function Messagescreen({ navigation, route }) {
     setCurrentChatMessage,
   } = useContext(GlobalContext);
   const flatListRef = useRef(null);
+  const [visible, setVisible] = React.useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const [date, setDate] = useState(dayjs());
+  const [time, setTime] = useState(new Date());
+
+  const showModal = () => {
+    setVisible(true);
+  };
+  const hideModal = () => {
+    setVisible(false);
+  };
+
+
   useEffect(() => {
     // Fetch initial messages on component mount
     socket.emit('findGroup', currentGroupID);
@@ -68,13 +90,17 @@ export default function Messagescreen({ navigation, route }) {
     }
   }
   
-  
+ 
  
   return (
+    <>
+   
     <View style={styles.wrapper}>
+    
        <View
         style={[styles.wrapper, { paddingVertical: 15, paddingHorizontal: 10 }]}
       >
+        
         {allChatMessages[2] && allChatMessages[2].length > 0 ? (
           <FlatList
           ref={flatListRef}
@@ -82,15 +108,65 @@ export default function Messagescreen({ navigation, route }) {
           renderItem={({ item }) => (
             <Messagecomponent item={item} currentUser={currentUser} />
           )}
-          keyExtractor={(item) => item.id} // Use the improved keyExtractor
-          extraData={allChatMessages.length} // Add extraData prop
+          keyExtractor={(item) => item.id} 
+          extraData={allChatMessages.length} 
           onContentSizeChange={() => flatListRef.current.scrollToEnd({ animated: false })} // Add this line
         />
         ) : (
           <Text>No messages available</Text>
         )}
       </View>
+      <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={containerStyle}>
+        <View style={styles.modalContent}>
+       <ScrollView>
+          <Text style={styles.modalTitle}>Appointment</Text>
+          <TouchableOpacity onPress={() => setShowDatePicker(!showDatePicker)}>
+            <View
+              style={{
+                width: "100%",
+                height: 48,
+                borderColor: COLORS.black,
+                borderWidth: 1,
+                borderRadius: 8,
+                alignItems: "center",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                paddingLeft: 22,
+              }}
+            >
+              <TextInput
+                placeholder="Select your appointment date"
+                placeholderTextColor={COLORS.black}
+                editable={false}
+                style={{ width: "80%" }}
+                value={dayjs(date).format('YYYY-MM-DD')}
+              />
+            </View>
+          </TouchableOpacity>
+          {showDatePicker && (
+            <DateTimePicker
+            mode="single"
+            date={date}
+            onChange={(params) =>{ setDate(params.date)
+            setDate(params.date)
+          }}
+            timePicker="true"
+          />
+          )}
+         
+          <TextInput
+            style={styles.modalInput}
+            placeholder="Number of hours"
+            keyboardType="numeric"
+          />
+       </ScrollView>
+        </View>
+      </Modal>
       <View style={styles.messageInputContainer}>
+      <Pressable  onPress={showModal}>
+      <AntDesign name="book" size={30} color="black"style={{marginTop:5,marginRight:2}} />
+      
+      </Pressable>
         <TextInput
           style={styles.messageInput}
           value={currentChatMessage}
@@ -102,9 +178,10 @@ export default function Messagescreen({ navigation, route }) {
                 </Pressable>
       </View>
     </View>
+    </>
   );
 }
-
+const containerStyle = {backgroundColor: 'white', padding: 20,margin: 0,};
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
@@ -114,7 +191,7 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "#fff",
     paddingVertical: 20,
-    paddingHorizontal: 15,
+    paddingHorizontal: 8,
     justifyContent: "center",
     flexDirection: "row",
   },
@@ -124,6 +201,7 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 50,
     marginRight: 10,
+   
   },
   button: {
     width: "15%",
@@ -135,5 +213,24 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#fff",
     fontSize: 20,
+  },
+  modalContent: {
+    backgroundColor: "white",
+    padding: 5,
+    borderRadius: 10,
+  
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  modalInput: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    padding: 10,
+    marginBottom: 10,
+    borderRadius: 5,
   },
 });

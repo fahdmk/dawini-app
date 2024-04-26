@@ -4,17 +4,70 @@ import { socket } from "../utils";
 import { GlobalContext } from "../context";
 import { Card } from 'react-native-paper';
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 const ProfileView = (route) => {
+  const {
+    currentUser,
+    allConversations,
+    setAllConversations,
+    setCurrentUser,
+  } = useContext(GlobalContext);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const storedUser = await AsyncStorage.getItem("user");
+        setCurrentUser(storedUser || "DefaultUser");
+        socket.on("latestMessageUpdate", ({ conversationId, latestMessage }) => {
+          setAllConversations(prevConversations => 
+            prevConversations.map(conv => 
+              conv.id === conversationId ? { ...conv, latestMessage } : conv
+            )
+          );
+        });
+        // Listen for conversation list updates
+        socket.on("conversationList", (conversations) => {
+          const modifiedConversations = conversations.map(conversation => {
+            // Assuming `conversation` is a structure { id: "user1-user2", latestMessage: {...} }
+            const participants = conversation.id.split("-"); 
+            return {
+              id: conversation.id, // This assumes conversation object includes an id field
+              participants: participants,
+              latestMessage: conversation.latestMessage // Assuming latestMessage is properly structured
+            };
+          });
+          setAllConversations(modifiedConversations);
+        });
+  
+        // Emit initial request
+        socket.emit("getAllConversations");
+        
+  
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+  
+    fetchData();
+  
+    // Clean up socket event listeners on component unmount
+    return () => {
+      socket.off("conversationList");
+      socket.off("latestMessageUpdate");
+    };
+  }, []); // This ensures the effect runs only once on component mount
+  
+ 
   const navigation = useNavigation();
     const selectedNurse = route.route.params['idCare taker'];
 const [nurse, setNurse] = useState(null);
-const { currentUser} = useContext(GlobalContext);
 const [reviews, setReviews] = useState([]);
 useEffect(() => {
   const fetchNurse = async () => {
     try {
-      const response = await fetch(`http://192.168.195.229:3000/api/nurses/${selectedNurse}`);
+      const response = await fetch(`http://192.168.17.55:3000/api/nurses/${selectedNurse}`);
       if (!response.ok) {
         throw new Error('Failed to fetch nurse information');
       }
@@ -29,7 +82,7 @@ useEffect(() => {
  
   const fetchReviews = async () => {
     try {
-      const response = await fetch(`http://192.168.195.229:3000/api/reviews/caretaker/${selectedNurse}`);
+      const response = await fetch(`http://192.168.17.55:3000/api/reviews/caretaker/${selectedNurse}`);
       if (!response.ok) {
         console.log("no reviews")
       }

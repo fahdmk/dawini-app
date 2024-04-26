@@ -51,7 +51,7 @@ const SignupPatient = ({ navigation }) => {
       }
     };
   
-   const [date, setDate] = useState(dayjs());
+  const [date, setDate] = useState(dayjs());
   const [isPasswordShown, setIsPasswordShown] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
