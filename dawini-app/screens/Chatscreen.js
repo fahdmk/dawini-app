@@ -12,6 +12,8 @@ export default function Chatscreen({ navigation }) {
     allConversations,
     setAllConversations,
     setCurrentUser,
+    role,
+    id
   } = useContext(GlobalContext);
 
   useEffect(() => {
@@ -58,7 +60,7 @@ export default function Chatscreen({ navigation }) {
   }, []); // This ensures the effect runs only once on component mount
   
  
-
+console.log(role,id);
 
   const filteredConversations = allConversations.filter(conversation =>
     conversation.participants.includes(currentUser)

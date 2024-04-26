@@ -25,17 +25,19 @@ socketIO.on("connection", (socket) => {
  
   
   socket.on("newAppointment", (appointmentData) => {
-    const { date, duration, sender, conversationId, timeData, status, price } = appointmentData;
+    const { date, duration, sender, conversationId, timeData, status, price , senderid, caretaker} = appointmentData;
   
     const messageWithAppointment = {
         id: createUniqueId(),
         text: `Appointment on ${date} for ${duration} hours.`,
         sender: sender,
         time: `${timeData.hr}:${timeData.mins}`,
-         date: date,
+        date: date,
         duration: duration,
         status:status,
-        price :price 
+        price :price ,
+        senderid: senderid,
+        caretaker: caretaker
     };
   
     if (conversations[conversationId]) {

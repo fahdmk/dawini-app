@@ -22,7 +22,10 @@ import {GlobalContext} from "../context"
 const LoginPatient = ({ navigation }) => {
   const {
     role,
-    setRole
+    setRole,
+    id,
+    setID
+
   } = useContext(GlobalContext);
   const [isPasswordShown, setIsPasswordShown] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
@@ -48,23 +51,18 @@ const LoginPatient = ({ navigation }) => {
       }
   
       const { token, user } = await response.json();
-  
-     
-      console.log("User:", user);
+      
+      
       
       setRole(user.role);
-      
-
-      // Store the token in local storage or context for further use
-  
-      // Clear input fields after successful login
       setEmail("");
       setPassword("");
-  
-      // Navigate to the next screen or perform other actions
+      {role=="patient" ? (setID(user.idUser)):(setID(user["idCare taker"]))}
+      console.log("zzzzzzzzzzzzzz",id);
+     
+      console.log("User:", user);
       navigation.navigate("MainScreen");
 
-      // Store the token in AsyncStorage
       await AsyncStorage.setItem('user', user.fullName);
     
     } catch (error) {

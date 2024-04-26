@@ -25,7 +25,7 @@ const Review = sequelize.define('Review', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Caretaker', // This should match the model name as defined
+      model: 'Caretaker', 
       key: 'idCare taker'
     },
     field: 'idCare taker'

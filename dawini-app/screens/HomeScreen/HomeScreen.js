@@ -20,7 +20,6 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 export default function HomeScreen({ navigation }) {
   const [location, setLocation] = useState(null);
-  const [errorMsg, setErrorMsg] = useState(null);
   const [loading, setLoading] = useState(true);
   const [nurses, setNurses] = useState([]);
   const [search, setSearch] = useState("");
@@ -30,11 +29,7 @@ export default function HomeScreen({ navigation }) {
  
   useEffect(() => {
  
-   
-    // // Fetch the initial location
     fetchLocation();
-
-    // Subscribe to location updates
     const locationSubscription = Location.watchPositionAsync(
       {
         accuracy: Location.Accuracy.High,
@@ -85,14 +80,15 @@ export default function HomeScreen({ navigation }) {
       }
       const data = await response.json();
       setNurses(data);
-      setFilteredDataSource(data); // Initialize filtered data source
+      setFilteredDataSource(data); 
+
     } catch (error) {
       console.error("Error fetching nurses:", error);
     } finally {
       setLoading(false);
     }
   };
-
+// console.log(filteredDataSource)
   const searchFilterFunction = (text) => {
     const newData = nurses.filter((item) => {
       const fullName = item.fullName ? item.fullName.toUpperCase() : "";
@@ -203,7 +199,7 @@ export default function HomeScreen({ navigation }) {
           </Text>
         )}
       </View>
-      <View style={{ marginBottom: 15, padding: 5 }}>
+      <View style={{ flex:1, marginBottom: 15, padding: 5 }}>
         <Text style={{ ...FONTS.h3, marginVertical: SIZES.padding * 2,fontWeight: "bold" }}>
           Nurses
         </Text>
@@ -251,7 +247,7 @@ export default function HomeScreen({ navigation }) {
         <FlatList
           ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
           data={filteredDataSource}
-          keyExtractor={(item) => item["idCare taker"]}
+          keyExtractor={(item, index) => item["idCare taker"] || index.toString()}
           renderItem={renderNurseItem}
         />
       </View>

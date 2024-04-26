@@ -29,16 +29,22 @@ export default function Messagescreen({ navigation, route }) {
     currentUser,
     currentChatMessage,
     setCurrentChatMessage,
+    id
   } = useContext(GlobalContext);
   const flatListRef = useRef(null);
   const [visible, setVisible] = React.useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
-
   const [date, setDate] = useState(Date);
   const [duration, setDuration] = useState("");
   const handleDateChange = (params) => {
     setTempDate(params.date);
   };
+  function getOtherParticipant(currentGroupID, sender) {
+    const participants = currentGroupID.split('-');
+    return participants.find(participant => participant !== sender);
+  }
+  
+  const caretaker = getOtherParticipant(currentGroupID, currentUser);
   const confirmDate = () => {
     setDate(tempDate);
     setShowDatePicker(false);
@@ -67,6 +73,8 @@ export default function Messagescreen({ navigation, route }) {
       timeData: timeData,
       status: "pending",
       price: "",
+      senderid: id,
+      caretaker:caretaker
     };
 
     socket.emit("newAppointment", appointmentData);
@@ -102,6 +110,7 @@ export default function Messagescreen({ navigation, route }) {
       socket.off("updateMessage", handleUpdateMessage);
     };
   }, [allChatMessages]);
+  
 
   function handleAddNewMessage() {
     const timeData = {

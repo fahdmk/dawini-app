@@ -2,6 +2,9 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../sequelize-config');
 const Review = require('./Review');
+const Appointment = require('./appointment'); // Adjust path as necessary
+
+
 const Caretaker = sequelize.define('Caretaker', {
   "idCare taker": {
     type: DataTypes.INTEGER,
@@ -14,13 +17,13 @@ const Caretaker = sequelize.define('Caretaker', {
     allowNull: false,
   },
   password: {
-    type: DataTypes.STRING(60), // Assuming you'll hash the passwords
+    type: DataTypes.STRING(60), 
     allowNull: false,
   },
   fullName: {
     type: DataTypes.STRING,
     allowNull: false,
-    field: 'full name', // Map to the column name in the database
+    field: 'full name', 
   },
   adress: {
     type: DataTypes.STRING,
@@ -80,13 +83,15 @@ const Caretaker = sequelize.define('Caretaker', {
   timestamps: false, // Set to true if you have createdAt and updatedAt fields
 });
 Caretaker.hasMany(Review, {
-  foreignKey: 'idCare taker', // Matches the foreign key in Review
-  as: 'reviews' // Alias for clarity
+  foreignKey: 'idCare taker', 
+  as: 'reviews'
 });
-
-// models/Review.js 
+Caretaker.hasMany(Appointment, {
+  foreignKey: 'Caretaker_idCaretaker',
+  as: 'appointments'
+});
 Review.belongsTo(Caretaker, {
   foreignKey: 'idCare taker',
-  as: 'Caretaker' // Alias for clarity
+  as: 'Caretaker' 
 });
 module.exports = Caretaker;

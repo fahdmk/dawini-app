@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
 const app = express();
 const Caretaker = require('./Models/Caretaker');
 const Review = require('./Models/Review'); 
+const Appointment = require('./Models/appointment'); 
 const PORT = process.env.PORT || 3000;
 
 
@@ -32,7 +33,38 @@ sequelize
     console.error('Unable to connect to the database: ', error);
   });
  
-
+  app.post('/api/appointments', async (req, res) => {
+    try {
+      const {
+        Price,
+        Date,
+        status,
+        IdCareTaker,
+        User_idUser,
+        duration
+      } = req.body;
+  
+      // Check required fields
+      if (!Date || !IdCareTaker || !User_idUser) {
+        return res.status(400).json({ error: 'Missing required fields' });
+      }
+  
+      // Create a new appointment record in the database
+      const newAppointment = await Appointment.create({
+        Price,
+        Date,
+        status,
+        IdCareTaker,
+        User_idUser,
+        duration
+      });
+  
+      res.status(201).json(newAppointment);
+    } catch (error) {
+      console.error('Failed to create appointment:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
 app.post('/api/new-nurse', async (req, res) => {
   try {
     // Destructure user data from request body
@@ -72,6 +104,17 @@ app.post('/api/new-nurse', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Error creating Nurse' });
+  }
+});
+app.get('/api/caretakers/fullName/:fullName', async (req, res) => {
+  try {
+      const caretaker = await Caretaker.findOne({
+          where: { fullName: req.params.fullName }
+      });
+      if (!caretaker) return res.status(404).json({ error: 'Caretaker not found' });
+      res.json(caretaker);
+  } catch (error) {
+      res.status(500).json({ error: 'Internal server error' });
   }
 });
 app.post('/api/new-user', async (req, res) => {

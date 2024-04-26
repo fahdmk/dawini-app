@@ -2,6 +2,9 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../sequelize-config');
 const Review = require('./Review');
+const Appointment = require('./appointment'); // Adjust path as necessary
+
+
 const User = sequelize.define('User', {
   idUser: {
     type: DataTypes.INTEGER,
@@ -69,5 +72,8 @@ Review.belongsTo(User, {
   foreignKey: 'idUser',
   as: 'User' // Alias for easier identification
 });
-
+User.hasMany(Appointment, {
+  foreignKey: 'User_idUser',
+  as: 'appointments'
+});
 module.exports = User;
