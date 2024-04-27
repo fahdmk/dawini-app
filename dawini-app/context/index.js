@@ -14,10 +14,17 @@ function GlobalState({ children }) {
   const [allChatMessages, setAllChatMessages] = useState([]);
   const [role, setRole] = useState("");
   const [id, setID] = useState("");
+  const [role1, setRole1] = useState("");
+  const [id1, setId1] = useState("");
+
 
   return (
     <GlobalContext.Provider
       value={{
+        role1,
+        setRole1,
+        id1,
+        setId1,
         id,
         setID,
         role,

@@ -9,8 +9,7 @@ export default function Messagecomponent({
   const handleAction = (action, appointment) => {
     socket.emit("appointmentAction", {
       action,
-      idAppointment: appointment.id,
-      
+      idAppointment: appointment.idAppointment,
       conversationId: currentGroupID,
     });
   };
@@ -61,7 +60,7 @@ export default function Messagecomponent({
                 {item.status !== "accepted" && item.status !== "declined" && (
                   <>
                     <TouchableOpacity
-                      onPress={() => handleAction("decline", item)}
+                      onPress={() => {handleAction("decline", item);console.log(item)}}
                       style={styles.Dbutton}
                     >
                       <Text>Decline</Text>
@@ -80,7 +79,7 @@ export default function Messagecomponent({
         </>
       );
     } else {
-      // Render regular text message
+      
       return (
         <Text
           style={isCurrentUser ? styles.currentUserText : styles.otherUserText}

@@ -139,17 +139,17 @@ function handleAppointmentAction(action, idAppointment, conversationId, socket) 
     return;
   }
 
-  const appointmentIndex = conversation.messages.findIndex(msg => msg.id === idAppointment);
-  if (appointmentIndex === -1) {
+  // Find the appointment object using idAppointment
+  const appointment = conversation.messages.find(msg => msg.idAppointment === idAppointment);
+  if (!appointment) {
     console.error(`Appointment ${idAppointment} not found in conversation ${conversationId}`);
     return;
   }
 
-  const appointment = conversation.messages[appointmentIndex];
   const newStatus = action === "accept" ? "accepted" : "declined";
   const id = appointment.idAppointment;
   appointment.status = newStatus;
-console.log(newStatus)
+ console.log(newStatus)
   
   // if (conversation.latestMessage.id === appointmentId) {
   //   conversation.latestMessage.status = newStatus;

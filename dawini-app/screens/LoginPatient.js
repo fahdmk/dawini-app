@@ -32,6 +32,7 @@ const LoginPatient = ({ navigation }) => {
   const [isChecked, setIsChecked] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [idtab,setIdtab]=useState("");
 
   const handleLogin = async () => {
     try {
@@ -58,11 +59,11 @@ const LoginPatient = ({ navigation }) => {
   
       const userId = user.role === "patient" ? user.idUser : user["idCare taker"];
       setID(userId);
+      setIdtab(userId);
       setCurrentUser(user.fullName)
       console.log("User:", user);
       await AsyncStorage.setItem('user', user.fullName);
-      navigation.navigate("MainScreen");
-  
+      navigation.navigate("MainScreen", { idtab , role });  
     } catch (error) {
       console.error("Login error:", error.message);
       Alert.alert("Error", "Invalid credentials. Please try again.");
@@ -70,8 +71,8 @@ const LoginPatient = ({ navigation }) => {
   };
   
   useEffect(() => {
-    console.log("Current ID:", currentUser);
-  }, [currentUser]);
+    console.log("Current ID:", idtab);
+  }, [idtab]);
   
   
   return (
@@ -85,7 +86,7 @@ const LoginPatient = ({ navigation }) => {
               resizeMode='contain'
               style={{
                   width: "90%",
-                  height: 140, // Adjust height as needed
+                  height: 140, 
               }}
             />
 

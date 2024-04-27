@@ -52,12 +52,11 @@ const ProfileView = (route) => {
   
     fetchData();
   
-    // Clean up socket event listeners on component unmount
     return () => {
       socket.off("conversationList");
       socket.off("latestMessageUpdate");
     };
-  }, []); // This ensures the effect runs only once on component mount
+  }, []);
   
  
   const navigation = useNavigation();

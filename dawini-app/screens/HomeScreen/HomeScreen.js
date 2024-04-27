@@ -1,13 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   Text,
   FlatList,
   TouchableOpacity,
   Image,
-  ScrollView,
   StyleSheet,
-  List,
 } from "react-native";
 import { Card } from "react-native-paper";
 import * as Location from "expo-location";
@@ -17,8 +15,10 @@ import Slider from "@react-native-community/slider";
 import { Ionicons } from '@expo/vector-icons';
 import { TextInput } from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { GlobalContext } from "../../context";
 
-export default function HomeScreen({ navigation }) {
+
+export default function HomeScreen({ navigation , idtab, role}) {
   const [location, setLocation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [nurses, setNurses] = useState([]);
@@ -26,9 +26,11 @@ export default function HomeScreen({ navigation }) {
   const [filteredDataSource, setFilteredDataSource] = useState([]);
   const [maxDistance, setMaxDistance] = useState(""); // Added state for maximum distance
   const [showSlider, setShowSlider] = useState(false);
- 
+  
+  console.log("ccccccc",idtab);
   useEffect(() => {
- 
+    
+   
     fetchLocation();
     const locationSubscription = Location.watchPositionAsync(
       {

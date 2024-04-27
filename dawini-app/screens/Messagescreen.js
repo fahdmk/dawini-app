@@ -23,7 +23,8 @@ export default function Messagescreen({ navigation, route }) {
   const [tempDate, setTempDate] = useState(date);
   const messagesEndRef = useRef(false);
   const { currentGroupName, currentGroupID } = route.params;
-  const [caretakerData, setCaretakerData] = useState(null);  const {
+  const [caretakerData, setCaretakerData] = useState(null); 
+   const {
     allChatMessages,
     setAllChatMessages,
     currentUser,
@@ -62,7 +63,7 @@ if (role === "patient") {
         console.error('Error fetching caretaker:', error);
     }
 }
-console.log(caretakerName);
+// console.log(id);
 
   const confirmDate = () => {
     setDate(tempDate);
