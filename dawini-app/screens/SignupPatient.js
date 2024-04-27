@@ -45,7 +45,7 @@ const SignupPatient = ({ navigation }) => {
         navigation.navigate("LoginPatient")
        
       } catch (error) {
-        // Handle error
+        
         console.error('Error submitting form:', error);
         
       }

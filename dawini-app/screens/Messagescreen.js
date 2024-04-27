@@ -23,13 +23,14 @@ export default function Messagescreen({ navigation, route }) {
   const [tempDate, setTempDate] = useState(date);
   const messagesEndRef = useRef(false);
   const { currentGroupName, currentGroupID } = route.params;
-  const {
+  const [caretakerData, setCaretakerData] = useState(null);  const {
     allChatMessages,
     setAllChatMessages,
     currentUser,
     currentChatMessage,
     setCurrentChatMessage,
-    id
+    id,
+    role
   } = useContext(GlobalContext);
   const flatListRef = useRef(null);
   const [visible, setVisible] = React.useState(false);
@@ -43,12 +44,32 @@ export default function Messagescreen({ navigation, route }) {
     const participants = currentGroupID.split('-');
     return participants.find(participant => participant !== sender);
   }
-  
-  const caretaker = getOtherParticipant(currentGroupID, currentUser);
+  let caretakerName;
+
+if (role === "patient") {
+    caretakerName = getOtherParticipant(currentGroupID, currentUser, id);
+} else {
+    caretakerName = currentUser; 
+}
+  const fetchCaretaker = async () => {
+    
+    try {
+        const response = await fetch(`http://192.168.245.229:3000/api/caretakers/fullName/${caretakerName}`);
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Failed to fetch');
+        setCaretakerData(data);
+    } catch (error) {
+        console.error('Error fetching caretaker:', error);
+    }
+}
+console.log(caretakerName);
+
   const confirmDate = () => {
     setDate(tempDate);
     setShowDatePicker(false);
     console.log(duration);
+    fetchCaretaker();
+
   };
   const showModal = () => {
     setVisible(true);
@@ -64,8 +85,14 @@ export default function Messagescreen({ navigation, route }) {
           ? `0${new Date().getMinutes()}`
           : new Date().getMinutes(),
     };
-
+    
+    if( role=="patient"){
+      function createUniqueId() {
+        return Math.random().toString(20).substring(2, 10);
+      }
+      
     const appointmentData = {
+      idAppointment:createUniqueId(),
       date: date,
       duration: duration,
       sender: currentUser,
@@ -74,12 +101,15 @@ export default function Messagescreen({ navigation, route }) {
       status: "pending",
       price: "",
       senderid: id,
-      caretaker:caretaker
+      caretaker:caretakerData["idCare taker"]
     };
 
     socket.emit("newAppointment", appointmentData);
     setVisible(false);
-  }
+   console.log(appointmentData)}
+
+  
+}
   useEffect(() => {
     const handleUpdateMessage = (updatedMessage) => {
       setAllChatMessages((prevMessages) => {
@@ -89,7 +119,7 @@ export default function Messagescreen({ navigation, route }) {
       });
     };
 
-    // Fetch initial messages on component mount
+    
     socket.emit("findGroup", currentGroupID);
 
     const handleFoundGroup = (allChats) => {
@@ -111,7 +141,7 @@ export default function Messagescreen({ navigation, route }) {
     };
   }, [allChatMessages]);
   
-
+  // console.log("eeeeeeeeeee",currentUser);
   function handleAddNewMessage() {
     const timeData = {
       hr:

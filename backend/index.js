@@ -32,10 +32,31 @@ sequelize
   .catch((error) => {
     console.error('Unable to connect to the database: ', error);
   });
- 
+  app.post('/api/appointments/update-status', async (req, res) => {
+    const { idAppointment, status } = req.body;
+
+    if (!idAppointment || !status) {
+        return res.status(400).json({ error: 'Missing required fields: idAppointment and status' });
+    }
+
+    try {
+        const appointment = await Appointment.findByPk(idAppointment);
+        if (!appointment) {
+            return res.status(404).json({ error: 'Appointment not found' });
+        }
+
+        appointment.status = status;
+        await appointment.save();
+        res.json({ message: 'Appointment status updated successfully', appointment });
+    } catch (error) {
+        console.error('Error updating appointment status:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
   app.post('/api/appointments', async (req, res) => {
     try {
       const {
+        idAppointment,
         Price,
         Date,
         status,
@@ -43,14 +64,12 @@ sequelize
         User_idUser,
         duration
       } = req.body;
-  
-      // Check required fields
-      if (!Date || !IdCareTaker || !User_idUser) {
+        if (!Date || !IdCareTaker || !User_idUser) {
         return res.status(400).json({ error: 'Missing required fields' });
       }
   
-      // Create a new appointment record in the database
       const newAppointment = await Appointment.create({
+        idAppointment,
         Price,
         Date,
         status,
@@ -58,7 +77,6 @@ sequelize
         User_idUser,
         duration
       });
-  
       res.status(201).json(newAppointment);
     } catch (error) {
       console.error('Failed to create appointment:', error);
@@ -123,7 +141,7 @@ app.post('/api/new-user', async (req, res) => {
     const {
       username,
       role,
-      fullname,
+      fullName,
       password,
       email,
       phone,
@@ -140,7 +158,7 @@ app.post('/api/new-user', async (req, res) => {
     const newUser = await User.create({
       username,
       role,
-      fullname,
+      fullName,
       password,
       email,
       phone,
@@ -279,5 +297,5 @@ app.get('/api/reviews/caretaker/:idCareTaker', async (req, res) => {
   }
 });
 app.listen(PORT, () => {
-    console.log(`Server is running on http://192.168.100.25:${PORT}`);
+    console.log(`Server is running on http://192.168.245.229:${PORT}`);
 });

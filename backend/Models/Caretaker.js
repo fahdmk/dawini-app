@@ -87,7 +87,7 @@ Caretaker.hasMany(Review, {
   as: 'reviews'
 });
 Caretaker.hasMany(Appointment, {
-  foreignKey: 'Caretaker_idCaretaker',
+  foreignKey: 'IdCareTaker',
   as: 'appointments'
 });
 Review.belongsTo(Caretaker, {

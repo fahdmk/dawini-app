@@ -4,9 +4,10 @@ const http = require("http").Server(app);
 const cors = require("cors");
 const socketIO = require("socket.io")(http, {
   cors: {
-    origin: "http://192.168.100.25:3000/",
+    origin: "http://192.168.245.229:3000/",
   },
 });
+const axios = require('axios');
 
 const PORT = 4000;
 
@@ -25,10 +26,10 @@ socketIO.on("connection", (socket) => {
  
   
   socket.on("newAppointment", (appointmentData) => {
-    const { date, duration, sender, conversationId, timeData, status, price , senderid, caretaker} = appointmentData;
+    const { idAppointment ,date, duration, sender, conversationId, timeData, status, price , senderid , caretaker} = appointmentData;
   
     const messageWithAppointment = {
-        id: createUniqueId(),
+        idAppointment:idAppointment,
         text: `Appointment on ${date} for ${duration} hours.`,
         sender: sender,
         time: `${timeData.hr}:${timeData.mins}`,
@@ -43,18 +44,34 @@ socketIO.on("connection", (socket) => {
     if (conversations[conversationId]) {
         conversations[conversationId].messages.push(messageWithAppointment);
         socketIO.to(conversationId).emit("newMessage", messageWithAppointment);
+        const apiUrl = 'http://192.168.245.229:3000/api/appointments'; // Adjust the port if different
+        axios.post(apiUrl, {
+          idAppointment:idAppointment,
+          Price: price,
+          Date: date,
+          status: status,
+          IdCareTaker: caretaker,
+          User_idUser: senderid,
+          duration: duration
+        })
+        .then(response => {
+          console.log('Appointment saved to database', response.data);
+        })
+        .catch(error => {
+          console.error('Failed to save appointment:', error);
+        });
     } else {
         console.error(`Conversation ${conversationId} not found.`);
     }
 });
-socket.on("appointmentAction", ({ action, appointmentId, conversationId }) => {
-  handleAppointmentAction(action, appointmentId, conversationId, socket);
+socket.on("appointmentAction", ({ action, idAppointment, conversationId }) => {
+  handleAppointmentAction(action, idAppointment, conversationId, socket);
 });
   socket.on("getAllConversations", () => {
     // Emit detailed information for each conversation
     const conversationDetails = Object.values(conversations).map(conv => ({
       id: conv.id,
-      latestMessage: conv.latestMessage || {}  // Ensure latestMessage is not null
+      latestMessage: conv.latestMessage || {}  
     }));
     socket.emit("conversationList", conversationDetails);
   });
@@ -69,7 +86,6 @@ socket.on("appointmentAction", ({ action, appointmentId, conversationId }) => {
       };
     }
     socket.join(conversationId);
-    // Emit updated conversation list when a new conversation is started
     const conversationDetails = Object.values(conversations).map(conv => ({
       id: conv.id,
       latestMessage: conv.latestMessage || {}
@@ -116,31 +132,47 @@ socket.on("appointmentAction", ({ action, appointmentId, conversationId }) => {
     console.log(`New message added to conversation ${conversationId}:`, newMessage);
   });
 });
-function handleAppointmentAction(action, appointmentId, conversationId, socket) {
+function handleAppointmentAction(action, idAppointment, conversationId, socket) {
   const conversation = conversations[conversationId];
   if (!conversation) {
     console.error(`Conversation ${conversationId} not found.`);
     return;
   }
 
-  const appointmentIndex = conversation.messages.findIndex(msg => msg.id === appointmentId);
+  const appointmentIndex = conversation.messages.findIndex(msg => msg.id === idAppointment);
   if (appointmentIndex === -1) {
-    console.error(`Appointment ${appointmentId} not found in conversation ${conversationId}`);
+    console.error(`Appointment ${idAppointment} not found in conversation ${conversationId}`);
     return;
   }
 
-  conversation.messages[appointmentIndex].status = action === "accept" ? "accepted" : "declined";
-
-  // Update latestMessage if needed
-  if (conversation.latestMessage.id === appointmentId) {
-    conversation.latestMessage.status = conversation.messages[appointmentIndex].status;
-  }
+  const appointment = conversation.messages[appointmentIndex];
+  const newStatus = action === "accept" ? "accepted" : "declined";
+  const id = appointment.idAppointment;
+  appointment.status = newStatus;
+console.log(newStatus)
+  
+  // if (conversation.latestMessage.id === appointmentId) {
+  //   conversation.latestMessage.status = newStatus;
+  // }
 
   // Emit updated message and latestMessage to all clients in the conversation
-  socketIO.to(conversationId).emit("updateMessage", conversation.messages[appointmentIndex]);
+  socketIO.to(conversationId).emit("updateMessage", appointment, newStatus);
   socketIO.to(conversationId).emit("latestMessageUpdate", {
     conversationId,
-    latestMessage: conversation.latestMessage 
+    latestMessage: conversation.latestMessage
+  });
+  
+  // Update appointment status in MySQL database
+  const apiUrl = 'http://192.168.245.229:3000/api/appointments/update-status'; // Adjust the API endpoint
+  axios.post(apiUrl, {
+    idAppointment : id,
+    status: newStatus
+  })
+  .then(response => {
+    console.log('Appointment status updated in database', response.data);
+  })
+  .catch(error => {
+    console.error('Failed to update appointment status:', error);
   });
 }
 http.listen(PORT, () => {

@@ -3,9 +3,8 @@ const sequelize = require('../sequelize-config'); // adjust the path to your seq
 
 const Appointment = sequelize.define('Appointment', {
   idAppointment: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.STRING(36),
     allowNull: false,
-    autoIncrement: true,
     primaryKey: true,
   },
   Price: {
@@ -19,7 +18,7 @@ const Appointment = sequelize.define('Appointment', {
   status: {
     type: DataTypes.STRING(45),
     allowNull: false,
-    field: 'accepted/declined' // Ensure this matches your database schema if using snake_case
+    field: 'accepted/declined' 
   },
   duration: {
     type: DataTypes.INTEGER,
@@ -29,22 +28,22 @@ const Appointment = sequelize.define('Appointment', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Caretaker', // This should match the model name if set in Sequelize or the table name
-      key: 'idCare taker', // This must match the exact primary key name in the Caretaker model or table
+      model: 'Caretaker', 
+      key: 'idCare taker', 
     },
-    field: 'Care taker_idCare taker' // The actual column name in the database
+    field: 'Care taker_idCare taker'
   },
   User_idUser: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'User', // name of Target model
-      key: 'id', // key in Target model
+      model: 'User', 
+      key: 'id',
     }
   }
 }, {
-  tableName: 'appointment', // specify the table name
-  timestamps: false, // set to true if you have createdAt and updatedAt fields
+  tableName: 'appointment', 
+  timestamps: false, 
 });
 
 module.exports = Appointment;

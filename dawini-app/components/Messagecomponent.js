@@ -9,12 +9,13 @@ export default function Messagecomponent({
   const handleAction = (action, appointment) => {
     socket.emit("appointmentAction", {
       action,
-      appointmentId: appointment.id,
+      idAppointment: appointment.id,
+      
       conversationId: currentGroupID,
     });
   };
-  // console.log(item.status)
-  // Function to determine if the message is an appointment based on its properties
+
+  
   const isAppointment = (item) => item.date;
   const isacepted = item.status == "accepted";
   const renderContent = () => {
@@ -23,7 +24,7 @@ export default function Messagecomponent({
         <>
           {isCurrentUser ? (
             <View>
-              <Text style={styles.appointmentTitle1}>Appointment</Text>
+              <Text style={styles.appointmentTitle1}>Appointment requested</Text>
               <Text style={styles.currentUserText}>Date: {item.date}</Text>
               <Text style={styles.currentUserText}>
                 Duration: {item.duration} hours
@@ -31,7 +32,7 @@ export default function Messagecomponent({
             </View>
           ) : (
             <View>
-              <Text style={styles.appointmentTitle}>Appointment</Text>
+              <Text style={styles.appointmentTitle}>Appointment request</Text>
               <Text
                 style={
                   isCurrentUser ? styles.currentUserText : styles.otherUserText

@@ -65,6 +65,7 @@ export default function App() {
 
 const MainScreen = () => {
   return (
+    <GlobalState> 
     <Tab.Navigator
     screenOptions={{
       headerShown: false,
@@ -137,5 +138,6 @@ const MainScreen = () => {
         }}
       /> */}
     </Tab.Navigator>
+    </GlobalState>
   );
 };

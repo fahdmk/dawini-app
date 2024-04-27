@@ -15,7 +15,6 @@ import { Ionicons } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox";
 import Button from "../components/Button";
 import axios from 'axios';
-import DateTimePicker from 'react-native-ui-datepicker';
 import dayjs from 'dayjs';
 
 

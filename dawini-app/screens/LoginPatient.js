@@ -1,4 +1,4 @@
-import React, { useState ,useContext} from "react";
+import React, { useState ,useContext, useEffect} from "react";
 import {
   View,
   Text,
@@ -14,13 +14,14 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import Checkbox from "expo-checkbox";
 import Button from "../components/Button";
 import COLORS from "../constants/colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {GlobalContext} from "../context"
 const LoginPatient = ({ navigation }) => {
   const {
+    setCurrentUser,
+    currentUser,
     role,
     setRole,
     id,
@@ -34,7 +35,7 @@ const LoginPatient = ({ navigation }) => {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch("http://192.168.100.25:3000/login", {
+      const response = await fetch("http://192.168.245.229:3000/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -51,26 +52,28 @@ const LoginPatient = ({ navigation }) => {
       }
   
       const { token, user } = await response.json();
-      
-      
-      
       setRole(user.role);
       setEmail("");
       setPassword("");
-      {role=="patient" ? (setID(user.idUser)):(setID(user["idCare taker"]))}
-      console.log("zzzzzzzzzzzzzz",id);
-     
+  
+      const userId = user.role === "patient" ? user.idUser : user["idCare taker"];
+      setID(userId);
+      setCurrentUser(user.fullName)
       console.log("User:", user);
-      navigation.navigate("MainScreen");
-
       await AsyncStorage.setItem('user', user.fullName);
-    
+      navigation.navigate("MainScreen");
+  
     } catch (error) {
       console.error("Login error:", error.message);
       Alert.alert("Error", "Invalid credentials. Please try again.");
     }
-   
   };
+  
+  useEffect(() => {
+    console.log("Current ID:", currentUser);
+  }, [currentUser]);
+  
+  
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
@@ -85,8 +88,6 @@ const LoginPatient = ({ navigation }) => {
                   height: 140, // Adjust height as needed
               }}
             />
-
-            
 
           </View>
           <Text

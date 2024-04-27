@@ -67,7 +67,7 @@ const [reviews, setReviews] = useState([]);
 useEffect(() => {
   const fetchNurse = async () => {
     try {
-      const response = await fetch(`http://192.168.100.25:3000/api/nurses/${selectedNurse}`);
+      const response = await fetch(`http://192.168.245.229:3000/api/nurses/${selectedNurse}`);
       if (!response.ok) {
         throw new Error('Failed to fetch nurse information');
       }
@@ -82,7 +82,7 @@ useEffect(() => {
  
   const fetchReviews = async () => {
     try {
-      const response = await fetch(`http://192.168.100.25:3000/api/reviews/caretaker/${selectedNurse}`);
+      const response = await fetch(`http://192.168.245.229:3000/api/reviews/caretaker/${selectedNurse}`);
       if (!response.ok) {
         console.log("no reviews")
       }
