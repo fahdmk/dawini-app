@@ -60,7 +60,7 @@ export default function Messagecomponent({
                 {item.status !== "accepted" && item.status !== "declined" && (
                   <>
                     <TouchableOpacity
-                      onPress={() => {handleAction("decline", item);console.log(item)}}
+                      onPress={() => {handleAction("decline", item);}}
                       style={styles.Dbutton}
                     >
                       <Text>Decline</Text>

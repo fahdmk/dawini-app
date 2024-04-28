@@ -55,7 +55,7 @@ const LoginPatient = ({ navigation }) => {
       const { token, user } = await response.json();
       setRole(user.role);
       setEmail("");
-      setPassword("");
+      setPassword(""); 
   
       const userId = user.role === "patient" ? user.idUser : user["idCare taker"];
       setID(userId);
@@ -71,7 +71,7 @@ const LoginPatient = ({ navigation }) => {
   };
   
   useEffect(() => {
-    console.log("Current ID:", idtab);
+    console.log("Current ID:", idtab ,role);
   }, [idtab]);
   
   

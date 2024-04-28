@@ -8,11 +8,12 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React from 'react';
 import GlobalState from "./context";
 
-
 const Tab = createBottomTabNavigator();
 const MainScreen = (tab) => {
-    const { idtab,role } = tab.route.params;
-    console.log("zzzzzzzzzzzzzzz",tab.route.params)
+ 
+    const { idtab , role } = tab.route.params;
+    
+    // console.log("zzzzzzzaaaaaa",idtab,role)
     return (
       <GlobalState>
       <Tab.Navigator
@@ -22,10 +23,10 @@ const MainScreen = (tab) => {
         tabBarInactiveTintColor: 'black',
         tabBarShowLabel: false,
         tabBarStyle: {
-          display: 'flex',
+          display: 'flex'
         },
       }}
-      >
+      > 
         <Tab.Screen
           name='Home'
           component={HomeScreen}
@@ -41,13 +42,10 @@ const MainScreen = (tab) => {
         <Tab.Screen
           name='Booking'
           component={BookingScreen}
+          initialParams={{ idtab, role }} 
           options={{
-            tabBarLabel: ({ color }) => (
-              <Text style={{ color: color, fontSize: 12 }}>Appointments</Text>
-            ),
-            tabBarIcon: ({ color, size }) => (
-              <AntDesign name="book" size={size} color={color} />
-            )
+            tabBarLabel: ({ color }) => <Text style={{ color, fontSize: 12 }}>Appointments</Text>,
+            tabBarIcon: ({ color, size }) => <AntDesign name="book" size={size} color={color} />
           }}
         />
         <Tab.Screen

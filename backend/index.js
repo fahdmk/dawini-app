@@ -34,34 +34,42 @@ sequelize
   });
   app.get('/api/appointments', async (req, res) => {
     try {
-      const { userId, role } = req.query; 
-  
-      if (!userId || !role) {
-        return res.status(400).json({ error: 'userId and role are required' });
-      }
-  
-      let appointments;
-  
-      if (role === 'patient') {
-        // Fetch appointments where User_idUser matches the provided userId
-        appointments = await Appointment.findAll({
-          where: { User_idUser: userId },
-        });
-      } else if (role === 'nurse') {
-        // Fetch appointments where IdCareTaker matches the provided userId
-        appointments = await Appointment.findAll({
-          where: { IdCareTaker: userId },
-        });
-      } else {
-        return res.status(400).json({ error: 'Invalid role' });
-      }
-  
-      res.json(appointments);
+        const { userId, role } = req.query;
+
+        if (!userId || !role) {
+            return res.status(400).json({ error: 'userId and role are required' });
+        }
+
+        let appointments;
+
+        if (role === 'patient') {
+            appointments = await Appointment.findAll({
+                where: { User_idUser: userId },
+                include: [
+                    { model: User, as: 'Patient', attributes: ['idUser', 'fullName', 'email'] },
+                    { model: Caretaker, as: 'Caretaker', attributes: ['idCare taker', 'fullName', 'photo_uri'] } 
+                ]
+            });
+        } else if (role === 'nurse') {
+            appointments = await Appointment.findAll({
+                where: { IdCareTaker: userId },
+                include: [
+                    { model: User, as: 'Patient', attributes: ['idUser', 'fullName', 'email'] },
+                    { model: Caretaker, as: 'Caretaker', attributes: ['idCare taker', 'fullName' ,'photo_uri'] }
+                ]
+            });
+        } else {
+            return res.status(400).json({ error: 'Invalid role' });
+        }
+
+        res.json(appointments);
     } catch (error) {
-      console.error('Error fetching appointments:', error);
-      res.status(500).json({ error: 'Internal server error' });
+        console.error('Error fetching appointments:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
-  });
+});
+
+
   app.post('/api/appointments/update-status', async (req, res) => {
     const { idAppointment, status } = req.body;
 

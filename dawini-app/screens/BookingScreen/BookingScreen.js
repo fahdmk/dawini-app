@@ -7,14 +7,13 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { COLORS, SIZES, FONTS } from "../../constants1";
 
 
-export default function BookingScreen() {
-  const { currentUser, id1, role1 } = useContext(GlobalContext);
+export default function BookingScreen(tab) {
   const [appointments, setAppointments] = useState([]);
-
+  const { idtab , role } = tab.route.params;
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        const response = await fetch(`http://192.168.245.229:3000/api/appointments?userId=${id1}&role=${role1}`);
+        const response = await fetch(`http://192.168.245.229:3000/api/appointments?userId=${idtab}&role=${role}`);
         const data = await response.json();
         setAppointments(data);
       } catch (error) {
@@ -23,24 +22,24 @@ export default function BookingScreen() {
     };
     fetchAppointments();
   }, []);
-  console.log("zzzzzzzzzzzzz",role1); 
+  console.log("zzzzzzzzzzzzz",  appointments); 
 
   const renderAppointmentItem = ({ item }) => (
     <Card style={{ ...styles.cardContainer, padding: 10, width: "99%", marginLeft: 2 }}>
       <View style={{ flexDirection: "row", alignItems: "center" }}>
         <View style={styles.imageContainer}>
-          {/* <Image source={{ uri: item.Caretaker.photo_uri }} style={styles.image} />  */}
+          <Image source={{ uri: item.Caretaker.photo_uri }} style={styles.image} />  
         </View>
         <View style={{ padding: SIZES.padding }}>
           <Text style={{ fontSize: 14, color: COLORS.black, fontWeight: "bold" }}>
-      
+          {item.Patient.fullName}
           </Text>
 
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <MaterialIcons name="location-on" size={16} color={COLORS.black} />
+            
             <Text style={{ fontSize: 12, marginVertical: 4, marginLeft: 4 }}>
-
-
+            {item.Date}
+ 
             </Text>
           </View>
         </View>

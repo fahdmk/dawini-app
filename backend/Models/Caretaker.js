@@ -2,7 +2,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../sequelize-config');
 const Review = require('./Review');
-const Appointment = require('./appointment'); // Adjust path as necessary
 
 
 const Caretaker = sequelize.define('Caretaker', {
@@ -86,12 +85,10 @@ Caretaker.hasMany(Review, {
   foreignKey: 'idCare taker', 
   as: 'reviews'
 });
-Caretaker.hasMany(Appointment, {
-  foreignKey: 'IdCareTaker',
-  as: 'appointments'
-});
+
 Review.belongsTo(Caretaker, {
   foreignKey: 'idCare taker',
   as: 'Caretaker' 
 });
+
 module.exports = Caretaker;

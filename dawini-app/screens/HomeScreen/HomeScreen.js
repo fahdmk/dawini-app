@@ -18,7 +18,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { GlobalContext } from "../../context";
 
 
-export default function HomeScreen({ navigation , idtab, role}) {
+export default function HomeScreen({ navigation }) {
   const [location, setLocation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [nurses, setNurses] = useState([]);
@@ -27,7 +27,6 @@ export default function HomeScreen({ navigation , idtab, role}) {
   const [maxDistance, setMaxDistance] = useState(""); // Added state for maximum distance
   const [showSlider, setShowSlider] = useState(false);
   
-  console.log("ccccccc",idtab);
   useEffect(() => {
     
    
@@ -194,7 +193,7 @@ export default function HomeScreen({ navigation , idtab, role}) {
   return (
     <>
       <Header />
-      <View style={{ marginBottom: 12 }}>
+      <View style={{ marginBottom: 2 }}>
         {location && (
           <Text>
             Latitude: {location.coords.latitude}, Longitude: {location.coords.longitude}
@@ -202,7 +201,7 @@ export default function HomeScreen({ navigation , idtab, role}) {
         )}
       </View>
       <View style={{ flex:1, marginBottom: 15, padding: 5 }}>
-        <Text style={{ ...FONTS.h3, marginVertical: SIZES.padding * 2,fontWeight: "bold" }}>
+        <Text style={{ ...FONTS.h3,fontWeight: "bold" }}>
           Nurses
         </Text>
         <View style={{ flexDirection: "row", alignItems: "center", marginLeft: 1 }}>

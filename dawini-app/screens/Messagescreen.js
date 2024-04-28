@@ -55,21 +55,25 @@ if (role === "patient") {
   const fetchCaretaker = async () => {
     
     try {
+      
         const response = await fetch(`http://192.168.245.229:3000/api/caretakers/fullName/${caretakerName}`);
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || 'Failed to fetch');
-        setCaretakerData(data);
+        setCaretakerData(data)
+        // console.log(data)
     } catch (error) {
         console.error('Error fetching caretaker:', error);
     }
 }
+fetchCaretaker();
 // console.log(id);
 
   const confirmDate = () => {
     setDate(tempDate);
     setShowDatePicker(false);
-    console.log(duration);
-    fetchCaretaker();
+    // console.log(duration);
+    
+    // console.log(caretakerData);
 
   };
   const showModal = () => {
@@ -91,7 +95,6 @@ if (role === "patient") {
       function createUniqueId() {
         return Math.random().toString(20).substring(2, 10);
       }
-      
     const appointmentData = {
       idAppointment:createUniqueId(),
       date: date,
@@ -107,7 +110,8 @@ if (role === "patient") {
 
     socket.emit("newAppointment", appointmentData);
     setVisible(false);
-   console.log(appointmentData)}
+  //  console.log(appointmentData)
+  }
 
   
 }
@@ -141,8 +145,8 @@ if (role === "patient") {
       socket.off("updateMessage", handleUpdateMessage);
     };
   }, [allChatMessages]);
-  
-  // console.log("eeeeeeeeeee",currentUser);
+
+// console.log("eeeeeeeeeee",caretakerData);
   function handleAddNewMessage() {
     const timeData = {
       hr:
