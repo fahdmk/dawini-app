@@ -15,9 +15,8 @@ import { Ionicons } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox";
 import Button from "../components/Button";
 import axios from 'axios';
-import DateTimePicker from 'react-native-ui-datepicker';
 import dayjs from 'dayjs';
-
+import DatePicker from 'react-native-modern-datepicker';
 
 const SignupPatient = ({ navigation }) => {
    
@@ -305,11 +304,19 @@ const SignupPatient = ({ navigation }) => {
             </View>
           </TouchableOpacity>
           {showDatePicker && (
-            <DateTimePicker
-            mode="single"
+            <DatePicker
+            options={{
+              backgroundColor: '#fff',
+              textHeaderColor: 'green',
+              textDefaultColor: 'black',
+              selectedTextColor: '#fff',
+              mainColor: 'green',
+              textSecondaryColor: 'grey',
+              borderColor: 'rgba(122, 146, 165, 0.1)',
+            }}
+            mode="calendar"
             date={date}
-            onChange={(params) =>{ setDate(params.date)
-            setbirthday(params.date)}}
+            onSelectedChange={(date) => {setDate(date) ;setbirthday(date)}}
           />
           )}
               

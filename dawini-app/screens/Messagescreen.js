@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState ,useMemo} from "react";
 import {
   ScrollView,
   FlatList,
@@ -18,6 +18,8 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import COLORS from "../constants/colors";
 import DateTimePicker from "react-native-ui-datepicker";
+import DatePicker from 'react-native-modern-datepicker';
+
 
 export default function Messagescreen({ navigation, route }) {
   const [tempDate, setTempDate] = useState(date);
@@ -60,16 +62,17 @@ if (role === "patient") {
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || 'Failed to fetch');
         setCaretakerData(data)
-        // console.log(data)
+    
     } catch (error) {
         console.error('Error fetching caretaker:', error);
     }
 }
-fetchCaretaker();
+
+
 // console.log(id);
 
   const confirmDate = () => {
-    setDate(tempDate);
+    fetchCaretaker();
     setShowDatePicker(false);
     // console.log(duration);
     
@@ -171,7 +174,21 @@ fetchCaretaker();
       Keyboard.dismiss();
     }
   }
-
+  const memoizedDatePicker = useMemo(() => (
+    <DatePicker
+      options={{
+        backgroundColor: '#fff',
+        textHeaderColor: 'green',
+        textDefaultColor: 'black',
+        selectedTextColor: '#fff',
+        mainColor: 'green',
+        textSecondaryColor: 'grey',
+        borderColor: 'rgba(122, 146, 165, 0.1)',
+      }}
+      onSelectedChange={setDate}
+      onSelect={setShowDatePicker(false)}
+    />
+  ), [setDate]);
   return (
     <>
       <View style={styles.wrapper}>
@@ -235,15 +252,7 @@ fetchCaretaker();
                 </View>
               </TouchableOpacity>
 
-              {showDatePicker && (
-                <DateTimePicker
-                  mode="single"
-                  date={tempDate}
-                  onChange={handleDateChange}
-                  timePicker="true"
-                  selectedItemColor="green"
-                />
-              )}
+              {showDatePicker && memoizedDatePicker}
               {showDatePicker && (
                 <TouchableOpacity
                   onPress={confirmDate}
