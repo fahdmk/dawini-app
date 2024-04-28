@@ -15,7 +15,6 @@ import Slider from "@react-native-community/slider";
 import { Ionicons } from '@expo/vector-icons';
 import { TextInput } from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { GlobalContext } from "../../context";
 
 
 export default function HomeScreen({ navigation }) {
@@ -75,7 +74,7 @@ export default function HomeScreen({ navigation }) {
 
   const fetchNurses = async () => {
     try {
-      const response = await fetch("http://192.168.245.229:3000/api/nurses");
+      const response = await fetch("http://192.168.100.25:3000/api/nurses");
       if (!response.ok) {
         throw new Error("Failed to fetch nurses");
       }

@@ -13,7 +13,7 @@ const MainScreen = (tab) => {
  
     const { idtab , role } = tab.route.params;
     
-    // console.log("zzzzzzzaaaaaa",idtab,role)
+     console.log("zzzzzzzaaaaaa",idtab,role)
     return (
       <GlobalState>
       <Tab.Navigator

@@ -46,7 +46,7 @@ sequelize
             appointments = await Appointment.findAll({
                 where: { User_idUser: userId },
                 include: [
-                    { model: User, as: 'Patient', attributes: ['idUser', 'fullName', 'email'] },
+                    { model: User, as: 'Patient', attributes: ['idUser', 'fullName', 'email','photo_uri'] },
                     { model: Caretaker, as: 'Caretaker', attributes: ['idCare taker', 'fullName', 'photo_uri'] } 
                 ]
             });
@@ -54,7 +54,7 @@ sequelize
             appointments = await Appointment.findAll({
                 where: { IdCareTaker: userId },
                 include: [
-                    { model: User, as: 'Patient', attributes: ['idUser', 'fullName', 'email'] },
+                    { model: User, as: 'Patient', attributes: ['idUser', 'fullName', 'email','photo_uri'] },
                     { model: Caretaker, as: 'Caretaker', attributes: ['idCare taker', 'fullName' ,'photo_uri'] }
                 ]
             });
@@ -335,5 +335,5 @@ app.get('/api/reviews/caretaker/:idCareTaker', async (req, res) => {
   }
 });
 app.listen(PORT, () => {
-    console.log(`Server is running on http://192.168.245.229:${PORT}`);
+    console.log(`Server is running on http://192.168.100.25:${PORT}`);
 });

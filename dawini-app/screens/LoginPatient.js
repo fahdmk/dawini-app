@@ -33,10 +33,11 @@ const LoginPatient = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [idtab,setIdtab]=useState("");
-
+  // setIdtab(null);
+  // setRole(null);
   const handleLogin = async () => {
     try {
-      const response = await fetch("http://192.168.245.229:3000/login", {
+      const response = await fetch("http://192.168.100.25:3000/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -56,20 +57,23 @@ const LoginPatient = ({ navigation }) => {
       setRole(user.role);
       setEmail("");
       setPassword(""); 
-  
+      
       const userId = user.role === "patient" ? user.idUser : user["idCare taker"];
       setID(userId);
       setIdtab(userId);
       setCurrentUser(user.fullName)
       console.log("User:", user);
       await AsyncStorage.setItem('user', user.fullName);
-      navigation.navigate("MainScreen", { idtab , role });  
     } catch (error) {
       console.error("Login error:", error.message);
       Alert.alert("Error", "Invalid credentials. Please try again.");
     }
   };
-  
+  useEffect(() => {
+    if (idtab && role) {
+      navigation.navigate("MainScreen", { idtab, role });
+    }
+  }, [idtab, role]);  
   useEffect(() => {
     console.log("Current ID:", idtab ,role);
   }, [idtab]);

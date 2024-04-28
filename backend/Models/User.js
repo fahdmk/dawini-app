@@ -59,6 +59,10 @@ const User = sequelize.define('User', {
   prefrences: {
     type: DataTypes.STRING,
   },
+  photo_uri: { 
+    type: DataTypes.STRING(255), 
+    allowNull: true, 
+  },
 }, {
   tableName: 'User', 
   timestamps: false, 
