@@ -12,10 +12,10 @@ import * as Location from "expo-location";
 import Header from "./Header";
 import { COLORS, SIZES, FONTS } from "../../constants1";
 import Slider from "@react-native-community/slider";
-import { Ionicons } from '@expo/vector-icons';
-import { TextInput } from 'react-native-paper';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-
+import { Ionicons } from "@expo/vector-icons";
+import { TextInput } from "react-native-paper";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import { StarRatingDisplay } from "react-native-star-rating-widget";
 
 export default function HomeScreen({ navigation }) {
   const [location, setLocation] = useState(null);
@@ -25,10 +25,11 @@ export default function HomeScreen({ navigation }) {
   const [filteredDataSource, setFilteredDataSource] = useState([]);
   const [maxDistance, setMaxDistance] = useState(""); // Added state for maximum distance
   const [showSlider, setShowSlider] = useState(false);
-  
+  const [topRatedNurses, setTopRatedNurses] = useState([]);
+  const [seeall, setSeeall] = useState(false);
+
+
   useEffect(() => {
-    
-   
     fetchLocation();
     const locationSubscription = Location.watchPositionAsync(
       {
@@ -74,21 +75,26 @@ export default function HomeScreen({ navigation }) {
 
   const fetchNurses = async () => {
     try {
-      const response = await fetch("http://192.168.100.25:3000/api/nurses");
+      const response = await fetch("http://192.168.201.229:3000/api/nurses");
       if (!response.ok) {
         throw new Error("Failed to fetch nurses");
       }
       const data = await response.json();
-      setNurses(data);
-      setFilteredDataSource(data); 
 
+      // Assuming 'data' is an array of nurses with a 'rating' property
+      const sortedNurses = data.sort((a, b) => b.rating - a.rating); // Sort nurses by descending rating
+      setNurses(sortedNurses);
+      setFilteredDataSource(sortedNurses);
+
+      // Set top 3 nurses
+      setTopRatedNurses(sortedNurses.slice(0, 3));
     } catch (error) {
       console.error("Error fetching nurses:", error);
     } finally {
       setLoading(false);
     }
   };
-// console.log(filteredDataSource)
+  // console.log(filteredDataSource)
   const searchFilterFunction = (text) => {
     const newData = nurses.filter((item) => {
       const fullName = item.fullName ? item.fullName.toUpperCase() : "";
@@ -136,7 +142,62 @@ export default function HomeScreen({ navigation }) {
     setFilteredDataSource(filteredNurses);
   };
 
-  
+  const renderTopNurseItem = ({ item }) => (
+    <TouchableOpacity
+      onPress={() => {
+        if (item && typeof item === "object" && "idCare taker" in item) {
+          navigation.navigate("ProfileView", {
+            "idCare taker": item["idCare taker"],
+            message: "Hello from HomeScreen!",
+          });
+        } else {
+          console.error(
+            "Error: item is undefined or idCare taker property is not present:",
+            item
+          );
+        }
+      }}
+    >
+      <Card
+        style={{
+          ...styles.cardTopContainer,
+          padding: 10,
+          width: "99%",
+          marginLeft: 4,
+        }}
+      >
+        <View style={{ flexDirection: "column", alignItems: "center" }}>
+          <View style={styles.imageContainer}>
+            <Image
+              source={{
+                uri: item.photo_uri,
+              }}
+              style={styles.imageTop}
+            />
+          </View>
+          <View style={{ padding: SIZES.padding }}>
+            <Text
+              style={{ fontSize: 14, color: COLORS.black, fontWeight: "bold" }}
+            >
+              {item.fullName}
+            </Text>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <MaterialIcons
+                name="location-on"
+                size={16}
+                color={COLORS.black}
+              />
+              <Text style={{ fontSize: 12, marginVertical: 4, marginLeft: 4 }}>
+                {item.working_Area}
+              </Text>
+            </View>
+            <StarRatingDisplay rating={item.rating} starSize={25} />
+          </View>
+        </View>
+      </Card>
+    </TouchableOpacity>
+  );
+
   const renderNurseItem = ({ item }) => (
     <TouchableOpacity
       onPress={() => {
@@ -165,7 +226,7 @@ export default function HomeScreen({ navigation }) {
           <View style={styles.imageContainer}>
             <Image
               source={{
-                uri: item.photo_uri
+                uri: item.photo_uri,
               }}
               style={styles.image}
             />
@@ -176,13 +237,17 @@ export default function HomeScreen({ navigation }) {
             >
               {item.fullName}
             </Text>
-  
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <MaterialIcons name="location-on" size={16} color={COLORS.black} />
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <MaterialIcons
+                name="location-on"
+                size={16}
+                color={COLORS.black}
+              />
               <Text style={{ fontSize: 12, marginVertical: 4, marginLeft: 4 }}>
                 {item.working_Area}
               </Text>
             </View>
+            <StarRatingDisplay rating={item.rating} starSize={25} />
           </View>
         </View>
       </Card>
@@ -195,15 +260,17 @@ export default function HomeScreen({ navigation }) {
       <View style={{ marginBottom: 2 }}>
         {location && (
           <Text>
-            Latitude: {location.coords.latitude}, Longitude: {location.coords.longitude}
+            Latitude: {location.coords.latitude}, Longitude:{" "}
+            {location.coords.longitude}
           </Text>
         )}
       </View>
-      <View style={{ flex:1, marginBottom: 15, padding: 5 }}>
-        <Text style={{ ...FONTS.h3,fontWeight: "bold" }}>
-          Nurses
-        </Text>
-        <View style={{ flexDirection: "row", alignItems: "center", marginLeft: 1 }}>
+      
+      <View style={{ flex: 1, marginBottom: 15, padding: 5 }}>
+       
+        <View
+          style={{ flexDirection: "row", alignItems: "center", marginLeft: 1 }}
+        >
           <TextInput
             style={styles.textInputStyle}
             onChangeText={setSearch}
@@ -218,17 +285,19 @@ export default function HomeScreen({ navigation }) {
           </TouchableOpacity>
         </View>
         {showSlider && (
-          <View style={{ flexDirection: "row", alignItems: "center", padding: 10 }}>
+          <View
+            style={{ flexDirection: "row", alignItems: "center", padding: 10 }}
+          >
             <Slider
               style={{ flex: 1 }}
               minimumValue={0}
               maximumValue={20000} // Maximum distance
               step={100} // Step interval
               value={parseInt(maxDistance) || 0}
-              onValueChange={value => setMaxDistance(value.toString())}
+              onValueChange={(value) => setMaxDistance(value.toString())}
               minimumTrackTintColor="green"
               maximumTrackTintColor="grey"
-              thumbTintColor='green'
+              thumbTintColor="green"
             />
             <Text style={{ minWidth: 40, textAlign: "center" }}>
               {`${maxDistance} m`}
@@ -244,10 +313,25 @@ export default function HomeScreen({ navigation }) {
             </TouchableOpacity>
           </View>
         )}
+         <Text style={{ ...FONTS.h3, fontWeight: "bold" }}>Top Rated Nurses</Text>
+        <View style={{ height: 280, marginTop: 20,marginBottom:20 }}>
+          <FlatList
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            data={topRatedNurses}
+            keyExtractor={(item, index) => item["idCare taker"].toString()}
+            renderItem={renderTopNurseItem}
+            contentContainerStyle={{ paddingLeft: 10 }}
+          />
+        </View>
+        <Text style={{ ...FONTS.h3, fontWeight: "bold" }}>All Nurses</Text>
+
         <FlatList
           ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
           data={filteredDataSource}
-          keyExtractor={(item, index) => item["idCare taker"] || index.toString()}
+          keyExtractor={(item, index) =>
+            item["idCare taker"] || index.toString()
+          }
           renderItem={renderNurseItem}
         />
       </View>
@@ -263,18 +347,35 @@ const styles = StyleSheet.create({
     width: "99%",
     marginLeft: 2,
     borderWidth: 1,
-    borderColor: "grey", 
+    borderColor: "grey",
+    borderRadius: 10,
+  },
+  cardTopContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 10,
+    width: "99%",
+    marginLeft: 10,
+    borderWidth: 1,
+    borderColor: "grey",
     borderRadius: 10,
   },
   imageContainer: {
     borderRadius: 8,
-    overflow: "hidden", 
+    overflow: "hidden",
   },
   image: {
     height: 70,
     width: 70,
-    borderWidth: 1, 
-    borderColor: '#000',
+    borderWidth: 1,
+    borderColor: "#000",
+    borderRadius: 10,
+  },
+  imageTop: {
+    height: 150,
+    width: 150,
+    borderWidth: 1,
+    borderColor: "#000",
     borderRadius: 10,
   },
   container: {
@@ -284,9 +385,9 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   textInputStyle: {
-    width:"85%",
+    width: "85%",
     height: 40,
-  
+
     paddingLeft: 10,
     margin: 10,
   },

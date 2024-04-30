@@ -296,7 +296,51 @@ app.get('/api/users', async (req, res) => {
   const users = await User.findAll();
   res.json(users);
 });
+app.get('/api/caretakers/:idCareTaker', async (req, res) => {
+  const { idCareTaker } = req.params;
 
+  try {
+      const caretaker = await Caretaker.findByPk(idCareTaker, {
+          include: [{
+              model: Review,
+              as: 'reviews',
+              attributes: []
+          }]
+      });
+
+      if (!caretaker) {
+          return res.status(404).json({ error: 'Caretaker not found' });
+      }
+
+      // Calculate the average rating
+      const averageRating = await Review.findAll({
+          where: { "idCare taker": idCareTaker },
+          attributes: [[sequelize.fn('AVG', sequelize.col('numberOfStars')), 'avgRating']],
+          raw: true,
+      });
+
+      caretaker.dataValues.rating = averageRating[0].avgRating || 0; // Add average rating to caretaker data
+
+      res.json(caretaker);
+  } catch (error) {
+      console.error('Error fetching caretaker information:', error);
+      res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+async function updateCaretakerRating(idCaretaker) {
+  const aggregate = await Review.findAll({
+      where: { "idCare taker": idCaretaker },
+      attributes: [[sequelize.fn('AVG', sequelize.col('numberOfStars')), 'avgRating']],
+      raw: true,
+  });
+
+  await Caretaker.update(
+      { rating: aggregate[0].avgRating },
+      { where: {  "idCare taker": idCaretaker } }
+  );
+}
 app.post('/api/users', async (req, res) => {
   const { username, email } = req.body;
   try {
@@ -308,8 +352,26 @@ app.post('/api/users', async (req, res) => {
 });
 
 app.get('/api/nurses', async (req, res) => {
-  const nurses = await Caretaker.findAll();
-  res.json(nurses);
+  try {
+      // Fetch all caretakers
+      const nurses = await Caretaker.findAll();
+
+      // Update rating for each nurse
+      const updateRatingsPromises = nurses.map(nurse =>
+          updateCaretakerRating(nurse["idCare taker"]).then(() =>
+              Caretaker.findByPk(nurse["idCare taker"])
+          )
+      );
+
+      // Wait for all ratings to be updated
+      const updatedNurses = await Promise.all(updateRatingsPromises);
+
+      // Respond with updated data
+      res.json(updatedNurses);
+  } catch (error) {
+      console.error('Error fetching and updating nurses:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 app.get('/api/nurses/:idCareTaker', async (req, res) => {
   try {
@@ -342,7 +404,7 @@ app.post('/api/reviews', async (req, res) => {
       idUser,
       reviewDate: new Date() // This will default to NOW() as specified in the model but can be explicitly set here
     });
-
+    await updateCaretakerRating(idCaretaker);
     // Fetch the newly created review with associated Caretaker and User details
     const detailedReview = await Review.findOne({
       where: { idReview: newReview.idReview },
@@ -350,12 +412,12 @@ app.post('/api/reviews', async (req, res) => {
         {
           model: Caretaker,
           as: 'Caretaker',
-          attributes: ['username', 'full Name', 'email', 'photo_uri'] // Include relevant caretaker details
+          attributes: ['username', 'full Name', 'email', 'photo_uri'] 
         },
         {
           model: User,
           as: 'User',
-          attributes: ['username', 'fullName', 'email'] // Include relevant user details who wrote the review
+          attributes: ['username', 'fullName', 'email'] 
         }
       ]
     });
@@ -404,5 +466,5 @@ app.get('/api/reviews/caretaker/:idCareTaker', async (req, res) => {
   }
 });
 app.listen(PORT, () => {
-    console.log(`Server is running on http://192.168.100.25:${PORT}`);
+    console.log(`Server is running on http://192.168.201.229:${PORT}`);
 });

@@ -77,6 +77,10 @@ const Caretaker = sequelize.define('Caretaker', {
     type: DataTypes.STRING(255), // Set an appropriate length for URIs
     allowNull: true, // Set to false if you require every caretaker to have a photo URI
   },
+  rating: { 
+    type: DataTypes.DECIMAL(5, 2),
+    allowNull: true,
+  }
 }, {
   tableName: 'caretaker', // Specify the actual table name
   timestamps: false, // Set to true if you have createdAt and updatedAt fields

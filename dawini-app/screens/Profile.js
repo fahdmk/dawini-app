@@ -15,7 +15,7 @@ const ProfileView = (route) => {
   const { id, currentUser, setAllConversations, setCurrentUser } =
     useContext(GlobalContext);
   const [modalVisible, setModalVisible] = useState(false);
-  const [starRating, setStarRating] = useState(3.5);
+  const [starRating, setStarRating] = useState(3);
   const [reviewText, setReviewText] = useState("");
   const onStarRatingPress = (rating) => {
     setStarRating(rating);
@@ -69,11 +69,14 @@ const ProfileView = (route) => {
   const selectedNurse = route.route.params["idCare taker"];
   const [nurse, setNurse] = useState(null);
   const [reviews, setReviews] = useState([]);
-  useEffect(() => {
+  const [refresh, setRefresh] = useState([]);
+
+
+    useEffect(() => {
     const fetchNurse = async () => {
       try {
         const response = await fetch(
-          `http://192.168.100.25:3000/api/nurses/${selectedNurse}`
+          `http://192.168.201.229:3000/api/nurses/${selectedNurse}`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch nurse information");
@@ -88,15 +91,17 @@ const ProfileView = (route) => {
     const fetchReviews = async () => {
       try {
         const response = await fetch(
-          `http://192.168.100.25:3000/api/reviews/caretaker/${selectedNurse}`
+          `http://192.168.201.229:3000/api/reviews/caretaker/${selectedNurse}`
         );
         if (!response.ok) {
           console.log("no reviews");
+          setReviews([]);
         }
         const data = await response.json();
         setReviews(data);
       } catch (error) {
         console.error(error);
+        setReviews([]);
       }
     };
 
@@ -112,7 +117,7 @@ const ProfileView = (route) => {
     };
     console.log(reviewData);
     try {
-      const response = await fetch("http://192.168.100.25:3000/api/reviews", {
+      const response = await fetch("http://192.168.201.229:3000/api/reviews", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -130,7 +135,6 @@ const ProfileView = (route) => {
   const handleSendMessage = () => {
     // Emit socket event to start a conversation with the nurse
     socket.emit("startConversation", [currentUser, nurse.fullName]);
-
     socket.on("conversationList", (conversationDetails) => {
       const conversationId = conversationDetails.find(
         (conv) => conv.id === [currentUser, nurse.fullName].sort().join("-")
@@ -228,8 +232,7 @@ const ProfileView = (route) => {
                 flexDirection: "column",
                 justifyContent: "center",
               }}
-            >
-              
+            > 
               <Text style={{ color: "white", fontSize: 16 ,margin:10}}>
                 How was your experience?
               </Text>
