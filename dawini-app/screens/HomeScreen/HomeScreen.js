@@ -262,19 +262,19 @@ const styles = StyleSheet.create({
     padding: 10,
     width: "99%",
     marginLeft: 2,
-    borderWidth: 1, // Sets the border width
-    borderColor: "grey", // Sets the border color, change as needed
+    borderWidth: 1,
+    borderColor: "grey", 
     borderRadius: 10,
   },
   imageContainer: {
-    borderRadius: 8, // Adjust border radius as needed
-    overflow: "hidden", // Clip the image to the border radius
+    borderRadius: 8,
+    overflow: "hidden", 
   },
   image: {
     height: 70,
     width: 70,
-    borderWidth: 1, // Sets the border width
-    borderColor: '#000', // Sets the border color, change as needed
+    borderWidth: 1, 
+    borderColor: '#000',
     borderRadius: 10,
   },
   container: {

@@ -17,7 +17,6 @@ import { socket } from "../utils/index";
 import { MaterialIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import COLORS from "../constants/colors";
-import DateTimePicker from "react-native-ui-datepicker";
 import DatePicker from 'react-native-modern-datepicker';
 
 
@@ -74,10 +73,7 @@ if (role === "patient") {
   const confirmDate = () => {
     fetchCaretaker();
     setShowDatePicker(false);
-    // console.log(duration);
-    
-    // console.log(caretakerData);
-
+ 
   };
   const showModal = () => {
     setVisible(true);
@@ -106,7 +102,7 @@ if (role === "patient") {
       conversationId: currentGroupID,
       timeData: timeData,
       status: "pending",
-      price: "",
+      price:"",
       senderid: id,
       caretaker:caretakerData["idCare taker"]
     };
@@ -127,7 +123,6 @@ if (role === "patient") {
       });
     };
 
-    
     socket.emit("findGroup", currentGroupID);
 
     const handleFoundGroup = (allChats) => {
@@ -149,7 +144,7 @@ if (role === "patient") {
     };
   }, [allChatMessages]);
 
-// console.log("eeeeeeeeeee",caretakerData);
+
   function handleAddNewMessage() {
     const timeData = {
       hr:
@@ -174,6 +169,7 @@ if (role === "patient") {
       Keyboard.dismiss();
     }
   }
+
   const memoizedDatePicker = useMemo(() => (
     <DatePicker
       options={{
@@ -187,6 +183,7 @@ if (role === "patient") {
       }}
       onSelectedChange={setDate}
       onSelect={setShowDatePicker(false)}
+      
     />
   ), [setDate]);
   return (
@@ -210,7 +207,9 @@ if (role === "patient") {
                   currentGroupID={currentGroupID}
                 />
               )}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item) => {
+                return item.id || item.idAppointment;
+              }}
               extraData={allChatMessages.length}
               onContentSizeChange={() =>
                 flatListRef.current.scrollToEnd({ animated: false })

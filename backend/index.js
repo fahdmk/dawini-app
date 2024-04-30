@@ -32,6 +32,27 @@ sequelize
   .catch((error) => {
     console.error('Unable to connect to the database: ', error);
   });
+  app.post('/api/appointments/update-price', async (req, res) => {
+    const { idAppointment, Price } = req.body;
+
+    if (!idAppointment || Price === undefined) {
+        return res.status(400).json({ error: 'Missing required fields: idAppointment and Price' });
+    }
+
+    try {
+        const appointment = await Appointment.findByPk(idAppointment);
+        if (!appointment) {
+            return res.status(404).json({ error: 'Appointment not found' });
+        }
+
+        appointment.Price = Price;
+        await appointment.save();
+        res.json({ message: 'Appointment price updated successfully', appointment });
+    } catch (error) {
+        console.error('Error updating appointment price:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
   app.get('/api/appointments', async (req, res) => {
     try {
         const { userId, role } = req.query;
@@ -176,7 +197,7 @@ app.get('/api/caretakers/fullName/:fullName', async (req, res) => {
 app.post('/api/new-user', async (req, res) => {
   try {
     // Destructure user data from request body
-    const {
+    const {     
       username,
       role,
       fullName,
@@ -303,6 +324,54 @@ app.get('/api/nurses/:idCareTaker', async (req, res) => {
     res.status(500).json({ error: 'Error fetching nurse information' });
   }
 });
+app.post('/api/reviews', async (req, res) => {
+  try {
+    // Extracting data from the request body
+    const { numberOfStars, description, idCaretaker, idUser } = req.body;
+
+    // Validate the input
+    if (!numberOfStars || !idCaretaker || !idUser) {
+      return res.status(400).json({ error: 'Missing required fields: numberOfStars, idCaretaker, and idUser.' });
+    }
+
+    // Create a new review using the Review model
+    const newReview = await Review.create({
+      numberOfStars,
+      description,
+      "idCare taker": idCaretaker, // Make sure to match the exact field name from the model
+      idUser,
+      reviewDate: new Date() // This will default to NOW() as specified in the model but can be explicitly set here
+    });
+
+    // Fetch the newly created review with associated Caretaker and User details
+    const detailedReview = await Review.findOne({
+      where: { idReview: newReview.idReview },
+      include: [
+        {
+          model: Caretaker,
+          as: 'Caretaker',
+          attributes: ['username', 'full Name', 'email', 'photo_uri'] // Include relevant caretaker details
+        },
+        {
+          model: User,
+          as: 'User',
+          attributes: ['username', 'fullName', 'email'] // Include relevant user details who wrote the review
+        }
+      ]
+    });
+
+    if (!detailedReview) {
+      return res.status(404).json({ error: 'Review created but not found' });
+    }
+
+    // Send a response back with the created review including the detailed info
+    res.status(201).json(detailedReview);
+  } catch (error) {
+    console.error('Failed to create review:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 app.get('/api/reviews/caretaker/:idCareTaker', async (req, res) => {
   try {
     const { idCareTaker } = req.params;
