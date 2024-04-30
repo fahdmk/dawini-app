@@ -76,7 +76,7 @@ const ProfileView = (route) => {
     const fetchNurse = async () => {
       try {
         const response = await fetch(
-          `http://192.168.201.229:3000/api/nurses/${selectedNurse}`
+          `http://192.168.100.25:3000/api/nurses/${selectedNurse}`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch nurse information");
@@ -91,7 +91,7 @@ const ProfileView = (route) => {
     const fetchReviews = async () => {
       try {
         const response = await fetch(
-          `http://192.168.201.229:3000/api/reviews/caretaker/${selectedNurse}`
+          `http://192.168.100.25:3000/api/reviews/caretaker/${selectedNurse}`
         );
         if (!response.ok) {
           console.log("no reviews");
@@ -117,7 +117,7 @@ const ProfileView = (route) => {
     };
     console.log(reviewData);
     try {
-      const response = await fetch("http://192.168.201.229:3000/api/reviews", {
+      const response = await fetch("http://192.168.100.25:3000/api/reviews", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -75,18 +75,16 @@ export default function HomeScreen({ navigation }) {
 
   const fetchNurses = async () => {
     try {
-      const response = await fetch("http://192.168.201.229:3000/api/nurses");
+      const response = await fetch("http://192.168.100.25:3000/api/nurses");
       if (!response.ok) {
         throw new Error("Failed to fetch nurses");
       }
       const data = await response.json();
 
-      // Assuming 'data' is an array of nurses with a 'rating' property
       const sortedNurses = data.sort((a, b) => b.rating - a.rating); // Sort nurses by descending rating
       setNurses(sortedNurses);
       setFilteredDataSource(sortedNurses);
 
-      // Set top 3 nurses
       setTopRatedNurses(sortedNurses.slice(0, 3));
     } catch (error) {
       console.error("Error fetching nurses:", error);
@@ -99,7 +97,7 @@ export default function HomeScreen({ navigation }) {
     const newData = nurses.filter((item) => {
       const fullName = item.fullName ? item.fullName.toUpperCase() : "";
       const searchText = text.toUpperCase();
-      return fullName.includes(searchText); // Use includes() for simple string matching
+      return fullName.includes(searchText); 
     });
     setFilteredDataSource(newData);
     setSearch(text);
@@ -266,7 +264,7 @@ export default function HomeScreen({ navigation }) {
         )}
       </View>
       
-      <View style={{ flex: 1, marginBottom: 15, padding: 5 }}>
+      <View style={{ flex: 1, marginBottom: 0, padding: 4 }}>
        
         <View
           style={{ flexDirection: "row", alignItems: "center", marginLeft: 1 }}
@@ -279,7 +277,8 @@ export default function HomeScreen({ navigation }) {
             mode="outlined"
             outlineColor="green"
             activeOutlineColor="green"
-          />
+            onFocus={() => setSeeall(true)}     
+            />
           <TouchableOpacity onPress={() => setShowSlider(!showSlider)}>
             <Ionicons name="options-outline" size={24} color="black" />
           </TouchableOpacity>
@@ -313,7 +312,9 @@ export default function HomeScreen({ navigation }) {
             </TouchableOpacity>
           </View>
         )}
+        {!seeall && <>
          <Text style={{ ...FONTS.h3, fontWeight: "bold" }}>Top Rated Nurses</Text>
+       
         <View style={{ height: 280, marginTop: 20,marginBottom:20 }}>
           <FlatList
             horizontal
@@ -324,8 +325,24 @@ export default function HomeScreen({ navigation }) {
             contentContainerStyle={{ paddingLeft: 10 }}
           />
         </View>
-        <Text style={{ ...FONTS.h3, fontWeight: "bold" }}>All Nurses</Text>
-
+        </>}
+       
+       <View style={{flexDirection:"row",width:"100%",justifyContent:"space-between"}}>
+        <Text style={{ ...FONTS.h3, fontWeight: "bold",
+              justifyContent: "center" }}>All Nurses</Text>
+        <TouchableOpacity
+            style={{margin: 4,
+              padding: 6,
+              justifyContent: "",
+              borderWidth: 2,
+              borderColor: "black",
+              borderRadius: 10,
+            alignSelf:"flex-end"}}
+            onPress={() => setSeeall(true)}
+          >
+            <Text style={styles.buttonText}>See All nurses</Text>
+          </TouchableOpacity>
+          </View>
         <FlatList
           ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
           data={filteredDataSource}
@@ -334,6 +351,7 @@ export default function HomeScreen({ navigation }) {
           }
           renderItem={renderNurseItem}
         />
+
       </View>
     </>
   );
@@ -396,5 +414,11 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     marginLeft: 5,
+  },
+  button: {
+    backgroundColor: "green",
+    borderRadius: 5,
+    padding: 10,
+    marginHorizontal: 20,
   },
 });

@@ -1,7 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import React from 'react';
 import GlobalState from "./context";
 import LoginPatient from "./screens/LoginPatient";
@@ -16,6 +16,7 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   
   return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
     <GlobalState> 
       <NavigationContainer>
         <Stack.Navigator initialRouteName='LoginPatient'>
@@ -59,6 +60,7 @@ export default function App() {
       </NavigationContainer>
 
     </GlobalState>
+    </GestureHandlerRootView>
   );
 }
 

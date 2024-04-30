@@ -5,6 +5,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { GlobalContext } from "../context";
 import Chatcomponent from "../components/Chatcomponent";
 import Header from "./HomeScreen/Header";
+import { COLORS, SIZES, FONTS } from "../constants1";
+import { ScrollView } from "react-native-gesture-handler";
 
 export default function Chatscreen({ navigation }) {
   const {
@@ -40,7 +42,8 @@ export default function Chatscreen({ navigation }) {
           });
           setAllConversations(modifiedConversations);
         });
-  
+       
+     
         // Emit initial request
         socket.emit("getAllConversations");
         
@@ -57,29 +60,31 @@ export default function Chatscreen({ navigation }) {
       socket.off("conversationList");
       socket.off("latestMessageUpdate");
     };
-  }, []); // This ensures the effect runs only once on component mount
+  }, []); 
   
  
-// console.log(role,id);
+console.log(allConversations);
 
   const filteredConversations = allConversations.filter(conversation =>
     conversation.participants.includes(currentUser)
     
   );
-
+console.log(filteredConversations)
   return (
+    <ScrollView>
     <View style={styles.mainWrapper}>
      <Header />
     
+     <Text style={{ fontSize:24, fontWeight: "bold",
+              justifyContent: "center",alignSelf:"center" }}>Chats</Text>
       <View style={styles.listContainer}>
         {filteredConversations.map((conversation, index) => (
           <Chatcomponent key={index} item={conversation} currentUser={currentUser} />
         ))}
       </View>
-     
-     
+      
     </View>
-  );
+    </ScrollView> );
 }
 
 const styles = StyleSheet.create({

@@ -37,7 +37,7 @@ const LoginPatient = ({ navigation }) => {
   // setRole(null);
   const handleLogin = async () => {
     try {
-      const response = await fetch("http://192.168.201.229:3000/login", {
+      const response = await fetch("http://192.168.100.25:3000/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

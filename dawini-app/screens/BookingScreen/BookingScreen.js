@@ -65,7 +65,7 @@ export default function BookingScreen(tab) {
   const fetchAppointments = async () => {
     try {
       const response = await fetch(
-        `http://192.168.201.229:3000/api/appointments?userId=${idtab}&role=${role}`
+        `http://192.168.100.25:3000/api/appointments?userId=${idtab}&role=${role}`
       );
       const data = await response.json();
       setAppointments(data);
@@ -97,7 +97,7 @@ export default function BookingScreen(tab) {
       return;
     }
     try {
-      const response = await fetch('http://192.168.201.229:3000/api/appointments/update-price', {
+      const response = await fetch('http://192.168.100.25:3000/api/appointments/update-price', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

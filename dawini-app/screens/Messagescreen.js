@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useRef, useState ,useMemo} from "react";
 import {
-  ScrollView,
   FlatList,
   Keyboard,
   Pressable,
@@ -57,7 +56,7 @@ if (role === "patient") {
     
     try {
       
-        const response = await fetch(`http://192.168.201.229:3000/api/caretakers/fullName/${caretakerName}`);
+        const response = await fetch(`http://192.168.100.25:3000/api/caretakers/fullName/${caretakerName}`);
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || 'Failed to fetch');
         setCaretakerData(data)
