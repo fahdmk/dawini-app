@@ -27,6 +27,7 @@ const MainScreen = (tab) => {
         },
       }}
       > 
+       {role=="patient"&&
         <Tab.Screen
           name='Home'
           component={HomeScreen}
@@ -39,6 +40,7 @@ const MainScreen = (tab) => {
             )
           }}
         />
+      }
         <Tab.Screen
           name='Booking'
           component={BookingScreen}
@@ -63,6 +65,7 @@ const MainScreen = (tab) => {
         <Tab.Screen
           name='Profile'
           component={ProfileScreen}
+          initialParams={{ idtab, role }} 
           options={{
             tabBarLabel: ({ color }) => (
               <Text style={{ color: color, fontSize: 12 }}>Profile</Text>

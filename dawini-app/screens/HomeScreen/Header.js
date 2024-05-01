@@ -54,8 +54,8 @@ const styles = StyleSheet.create({
     }
 ,
 logoContainer: {
-    width: '100%', // Take full width of the parent container
-    alignItems: 'center', // Center items horizontally
+    width: '100%', 
+    alignItems: 'center', 
   },
     logo: {
         width: 200,

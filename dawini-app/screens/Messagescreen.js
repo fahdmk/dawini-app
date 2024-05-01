@@ -288,7 +288,7 @@ if (role === "patient") {
                 />
               </View>
             </View>
-
+          
             <TouchableOpacity
               onPress={handleBookAppointment}
               style={styles.confirmButton1}
@@ -297,9 +297,11 @@ if (role === "patient") {
                 Book This appointment
               </Text>
             </TouchableOpacity>
+
           </View>
         )}
         <View style={styles.messageInputContainer}>
+        {role=="patient" &&
           <Pressable onPress={showModal}>
             <AntDesign
               name="book"
@@ -308,6 +310,7 @@ if (role === "patient") {
               style={{ marginTop: 5, marginRight: 2 }}
             />
           </Pressable>
+}
           <TextInput
             style={styles.messageInput}
             value={currentChatMessage}
