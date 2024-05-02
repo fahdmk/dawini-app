@@ -16,6 +16,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { TextInput } from "react-native-paper";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { StarRatingDisplay } from "react-native-star-rating-widget";
+import { useFocusEffect } from '@react-navigation/native';
+
 
 export default function HomeScreen({ navigation }) {
   const [location, setLocation] = useState(null);
@@ -49,6 +51,15 @@ export default function HomeScreen({ navigation }) {
       }
     };
   }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchNurses();
+      return () => {
+        // Optionally: Any cleanup actions
+      };
+    }, [])
+  );
+  
   useEffect(() => {
     fetchLocation();
     fetchNurses();

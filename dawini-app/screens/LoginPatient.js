@@ -28,13 +28,12 @@ const LoginPatient = ({ navigation }) => {
     setID
 
   } = useContext(GlobalContext);
-  const [isPasswordShown, setIsPasswordShown] = useState(false);
+  const [isPasswordShown, setIsPasswordShown] = useState(true);
   const [isChecked, setIsChecked] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [idtab,setIdtab]=useState("");
-  // setIdtab(null);
-  // setRole(null);
+ 
   const handleLogin = async () => {
     try {
       const response = await fetch("http://192.168.100.25:3000/login", {
@@ -47,7 +46,6 @@ const LoginPatient = ({ navigation }) => {
           password,
         }),
       });
-  
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || "Login failed");
@@ -73,7 +71,7 @@ const LoginPatient = ({ navigation }) => {
     if (idtab && role) {
       navigation.navigate("MainScreen", { idtab, role });
     }
-  }, [idtab, role]);  
+  }, [idtab,role,]);  
   useEffect(() => {
     console.log("Current ID:", idtab ,role);
   }, [idtab]);
@@ -198,6 +196,7 @@ const LoginPatient = ({ navigation }) => {
             style={{
               marginTop: 18,
               marginBottom: 4,
+              backgroundColor:"green"
             }}
           />
 

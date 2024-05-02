@@ -182,6 +182,7 @@ if (role === "patient") {
       }}
       onSelectedChange={setDate}
       onSelect={setShowDatePicker(false)}
+      selected={new Date().toISOString().split('T')[0]}
       
     />
   ), [setDate]);

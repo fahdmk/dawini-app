@@ -10,7 +10,6 @@ import StarRating from "react-native-star-rating-widget";
 import TextArea from "@freakycoder/react-native-text-area";
 import { StarRatingDisplay } from "react-native-star-rating-widget";
 import { AntDesign } from '@expo/vector-icons';
-
 const ProfileView = (route) => {
   const { id, currentUser, setAllConversations, setCurrentUser } =
     useContext(GlobalContext);
@@ -69,69 +68,70 @@ const ProfileView = (route) => {
   const selectedNurse = route.route.params["idCare taker"];
   const [nurse, setNurse] = useState(null);
   const [reviews, setReviews] = useState([]);
-  const [refresh, setRefresh] = useState([]);
 
 
     useEffect(() => {
-    const fetchNurse = async () => {
-      try {
-        const response = await fetch(
-          `http://192.168.100.25:3000/api/nurses/${selectedNurse}`
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch nurse information");
-        }
-        const data = await response.json();
-        setNurse(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    const fetchReviews = async () => {
-      try {
-        const response = await fetch(
-          `http://192.168.100.25:3000/api/reviews/caretaker/${selectedNurse}`
-        );
-        if (!response.ok) {
-          console.log("no reviews");
-          setReviews([]);
-        }
-        const data = await response.json();
-        setReviews(data);
-      } catch (error) {
-        console.error(error);
-        setReviews([]);
-      }
-    };
-
+   
+console.log(nurse)
+    
     fetchNurse();
     fetchReviews();
   }, []);
+  const fetchNurse = async () => {
+    try {
+      const response = await fetch(
+        `http://192.168.100.25:3000/api/nurses/${selectedNurse}`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch nurse information");
+      }
+      const data = await response.json();
+      setNurse(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const fetchReviews = async () => {
+    try {
+      const response = await fetch(
+        `http://192.168.100.25:3000/api/reviews/caretaker/${selectedNurse}`
+      );
+      if (!response.ok) {
+        console.log("no reviews");
+        setReviews([]);
+      }
+      const data = await response.json();
+      setReviews(data);
+    } catch (error) {
+      console.error(error);
+      setReviews([]);
+    }
+  };
+
   const handleSubmitReview = async () => {
-    const reviewData = {
-      idCaretaker: selectedNurse,
-      idUser: id,
-      numberOfStars: starRating,
-      description: reviewText,
-    };
-    console.log(reviewData);
     try {
       const response = await fetch("http://192.168.100.25:3000/api/reviews", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(reviewData),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          idCaretaker: selectedNurse,
+          idUser: id,
+          numberOfStars: starRating,
+          description: reviewText,
+        }),
       });
       if (!response.ok) throw new Error("Failed to submit review");
       const newReview = await response.json();
-      setReviews((prev) => [...prev, newReview]);
+  
+      setReviews(newReview||await response.json());
       setModalVisible(false);
     } catch (error) {
       console.error("Error submitting review:", error);
     }
+    fetchNurse();
+    fetchReviews();
   };
+  
   const handleSendMessage = () => {
     // Emit socket event to start a conversation with the nurse
     socket.emit("startConversation", [currentUser, nurse.fullName]);
@@ -169,6 +169,7 @@ const ProfileView = (route) => {
               }}
             />
             <Text style={styles.nameText}>{nurse && nurse.fullName}</Text>
+             <StarRatingDisplay rating={nurse && nurse.rating} />
           </View>
         </View>
 
@@ -199,7 +200,7 @@ const ProfileView = (route) => {
             </Card>
           ))
         ) : (
-          <Text>No reviews available.</Text>
+          <Text>This nurse has no reviews Yet.</Text>
         )}
         <Modal isVisible={modalVisible} >
        <View style={{flex:1}}>
