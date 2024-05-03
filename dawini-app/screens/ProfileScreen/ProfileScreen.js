@@ -134,9 +134,9 @@ const ProfileScreen = (tab) => {
               <Text style={styles.nameText}>Email</Text>
               <Text >{user && user.email}</Text>
               <Text style={styles.nameText}>description</Text>
-              <Text >{user.description||"no description"}</Text>
+              <Text >{user && user.description||"no description"}</Text>
               <Text style={styles.nameText}>Phone</Text>
-              <Text >{user.phone||"no description"}</Text>
+              <Text >{user &&user.phone||"no description"}</Text>
               </View>
             )}
         
