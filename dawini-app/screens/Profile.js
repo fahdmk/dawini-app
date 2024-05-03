@@ -23,46 +23,7 @@ const ProfileView = (route) => {
   const onReviewTextChange = (text) => {
     setReviewText(text);
   };
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const storedUser = await AsyncStorage.getItem("user");
-        setCurrentUser(storedUser || "DefaultUser");
-        socket.on(
-          "latestMessageUpdate",
-          ({ conversationId, latestMessage }) => {
-            setAllConversations((prevConversations) =>
-              prevConversations.map((conv) =>
-                conv.id === conversationId ? { ...conv, latestMessage } : conv
-              )
-            );
-          }
-        );
-        socket.on("conversationList", (conversations) => {
-          const modifiedConversations = conversations.map((conversation) => {
-            const participants = conversation.id.split("-");
-            return {
-              id: conversation.id,
-              participants: participants,
-              latestMessage: conversation.latestMessage,
-            };
-          });
-          setAllConversations(modifiedConversations);
-        });
-
-        socket.emit("getAllConversations");
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
-    };
-
-    fetchData();
-
-    return () => {
-      socket.off("conversationList");
-      socket.off("latestMessageUpdate");
-    };
-  }, []);
+ 
 
   const navigation = useNavigation();
   const selectedNurse = route.route.params["idCare taker"];

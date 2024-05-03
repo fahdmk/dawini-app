@@ -124,7 +124,7 @@ export default function BookingScreen(tab) {
     return (
       <>
         <Modal
-          animationType="slide"
+          animationType="false"
           transparent={true}
           visible={isModalVisible}
           onRequestClose={() => {

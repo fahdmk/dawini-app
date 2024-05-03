@@ -386,6 +386,19 @@ app.get('/api/nurses/:idCareTaker', async (req, res) => {
     res.status(500).json({ error: 'Error fetching nurse information' });
   }
 });
+app.get('/api/users/:idUser', async (req, res) => {
+  try {
+    const { idUser } = req.params;
+    const user = await User.findByPk(idUser);
+    if (!user) {
+      return res.status(404).json({ error: 'user not found' });
+    }
+    res.json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error fetching user information' });
+  }
+});
 app.post('/api/reviews', async (req, res) => {
   try {
     // Extracting data from the request body

@@ -69,11 +69,11 @@ const User = sequelize.define('User', {
 });
 User.hasMany(Review, {
   foreignKey: 'idUser',
-  as: 'Reviews' // Alias for easier identification
+  as: 'Reviews' 
 });
 Review.belongsTo(User, {
   foreignKey: 'idUser',
-  as: 'User' // Alias for easier identification
+  as: 'User' 
 });
 
 
