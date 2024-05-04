@@ -33,7 +33,7 @@ const ProfileView = (route) => {
 
     useEffect(() => {
    
-console.log(nurse)
+
     
     fetchNurse();
     fetchReviews();
@@ -41,7 +41,7 @@ console.log(nurse)
   const fetchNurse = async () => {
     try {
       const response = await fetch(
-        `http://192.168.100.25:3000/api/nurses/${selectedNurse}`
+        `http://192.168.63.229:3000/api/nurses/${selectedNurse}`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch nurse information");
@@ -55,7 +55,7 @@ console.log(nurse)
   const fetchReviews = async () => {
     try {
       const response = await fetch(
-        `http://192.168.100.25:3000/api/reviews/caretaker/${selectedNurse}`
+        `http://192.168.63.229:3000/api/reviews/caretaker/${selectedNurse}`
       );
       if (!response.ok) {
         console.log("no reviews");
@@ -71,7 +71,7 @@ console.log(nurse)
 
   const handleSubmitReview = async () => {
     try {
-      const response = await fetch("http://192.168.100.25:3000/api/reviews", {
+      const response = await fetch("http://192.168.63.229:3000/api/reviews", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

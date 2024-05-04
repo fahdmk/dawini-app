@@ -86,7 +86,7 @@ export default function HomeScreen({ navigation }) {
 
   const fetchNurses = async () => {
     try {
-      const response = await fetch("http://192.168.100.25:3000/api/nurses");
+      const response = await fetch("http://192.168.63.229:3000/api/nurses");
       if (!response.ok) {
         throw new Error("Failed to fetch nurses");
       }

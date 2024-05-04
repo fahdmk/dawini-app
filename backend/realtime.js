@@ -4,7 +4,7 @@ const http = require("http").Server(app);
 const cors = require("cors");
 const socketIO = require("socket.io")(http, {
   cors: {
-    origin: "http://192.168.100.25:3000/",
+    origin: "http://192.168.63.229:3000/",
   },
 });
 const axios = require('axios');
@@ -44,7 +44,7 @@ socketIO.on("connection", (socket) => {
     if (conversations[conversationId]) {
         conversations[conversationId].messages.push(messageWithAppointment);
         socketIO.to(conversationId).emit("newMessage", messageWithAppointment);
-        const apiUrl = 'http://192.168.100.25:3000/api/appointments'; // Adjust the port if different
+        const apiUrl = 'http://192.168.63.229:3000/api/appointments'; // Adjust the port if different
         axios.post(apiUrl, {
           idAppointment:idAppointment,
           Price: price,
@@ -84,7 +84,9 @@ socket.on("appointmentAction", ({ action, idAppointment, conversationId }) => {
         messages: [],
         latestMessage: null,
       };
+     
     }
+
     socket.join(conversationId);
     const conversationDetails = Object.values(conversations).map(conv => ({
       id: conv.id,
@@ -163,7 +165,7 @@ function handleAppointmentAction(action, idAppointment, conversationId, socket) 
   });
   
   // Update appointment status in MySQL database
-  const apiUrl = 'http://192.168.100.25:3000/api/appointments/update-status'; // Adjust the API endpoint
+  const apiUrl = 'http://192.168.63.229:3000/api/appointments/update-status'; // Adjust the API endpoint
   axios.post(apiUrl, {
     idAppointment : id,
     status: newStatus

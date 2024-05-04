@@ -1,5 +1,5 @@
-import React, {  useContext, useEffect } from "react";
-import {  StyleSheet, Text, View } from "react-native";
+import React, { useContext, useEffect, useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
 import { socket } from "../utils";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { GlobalContext } from "../context";
@@ -15,76 +15,91 @@ export default function Chatscreen({ navigation }) {
     setAllConversations,
     setCurrentUser,
     role,
-    id
+    id,
   } = useContext(GlobalContext);
-
+  const [filteredConversations, setfilteredConversations] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
       try {
         const storedUser = await AsyncStorage.getItem("user");
         setCurrentUser(storedUser || "DefaultUser");
-        socket.on("latestMessageUpdate", ({ conversationId, latestMessage }) => {
-          setAllConversations(prevConversations => 
-            prevConversations.map(conv => 
-              conv.id === conversationId ? { ...conv, latestMessage } : conv
-            )
-          );
-        });
+        socket.on(
+          "latestMessageUpdate",
+          ({ conversationId, latestMessage }) => {
+            setAllConversations((prevConversations) =>
+              prevConversations.map((conv) =>
+                conv.id === conversationId ? { ...conv, latestMessage } : conv
+              )
+            );
+          }
+        );
         // Listen for conversation list updates
         socket.on("conversationList", (conversations) => {
-          const modifiedConversations = conversations.map(conversation => {
-            const participants = conversation.id.split("-"); 
+          const modifiedConversations = conversations.map((conversation) => {
+            const participants = conversation.id.split("-");
             return {
-              id: conversation.id, 
+              id: conversation.id,
               participants: participants,
-              latestMessage: conversation.latestMessage 
+              latestMessage: conversation.latestMessage,
             };
           });
           setAllConversations(modifiedConversations);
+
+          setfilteredConversations(
+            allConversations.filter((conversation) =>
+              conversation.participants.includes(currentUser)
+            )
+          );
         });
-       
-     
+
         // Emit initial request
         socket.emit("getAllConversations");
-        
-  
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
     };
-  
+
     fetchData();
-  
+
     // Clean up socket event listeners on component unmount
     return () => {
       socket.off("conversationList");
       socket.off("latestMessageUpdate");
     };
-  }, []); 
-  
- 
-console.log(allConversations);
+  }, [allConversations]);
 
-  const filteredConversations = allConversations.filter(conversation =>
-    conversation.participants.includes(currentUser)
-    
-  );
-console.log(filteredConversations)
+  if (role == "nurse") {
+    console.log(allConversations);
+  }
+
+  // console.log(filteredConversations)
   return (
     <ScrollView>
-    <View style={styles.mainWrapper}>
-     <Header />
-    
-     <Text style={{ fontSize:24, fontWeight: "bold",
-              justifyContent: "center",alignSelf:"center" }}>Chats</Text>
-      <View style={styles.listContainer}>
-        {filteredConversations.map((conversation, index) => (
-          <Chatcomponent key={index} item={conversation} currentUser={currentUser} />
-        ))}
+      <View style={styles.mainWrapper}>
+        <Header />
+
+        <Text
+          style={{
+            fontSize: 24,
+            fontWeight: "bold",
+            justifyContent: "center",
+            alignSelf: "center",
+          }}
+        >
+          Chats
+        </Text>
+        <View style={styles.listContainer}>
+          {filteredConversations.map((conversation, index) => (
+            <Chatcomponent
+              key={index}
+              item={conversation}
+              currentUser={currentUser}
+            />
+          ))}
+        </View>
       </View>
-      
-    </View>
-    </ScrollView> );
+    </ScrollView>
+  );
 }
 
 const styles = StyleSheet.create({

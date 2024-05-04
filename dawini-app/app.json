@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "login-register-ui",
+    "name": "Dawini",
     "slug": "login-register-ui",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/adaptive-icon.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
@@ -21,10 +21,16 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.fahdmk.loginregisterui"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/adaptive-icon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "1284a8f9-a48e-4e8b-9923-5c4f668239a6"
+      }
     }
   }
 }
