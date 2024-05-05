@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   StyleSheet,
+  ScrollView,
 } from "react-native";
 import { Card } from "react-native-paper";
 import * as Location from "expo-location";
@@ -86,7 +87,7 @@ export default function HomeScreen({ navigation }) {
 
   const fetchNurses = async () => {
     try {
-      const response = await fetch("http://192.168.63.229:3000/api/nurses");
+      const response = await fetch("http://192.168.100.25:3000/api/nurses");
       if (!response.ok) {
         throw new Error("Failed to fetch nurses");
       }
@@ -266,6 +267,7 @@ export default function HomeScreen({ navigation }) {
   return (
     <>
       <Header />
+     <ScrollView>
       <View style={{ marginBottom: 2 }}>
         {location && (
           <Text>
@@ -354,16 +356,15 @@ export default function HomeScreen({ navigation }) {
             <Text style={styles.buttonText}>See All nurses</Text>
           </TouchableOpacity>
           </View>
-        <FlatList
-          ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
-          data={filteredDataSource}
-          keyExtractor={(item, index) =>
-            item["idCare taker"] || index.toString()
-          }
-          renderItem={renderNurseItem}
-        />
+          {filteredDataSource.map((item, index) => (
+        <View key={item["idCare taker"] || index.toString()}>
+          {renderNurseItem({ item })}  
+          <View style={{ height: 15 }} />
+        </View>
+      ))}
 
       </View>
+      </ScrollView>
     </>
   );
 }

@@ -479,5 +479,5 @@ app.get('/api/reviews/caretaker/:idCareTaker', async (req, res) => {
   }
 });
 app.listen(PORT, () => {
-    console.log(`Server is running on http://192.168.63.229:${PORT}`);
+    console.log(`Server is running on http://192.168.100.25:${PORT}`);
 });

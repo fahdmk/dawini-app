@@ -33,10 +33,11 @@ const LoginPatient = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [idtab,setIdtab]=useState("");
- 
+  const [token,setToken]=useState("");
   const handleLogin = async () => {
+   
     try {
-      const response = await fetch("http://192.168.63.229:3000/login", {
+      const response = await fetch("http://192.168.100.25:3000/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -58,24 +59,30 @@ const LoginPatient = ({ navigation }) => {
       
       const userId = user.role === "patient" ? user.idUser : user["idCare taker"];
       setID(userId);
-      setIdtab(userId);
       setCurrentUser(user.fullName)
-      console.log("User:", user);
+      setIdtab(userId);
+      setToken(token);     
+      
       await AsyncStorage.setItem('user', user.fullName);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'MainScreen', params: { idtab: userId, role: user.role } }],
+      });
     } catch (error) {
       console.error("Login error:", error.message);
       Alert.alert("Error", "Invalid credentials. Please try again.");
     }
   };
+ 
   useEffect(() => {
     if (idtab && role) {
       navigation.navigate("MainScreen", { idtab, role });
     }
-  }, [idtab,role,]);  
+  }, [idtab,role,token]);  
+
   useEffect(() => {
-    console.log("Current ID:", idtab ,role);
-  }, [idtab]);
-  
+   console.log("current user id:",idtab ,role)
+  }, [idtab,role]);  
   
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

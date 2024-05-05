@@ -32,30 +32,30 @@ const ProfileView = (route) => {
 
 
     useEffect(() => {
-   
+      const fetchNurse = async () => {
+        try {
+          const response = await fetch(
+            `http://192.168.100.25:3000/api/nurses/${selectedNurse}`
+          );
+          if (!response.ok) {
+            throw new Error("Failed to fetch nurse information");
+          }
+          const data = await response.json();
+          setNurse(data);
+        } catch (error) {
+          console.error(error);
+        }
+      };
 
     
     fetchNurse();
     fetchReviews();
   }, []);
-  const fetchNurse = async () => {
-    try {
-      const response = await fetch(
-        `http://192.168.63.229:3000/api/nurses/${selectedNurse}`
-      );
-      if (!response.ok) {
-        throw new Error("Failed to fetch nurse information");
-      }
-      const data = await response.json();
-      setNurse(data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  
   const fetchReviews = async () => {
     try {
       const response = await fetch(
-        `http://192.168.63.229:3000/api/reviews/caretaker/${selectedNurse}`
+        `http://192.168.100.25:3000/api/reviews/caretaker/${selectedNurse}`
       );
       if (!response.ok) {
         console.log("no reviews");
@@ -71,7 +71,7 @@ const ProfileView = (route) => {
 
   const handleSubmitReview = async () => {
     try {
-      const response = await fetch("http://192.168.63.229:3000/api/reviews", {
+      const response = await fetch("http://192.168.100.25:3000/api/reviews", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -95,6 +95,7 @@ const ProfileView = (route) => {
   
   const handleSendMessage = () => {
     // Emit socket event to start a conversation with the nurse
+    console.log(nurse.fullName)
     socket.emit("startConversation", [currentUser, nurse.fullName]);
     socket.on("conversationList", (conversationDetails) => {
       const conversationId = conversationDetails.find(
