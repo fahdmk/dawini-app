@@ -20,7 +20,7 @@ const ProfileScreen = (tab) => {
   const [reviews, setReviews] = useState([]);
   const [user, setUser] = useState(null);
 
-  console.log(role);
+  // console.log(role);
   useEffect(() => {
     if (role == "nurse") {
       const fetchNurse = async () => {
@@ -77,6 +77,11 @@ const ProfileScreen = (tab) => {
     }
   }, []);
   console.log(user);
+  const imageSource = user && user.photo_uri
+  ? { uri: user.photo_uri }
+  : user && !user.photo_uri && user.role === "patient"
+      ? require('../../assets/hero1.jpg')
+      : require('../../assets/hero2.jpg');
   return (
     <>
       <ScrollView style={styles.container}>
@@ -90,16 +95,12 @@ const ProfileScreen = (tab) => {
             {role == "patient" ? (
               <Image
                 style={styles.profilePhoto}
-                source={{
-                  uri: user?.photo_uri || "https://via.placeholder.com/150",
-                }}
+                source={imageSource}
               />
             ) : (
               <Image
                 style={styles.profilePhoto}
-                source={{
-                  uri: nurse?.photo_uri || "https://via.placeholder.com/150",
-                }}
+                source={imageSource}
               />
             )}
             {role == "patient" ? (

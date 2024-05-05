@@ -152,7 +152,11 @@ export default function HomeScreen({ navigation }) {
     setFilteredDataSource(filteredNurses);
   };
 
-  const renderTopNurseItem = ({ item }) => (
+  const renderTopNurseItem = ({ item }) =>{
+    const imageSource = item.photo_uri
+    ? { uri: item.photo_uri }
+    : require('../../assets/hero2.jpg');
+     return (
     <TouchableOpacity
       onPress={() => {
         if (item && typeof item === "object" && "idCare taker" in item) {
@@ -179,9 +183,7 @@ export default function HomeScreen({ navigation }) {
         <View style={{ flexDirection: "column", alignItems: "center" }}>
           <View style={styles.imageContainer}>
             <Image
-              source={{
-                uri: item.photo_uri,
-              }}
+              source={imageSource}
               style={styles.imageTop}
             />
           </View>
@@ -206,9 +208,13 @@ export default function HomeScreen({ navigation }) {
         </View>
       </Card>
     </TouchableOpacity>
-  );
+  );}
 
-  const renderNurseItem = ({ item }) => (
+  const renderNurseItem = ({ item }) => {
+    const imageSource = item.photo_uri
+    ? { uri: item.photo_uri }
+    : require('../../assets/hero2.jpg');
+     return (
     <TouchableOpacity
       onPress={() => {
         if (item && typeof item === "object" && "idCare taker" in item) {
@@ -235,9 +241,8 @@ export default function HomeScreen({ navigation }) {
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <View style={styles.imageContainer}>
             <Image
-              source={{
-                uri: item.photo_uri,
-              }}
+              source= {imageSource}
+              
               style={styles.image}
             />
           </View>
@@ -263,7 +268,7 @@ export default function HomeScreen({ navigation }) {
       </Card>
     </TouchableOpacity>
   );
-
+  }
   return (
     <>
       <Header />
@@ -417,8 +422,7 @@ const styles = StyleSheet.create({
   textInputStyle: {
     width: "85%",
     height: 40,
-
-    paddingLeft: 10,
+    paddingLeft: 4,
     margin: 10,
   },
   searchButton: {

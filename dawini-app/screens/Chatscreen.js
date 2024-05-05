@@ -5,17 +5,16 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { GlobalContext } from "../context";
 import Chatcomponent from "../components/Chatcomponent";
 import Header from "./HomeScreen/Header";
-import { COLORS, SIZES, FONTS } from "../constants1";
 import { ScrollView } from "react-native-gesture-handler";
 
-export default function Chatscreen({ navigation }) {
+export default function Chatscreen(tab) {
+  const { idtab, role } = tab.route.params;
+
   const {
     currentUser,
     allConversations,
     setAllConversations,
     setCurrentUser,
-    role,
-    id,
   } = useContext(GlobalContext);
   const [filteredConversations, setfilteredConversations] = useState([]);
   useEffect(() => {
@@ -33,7 +32,6 @@ export default function Chatscreen({ navigation }) {
             );
           }
         );
-        // Listen for conversation list updates
         socket.on("conversationList", (conversations) => {
           const modifiedConversations = conversations.map((conversation) => {
             const participants = conversation.id.split("-");
@@ -52,7 +50,6 @@ export default function Chatscreen({ navigation }) {
           );
         });
 
-        // Emit initial request
         socket.emit("getAllConversations");
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -61,18 +58,14 @@ export default function Chatscreen({ navigation }) {
 
     fetchData();
 
-    // Clean up socket event listeners on component unmount
     return () => {
       socket.off("conversationList");
       socket.off("latestMessageUpdate");
     };
   }, [allConversations]);
 
-  if (role == "nurse") {
-    console.log(allConversations);
-  }
-
-  // console.log(filteredConversations)
+ 
+  //  console.log(role)
   return (
     <ScrollView>
       <View style={styles.mainWrapper}>
@@ -89,14 +82,21 @@ export default function Chatscreen({ navigation }) {
           Chats
         </Text>
         <View style={styles.listContainer}>
-          {filteredConversations.map((conversation, index) => (
-            <Chatcomponent
-              key={index}
-              item={conversation}
-              currentUser={currentUser}
-            />
-          ))}
-        </View>
+  {filteredConversations.length === 0 ? (
+    <Text style={{alignSelf: "center"}}>No Chats yet!</Text>
+  ) : (
+    filteredConversations.map((conversation, index) => (
+      <Chatcomponent
+        key={index}
+        item={conversation}
+        currentUser={currentUser}
+        role={role}
+        idtab={idtab}
+      />
+    ))
+  )}
+</View>
+
       </View>
     </ScrollView>
   );

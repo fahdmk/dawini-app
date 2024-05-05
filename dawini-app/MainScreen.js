@@ -52,6 +52,7 @@ const MainScreen = (tab) => {
         <Tab.Screen
           name='Chatscreen'
           component={Chatscreen}
+          initialParams={{ idtab, role }} 
           options={{
             tabBarLabel: ({ color }) => (
               <Text style={{ color: color, fontSize: 12 }}>Chats</Text>

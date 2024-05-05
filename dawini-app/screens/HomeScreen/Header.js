@@ -38,8 +38,10 @@ const Header = () => {
 
 const styles = StyleSheet.create({
   Container: {
-    padding: 10,
+    height:90 ,
+    padding:0,
     paddingTop: 30,
+    paddingRight: 30,
     backgroundColor: '#007025',
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -55,8 +57,10 @@ const styles = StyleSheet.create({
   },
   logoutButton: {
     flexDirection: 'row',
-    alignItems: 'center',
-    marginRight: 10,
+    position: 'absolute',  
+    right: 20,              
+    top: 40,               
+    zIndex: 1,   
   },
   logoutText: {
     marginLeft: 5,

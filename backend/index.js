@@ -386,6 +386,28 @@ app.get('/api/nurses/:idCareTaker', async (req, res) => {
     res.status(500).json({ error: 'Error fetching nurse information' });
   }
 });
+app.get('/api/users/name/:fullName', async (req, res) => {
+  try {
+    const { fullName } = req.params;
+    // Decode the fullName to handle spaces and other URL-encoded characters
+    const decodedName = decodeURIComponent(fullName);
+
+    // Find the user by their full name
+    const user = await User.findOne({
+      where: { fullName: decodedName }
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error fetching user information' });
+  }
+});
+
 app.get('/api/users/:idUser', async (req, res) => {
   try {
     const { idUser } = req.params;

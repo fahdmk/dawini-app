@@ -7,13 +7,11 @@ import {
   TouchableOpacity,
   Modal,
   TextInput,
-  Button,
 } from "react-native";
-import { GlobalContext } from "../../context";
 import Header from "../HomeScreen/Header";
 import { Card } from "react-native-paper";
 import { Image } from "react-native-elements";
-import { COLORS, SIZES, FONTS } from "../../constants1";
+import { COLORS } from "../../constants1";
 import { FontAwesome } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 export default function BookingScreen(tab) {
@@ -297,7 +295,7 @@ export default function BookingScreen(tab) {
       </TouchableOpacity>
       </View>
       {appointments.length === 0 ? (
-        <Text>No appointments yet!</Text>
+        <Text style={{alignSelf:"center"}}>No appointments yet!</Text>
       ) : (
         <FlatList
           data={appointments}

@@ -4,7 +4,6 @@ import { socket } from "../utils";
 import { GlobalContext } from "../context";
 import { Card } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import Modal from "react-native-modal";
 import StarRating from "react-native-star-rating-widget";
 import TextArea from "@freakycoder/react-native-text-area";
@@ -32,26 +31,26 @@ const ProfileView = (route) => {
 
 
     useEffect(() => {
-      const fetchNurse = async () => {
-        try {
-          const response = await fetch(
-            `http://192.168.100.25:3000/api/nurses/${selectedNurse}`
-          );
-          if (!response.ok) {
-            throw new Error("Failed to fetch nurse information");
-          }
-          const data = await response.json();
-          setNurse(data);
-        } catch (error) {
-          console.error(error);
-        }
-      };
-
+     
     
     fetchNurse();
     fetchReviews();
   }, []);
-  
+  const fetchNurse = async () => {
+    try {
+      const response = await fetch(
+        `http://192.168.100.25:3000/api/nurses/${selectedNurse}`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch nurse information");
+      }
+      const data = await response.json();
+      setNurse(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const fetchReviews = async () => {
     try {
       const response = await fetch(
@@ -113,11 +112,19 @@ const ProfileView = (route) => {
   const closeModal = () => {
     setModalVisible(false);
   };
-
+  
+  const imageSource = nurse && nurse.photo_uri
+  ? { uri:nurse&&nurse.photo_uri }
+  : require('../assets/hero2.jpg');
   return (
     <>
+    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <AntDesign name="arrowleft" size={40} color="black" />
+          </TouchableOpacity>
       <ScrollView style={styles.container}>
+      
         <View style={styles.headerContainer}>
+       
           <Image
             source={require("../assets/green.png")}
             resizeMode="contain"
@@ -126,9 +133,7 @@ const ProfileView = (route) => {
           <View style={styles.profileContainer}>
             <Image
               style={styles.profilePhoto}
-              source={{
-                uri: nurse?.photo_uri || "https://via.placeholder.com/150",
-              }}
+              source={imageSource}
             />
             <Text style={styles.nameText}>{nurse && nurse.fullName}</Text>
              <StarRatingDisplay rating={nurse && nurse.rating} />
@@ -266,20 +271,26 @@ const ProfileView = (route) => {
 };
 
 const styles = {
+  backButton: {
+    position: 'absolute',  
+    left: 20,              
+    top: 40,               
+    zIndex: 1,           
+  },
   reviewCard: {
 marginLeft:7,
 marginRight:7,
 marginBottom:5,
-borderWidth: 1, // Sets the border width
+borderWidth: 1,
 borderColor: '#000',
   },
   reviewAuthor: {
-    fontWeight: "bold", // Makes the text bold
-    fontSize: 17, // Increases the size of the text
+    fontWeight: "bold",
+    fontSize: 17, 
   },
   reviewsTitle: {
-    fontWeight: "bold", // Makes the text bold
-    fontSize: 24, // Increases the size of the text
+    fontWeight: "bold",
+    fontSize: 24, 
   },
   container: {
     backgroundColor: "#fff",

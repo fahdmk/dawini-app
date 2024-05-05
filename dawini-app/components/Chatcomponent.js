@@ -2,12 +2,13 @@ import React, { useEffect, useState, useContext } from "react";
 import { Pressable, StyleSheet, Text, View, Image } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { GlobalContext } from "../context";
-
-export default function Chatcomponent({ item, currentUser }) {
+const hero2Image = require('../assets/hero1.jpg');
+const hero1Image = require('../assets/hero2.jpg');
+export default function Chatcomponent({ item, currentUser ,role, idtab}) {
   const [nurses, setNurses] = useState([]);
-  const { allConversations } = useContext(GlobalContext);
+  const [user, setUser] = useState(null);
   const navigation = useNavigation();
-
+// console.log(item)
   useEffect(() => {
     const fetchNurses = async () => {
       try {
@@ -21,7 +22,23 @@ export default function Chatcomponent({ item, currentUser }) {
         console.error("Error fetching nurses:", error);
       }
     };
+    if(role==="nurse"){
+    const fetchUser = async () => {
+      try {
+        const response = await fetch(
+          `http://192.168.100.25:3000/api/users/name/${otherParticipant}`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch user information");
+        }
+        const data = await response.json();
+        setUser(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
+    fetchUser();}
     fetchNurses();
   }, []);
 
@@ -38,21 +55,22 @@ export default function Chatcomponent({ item, currentUser }) {
   let messageDisplay = item.latestMessage 
     ? `${item.latestMessage.sender}: ${item.latestMessage.text}`
     : "No messages yet";
-
+    const getImageSource = () => {
+      if (nurseData && nurseData.photo_uri) {
+          return { uri: nurseData.photo_uri };
+      }
+      return role === "nurse"
+          ? (user && user.photo_uri ? { uri: user.photo_uri } : hero2Image)
+          : hero1Image;
+  };
   return (
     <Pressable style={styles.chat} onPress={handleNavigateToMessageScreen}>
       <View style={styles.circle}>
-        {nurseData && nurseData.photo_uri ?
-          <Image
-            source={{ uri: nurseData.photo_uri }}
-            style={styles.image}
-          />
-      : <Image
-      source={nurseData && nurseData.photo_uri ? 
-        { uri: nurseData.photo_uri } : 
-        require('../assets/hero1.jpg')} // Correctly reference local images
+      <Image
+      source={getImageSource()}
       style={styles.image}
-    />}
+    />
+       
       </View>
       <View style={styles.rightContainer}>
         
