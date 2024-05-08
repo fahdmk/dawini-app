@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import { Pressable, StyleSheet, Text, View, Image } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { GlobalContext } from "../context";
+import config from '../config.json';
 const hero2Image = require('../assets/hero1.jpg');
 const hero1Image = require('../assets/hero2.jpg');
 export default function Chatcomponent({ item, currentUser ,role, idtab}) {
@@ -12,7 +12,8 @@ export default function Chatcomponent({ item, currentUser ,role, idtab}) {
   useEffect(() => {
     const fetchNurses = async () => {
       try {
-        const response = await fetch("http://192.168.100.25:3000/api/nurses");
+        const ip = config.ip;
+        const response = await fetch(`http://${ip}:3000/api/nurses`);
         if (!response.ok) {
           throw new Error("Failed to fetch nurses");
         }
@@ -25,8 +26,9 @@ export default function Chatcomponent({ item, currentUser ,role, idtab}) {
     if(role==="nurse"){
     const fetchUser = async () => {
       try {
+        const ip = config.ip;
         const response = await fetch(
-          `http://192.168.100.25:3000/api/users/name/${otherParticipant}`
+          `http://${ip}:3000/api/users/name/${otherParticipant}`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch user information");

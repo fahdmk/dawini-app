@@ -23,7 +23,13 @@ const sequelize = new Sequelize(
 );
 app.use(cors());
 app.use(bodyParser.json());
+const corsOptions = {
+  origin: 'http://localhost:3001',  
+  credentials: true, 
+  optionsSuccessStatus: 200  
+};
 
+app.use(cors(corsOptions));
 sequelize
   .authenticate()
   .then(() => {
@@ -52,6 +58,41 @@ sequelize
         console.error('Error updating appointment price:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
+});
+app.get('/api/appointments/accepted-total-price', async (req, res) => {
+  try {
+    const totalAcceptedPrice = await Appointment.sum('Price', {
+      where: { status: 'accepted' }
+    });
+
+    if (isNaN(totalAcceptedPrice)) {
+      return res.status(404).json({ error: 'No accepted appointments found' });
+    }
+
+    res.json({ totalAcceptedPrice });
+  } catch (error) {
+    console.error('Error calculating total accepted appointment prices:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+app.get('/api/caretaker/count', async (req, res) => {
+  try {
+      const count = await Caretaker.count();
+      res.json({ totalnurses: count });
+  } catch (error) {
+      console.error('Failed to fetch caretaker count:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+app.get('/api/users/count', async (req, res) => {
+  try {
+      // Use the count method provided by Sequelize on the User model
+      const count = await User.count();
+      res.json({ totalUsers: count });
+  } catch (error) {
+      console.error('Failed to fetch user count:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
   app.get('/api/appointments', async (req, res) => {
     try {
@@ -90,7 +131,19 @@ sequelize
     }
 });
 
+app.get('/api/appointments/accepted-count', async (req, res) => {
+  try {
+      // Counting only appointments with a status of 'accepted'
+      const acceptedCount = await Appointment.count({
+          where: { status: 'accepted' }
+      });
 
+      res.json({ acceptedCount: acceptedCount });
+  } catch (error) {
+      console.error('Error fetching count of accepted appointments:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
   app.post('/api/appointments/update-status', async (req, res) => {
     const { idAppointment, status } = req.body;
 
@@ -501,5 +554,5 @@ app.get('/api/reviews/caretaker/:idCareTaker', async (req, res) => {
   }
 });
 app.listen(PORT, () => {
-    console.log(`Server is running on http://192.168.100.25:${PORT}`);
+    console.log(`Server is running on http://localhost:${PORT}`);
 });

@@ -34,7 +34,7 @@ export const TopCareTakers = (props) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:3001/caretaker", { withCredentials: true });
+        const response = await axios.get("http://localhost:3000/caretaker", { withCredentials: true });
         settopcare(response.data);
         console.log(response.data);
       } catch (error) {

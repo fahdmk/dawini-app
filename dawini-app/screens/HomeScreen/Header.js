@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; // Ensure you have Ionicons imported
 import { useNavigation } from '@react-navigation/native'; // Import this if not already done
-import { GlobalContext } from '../../context'; // Update the path as necessary
+import { GlobalContext } from '../../context'; 
 import { MaterialIcons } from '@expo/vector-icons';
 const Header = () => {
   const navigation = useNavigation();

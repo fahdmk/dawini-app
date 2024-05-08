@@ -18,25 +18,25 @@ const NbrUsersComponent = (props) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const response = await axios.get("http://localhost:3001/user", { withCredentials: true });
-        setnbrusers(response.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        // Handle errors gracefully, e.g., show an error message to the user
-      }
+        try {
+            const response = await axios.get('http://localhost:3000/api/users/count', {
+                withCredentials: true
+            });
+            setnbrusers(response.data.totalUsers);  
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
     };
 
     fetchData();
-  }, []);
-
+}, []);
   return (
     <Stack spacing={1}>
       <Typography color="text.secondary" variant="overline">
         Total patients
       </Typography>
       <Typography variant="h4">
-        {nbrusers && nbrusers.map((user) => <span key={user.id}>{user.NumberOfUsers}</span>)}
+        {nbrusers}
       </Typography>
     </Stack>
   );

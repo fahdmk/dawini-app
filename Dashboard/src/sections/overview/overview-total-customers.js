@@ -18,24 +18,22 @@ const NbrcaretakersComponent = (props) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const response = await axios.get("http://localhost:3001/caretakers", { withCredentials: true });
-        setnbrcaretakers(response.data);
-        console.log(response.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
+        try {
+            const response = await axios.get('http://localhost:3000/api/caretaker/count', {
+                withCredentials: true
+            });
+            setnbrcaretakers(response.data.totalnurses);  
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
     };
 
     fetchData();
-  }, []);
+}, []);
   return (
     <Stack spacing={1}>
       <Typography variant="h4">
-        {nbrcaretakers &&
-          nbrcaretakers.map((Caretaker) => (
-            <span key={Caretaker.id}>{Caretaker.NumberOfCaretakers}</span>
-          ))}
+        {nbrcaretakers}
       </Typography>
     </Stack>
   );
@@ -55,7 +53,7 @@ export const OverviewTotalCustomers = (props) => {
           <Stack spacing={1}>
           
             <Typography color="text.secondary" variant="overline">
-              Total caretakers
+              Total Nurses
             </Typography>
             <NbrcaretakersComponent />
           </Stack>

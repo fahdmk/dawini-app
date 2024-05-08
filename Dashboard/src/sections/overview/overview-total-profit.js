@@ -15,23 +15,22 @@ const SalesComponent = (props) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const response = await axios.get("http://localhost:3001/sales", { withCredentials: true });
-        setsales(response.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
+        try {
+            const response = await axios.get('http://localhost:3000/api/appointments/accepted-total-price', {
+                withCredentials: true
+            });
+            setsales(response.data.totalAcceptedPrice);  
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
     };
 
     fetchData();
-  }, []);
+}, []);
   return (
     <Stack spacing={1}>
       <Typography variant="h4">
-        {sales &&
-          sales.map((sales) => (
-            <span key={sales.id}>{sales.TotalSumOfPrices}$</span>
-          ))}
+        {sales }          TND
       </Typography>
     </Stack>
   );
@@ -59,7 +58,7 @@ export const OverviewTotalProfit = (props) => {
               color="text.secondary"
               variant="overline"
             >
-              Sales
+              Appointments total
             </Typography>
             <Typography variant="h4">
               <SalesComponent/>

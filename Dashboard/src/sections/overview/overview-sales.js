@@ -114,7 +114,7 @@ export const OverviewSales = (props) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:3001/thisyear", { withCredentials: true });
+        const response = await axios.get("http://localhost:3000/thisyear", { withCredentials: true });
         setthisyear(response.data);
         console.log(response.data);
       } catch (error) {
@@ -129,7 +129,7 @@ export const OverviewSales = (props) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:3001/lastyear", { withCredentials: true });
+        const response = await axios.get("http://localhost:3000/lastyear", { withCredentials: true });
         setlastyear(response.data);
       } catch (error) {
         console.error("Error fetching data:", error);

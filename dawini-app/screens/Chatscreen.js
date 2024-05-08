@@ -16,7 +16,7 @@ export default function Chatscreen(tab) {
     setAllConversations,
     setCurrentUser,
   } = useContext(GlobalContext);
-  const [filteredConversations, setfilteredConversations] = useState([]);
+  const [filteredConversations, setFilteredConversations] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -33,21 +33,26 @@ export default function Chatscreen(tab) {
           }
         );
         socket.on("conversationList", (conversations) => {
-          const modifiedConversations = conversations.map((conversation) => {
-            const participants = conversation.id.split("-");
-            return {
-              id: conversation.id,
-              participants: participants,
-              latestMessage: conversation.latestMessage,
-            };
-          });
+          const modifiedConversations = conversations.map(conversation => ({
+            id: conversation.id,
+            participants: conversation.id.split("-"),
+            latestMessage: conversation.latestMessage,
+          }));
           setAllConversations(modifiedConversations);
 
-          setfilteredConversations(
-            allConversations.filter((conversation) =>
-              conversation.participants.includes(currentUser)
-            )
-          );
+          const sortedConversations = modifiedConversations
+          .filter(conversation => 
+            conversation.participants.includes(currentUser) && 
+            conversation.latestMessage && 
+            conversation.latestMessage.time 
+          )
+            .sort((a, b) => {
+              const timeA = a.latestMessage && a.latestMessage.time ? a.latestMessage.time : "";
+              const timeB = b.latestMessage && b.latestMessage.time ? b.latestMessage.time : "";
+              return timeB.localeCompare(timeA); // Sorts descending, swap a and b for ascending
+            });
+
+          setFilteredConversations(sortedConversations);
         });
 
         socket.emit("getAllConversations");
@@ -65,7 +70,7 @@ export default function Chatscreen(tab) {
   }, [allConversations]);
 
  
-  //  console.log(role)
+   //console.log(allConversations)
   return (
     <ScrollView>
       <View style={styles.mainWrapper}>

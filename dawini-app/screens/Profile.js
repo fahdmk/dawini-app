@@ -8,7 +8,9 @@ import Modal from "react-native-modal";
 import StarRating from "react-native-star-rating-widget";
 import TextArea from "@freakycoder/react-native-text-area";
 import { StarRatingDisplay } from "react-native-star-rating-widget";
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign } from "@expo/vector-icons";
+import config from "../config.json";
+
 const ProfileView = (route) => {
   const { id, currentUser, setAllConversations, setCurrentUser } =
     useContext(GlobalContext);
@@ -22,24 +24,21 @@ const ProfileView = (route) => {
   const onReviewTextChange = (text) => {
     setReviewText(text);
   };
- 
 
   const navigation = useNavigation();
   const selectedNurse = route.route.params["idCare taker"];
   const [nurse, setNurse] = useState(null);
   const [reviews, setReviews] = useState([]);
 
-
-    useEffect(() => {
-     
-    
+  useEffect(() => {
     fetchNurse();
     fetchReviews();
   }, []);
   const fetchNurse = async () => {
     try {
+      const ip = config.ip;
       const response = await fetch(
-        `http://192.168.100.25:3000/api/nurses/${selectedNurse}`
+        `http://${ip}:3000/api/nurses/${selectedNurse}`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch nurse information");
@@ -53,8 +52,9 @@ const ProfileView = (route) => {
 
   const fetchReviews = async () => {
     try {
+      const ip = config.ip;
       const response = await fetch(
-        `http://192.168.100.25:3000/api/reviews/caretaker/${selectedNurse}`
+        `http://${ip}:3000/api/reviews/caretaker/${selectedNurse}`
       );
       if (!response.ok) {
         console.log("no reviews");
@@ -70,7 +70,8 @@ const ProfileView = (route) => {
 
   const handleSubmitReview = async () => {
     try {
-      const response = await fetch("http://192.168.100.25:3000/api/reviews", {
+      const ip = config.ip;
+      const response = await fetch(`http://${ip}:3000/api/reviews`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -82,8 +83,8 @@ const ProfileView = (route) => {
       });
       if (!response.ok) throw new Error("Failed to submit review");
       const newReview = await response.json();
-  
-      setReviews(newReview||await response.json());
+
+      setReviews(newReview || (await response.json()));
       setModalVisible(false);
     } catch (error) {
       console.error("Error submitting review:", error);
@@ -91,10 +92,13 @@ const ProfileView = (route) => {
     fetchNurse();
     fetchReviews();
   };
-  
+
   const handleSendMessage = () => {
-    // Emit socket event to start a conversation with the nurse
-    console.log(nurse.fullName)
+    if (!currentUser) {
+      console.log("aaaaaaaaaaaaaaaaaaaa");
+      return;
+    }
+    console.log(nurse.fullName);
     socket.emit("startConversation", [currentUser, nurse.fullName]);
     socket.on("conversationList", (conversationDetails) => {
       const conversationId = conversationDetails.find(
@@ -112,31 +116,30 @@ const ProfileView = (route) => {
   const closeModal = () => {
     setModalVisible(false);
   };
-  
-  const imageSource = nurse && nurse.photo_uri
-  ? { uri:nurse&&nurse.photo_uri }
-  : require('../assets/hero2.jpg');
+
+  const imageSource =
+    nurse && nurse.photo_uri
+      ? { uri: nurse && nurse.photo_uri }
+      : require("../assets/hero2.jpg");
   return (
     <>
-    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-            <AntDesign name="arrowleft" size={40} color="black" />
-          </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => navigation.goBack()}
+        style={styles.backButton}
+      >
+        <AntDesign name="arrowleft" size={40} color="black" />
+      </TouchableOpacity>
       <ScrollView style={styles.container}>
-      
         <View style={styles.headerContainer}>
-       
           <Image
             source={require("../assets/green.png")}
             resizeMode="contain"
             style={styles.logo}
           />
           <View style={styles.profileContainer}>
-            <Image
-              style={styles.profilePhoto}
-              source={imageSource}
-            />
+            <Image style={styles.profilePhoto} source={imageSource} />
             <Text style={styles.nameText}>{nurse && nurse.fullName}</Text>
-             <StarRatingDisplay rating={nurse && nurse.rating} />
+            <StarRatingDisplay rating={nurse && nurse.rating} />
           </View>
         </View>
 
@@ -157,11 +160,11 @@ const ProfileView = (route) => {
           reviews.map((review) => (
             <Card key={review.idReview} style={styles.reviewCard}>
               <Card.Content>
-              <Text style={styles.reviewAuthor}>
+                <Text style={styles.reviewAuthor}>
                   {review.User.fullName || review}
                 </Text>
                 <Text style={styles.reviewContent}>{review.description}</Text>
-                
+
                 <StarRatingDisplay rating={review.numberOfStars} />
               </Card.Content>
             </Card>
@@ -169,100 +172,108 @@ const ProfileView = (route) => {
         ) : (
           <Text>This nurse has no reviews Yet.</Text>
         )}
-        <Modal isVisible={modalVisible} >
-       <View style={{flex:1}}>
-        <TouchableOpacity onPress={closeModal}>
-         <AntDesign name="closecircleo" size={30} color="white"style={{justifyContent:"flex-end",alignSelf:"flex-end",margin:7}} />
-         </TouchableOpacity>
-          <View
-            style={{
-              flex:1,
-              shadowColor: "#000",
-              shadowOffset: {
-                width: 0,
-                height: 7,
-              },
-              shadowOpacity: 0.43,
-              shadowRadius: 9.51,
-              elevation: 15,
-              height: 325,
-              width: "90%",
-              borderRadius: 16,
-              alignSelf: "center",
-              justifyContent: "center",
-              backgroundColor: "transparent",
-            }}
-          >
+        <Modal isVisible={modalVisible}>
+          <View style={{ flex: 1 }}>
+            <TouchableOpacity onPress={closeModal}>
+              <AntDesign
+                name="closecircleo"
+                size={30}
+                color="white"
+                style={{
+                  justifyContent: "flex-end",
+                  alignSelf: "flex-end",
+                  margin: 7,
+                }}
+              />
+            </TouchableOpacity>
             <View
               style={{
-                height: "100%",
-                alignItems: "center",
-                flexDirection: "column",
+                flex: 1,
+                shadowColor: "#000",
+                shadowOffset: {
+                  width: 0,
+                  height: 7,
+                },
+                shadowOpacity: 0.43,
+                shadowRadius: 9.51,
+                elevation: 15,
+                height: 325,
+                width: "90%",
+                borderRadius: 16,
+                alignSelf: "center",
                 justifyContent: "center",
+                backgroundColor: "transparent",
               }}
-            > 
-              <Text style={{ color: "white", fontSize: 16 ,margin:10}}>
-                How was your experience?
-              </Text>
-              <View style={{ marginRight: 8, margin:10}}>
-              
-                <StarRating
-                  enableHalfStar={false}
-                  maxStars={5}
-                  starSize={30}
-                  disabled={false}
-                  animation="jello"
-                  rating={starRating}
-                  fullStarColor="#faec7c"
-                  emptyStarColor="#faec7c"
-                  starStyle={{ marginLeft: 8 }}
-                  onChange={onStarRatingPress}
-                />
-              </View>
-              <TextArea
-                maxCharLimit={50}
-                placeholderTextColor="black"
-                onChangeText={onReviewTextChange}
-                exceedCharCountColor="red"
-                placeholder={"Write your review..."}
-                style={{ height: 150, borderRadius: 16 , margin:10}}
-              />
-              <TouchableOpacity
+            >
+              <View
                 style={{
-                  height: 50,
-                  width: "95%",
-                  borderRadius: 16,
-                  backgroundColor: "white", margin:10
-                }}
-                onPress={() => {
-                  handleSubmitReview();
+                  height: "100%",
+                  alignItems: "center",
+                  flexDirection: "column",
+                  justifyContent: "center",
                 }}
               >
-                <View
+                <Text style={{ color: "white", fontSize: 16, margin: 10 }}>
+                  How was your experience?
+                </Text>
+                <View style={{ marginRight: 8, margin: 10 }}>
+                  <StarRating
+                    enableHalfStar={false}
+                    maxStars={5}
+                    starSize={30}
+                    disabled={false}
+                    animation="jello"
+                    rating={starRating}
+                    fullStarColor="#faec7c"
+                    emptyStarColor="#faec7c"
+                    starStyle={{ marginLeft: 8 }}
+                    onChange={onStarRatingPress}
+                  />
+                </View>
+                <TextArea
+                  maxCharLimit={50}
+                  placeholderTextColor="black"
+                  onChangeText={onReviewTextChange}
+                  exceedCharCountColor="red"
+                  placeholder={"Write your review..."}
+                  style={{ height: 150, borderRadius: 16, margin: 10 }}
+                />
+                <TouchableOpacity
                   style={{
                     height: 50,
-                    width: "100%",
+                    width: "95%",
                     borderRadius: 16,
-                    alignContent: "center",
-                    justifyContent: "center",
-                    backgroundColor: "green",
-                    
+                    backgroundColor: "white",
+                    margin: 10,
+                  }}
+                  onPress={() => {
+                    handleSubmitReview();
                   }}
                 >
-                  <Text
+                  <View
                     style={{
-                      color: "white",
-                      fontSize: 16,
-                      textAlign: "center",
-                      fontWeight: "bold",
+                      height: 50,
+                      width: "100%",
+                      borderRadius: 16,
+                      alignContent: "center",
+                      justifyContent: "center",
+                      backgroundColor: "green",
                     }}
                   >
-                    Submit
-                  </Text>
-                </View>
-              </TouchableOpacity>
+                    <Text
+                      style={{
+                        color: "white",
+                        fontSize: 16,
+                        textAlign: "center",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      Submit
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
           </View>
         </Modal>
       </ScrollView>
@@ -272,25 +283,25 @@ const ProfileView = (route) => {
 
 const styles = {
   backButton: {
-    position: 'absolute',  
-    left: 20,              
-    top: 40,               
-    zIndex: 1,           
+    position: "absolute",
+    left: 20,
+    top: 40,
+    zIndex: 1,
   },
   reviewCard: {
-marginLeft:7,
-marginRight:7,
-marginBottom:5,
-borderWidth: 1,
-borderColor: '#000',
+    marginLeft: 7,
+    marginRight: 7,
+    marginBottom: 5,
+    borderWidth: 1,
+    borderColor: "#000",
   },
   reviewAuthor: {
     fontWeight: "bold",
-    fontSize: 17, 
+    fontSize: 17,
   },
   reviewsTitle: {
     fontWeight: "bold",
-    fontSize: 24, 
+    fontSize: 24,
   },
   container: {
     backgroundColor: "#fff",

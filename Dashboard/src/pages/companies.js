@@ -20,7 +20,7 @@ const handleDeleteSelected = async () => {
     const selectedIds = selected.map((productId) => productId);
 
     
-    await axios.delete('http://localhost:3001/delete-products', {
+    await axios.delete('http://localhost:3000/delete-products', {
       data: { ids: selectedIds }, // Send the selected IDs in the request body
       withCredentials: true,
     });
@@ -32,7 +32,7 @@ const handleDeleteSelected = async () => {
 };
 const useproducts = async (page, rowsPerPage) => {
   try {
-    const response = await axios.get("http://localhost:3001/product", { withCredentials: true });
+    const response = await axios.get("http://localhost:3000/product", { withCredentials: true });
 
     const formattedproduct = response.data.map((product) => ({
       ...product,

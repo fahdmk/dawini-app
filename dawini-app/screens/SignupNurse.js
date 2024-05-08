@@ -16,6 +16,7 @@ import Checkbox from "expo-checkbox";
 import Button from "../components/Button";
 import axios from 'axios';
 import dayjs from 'dayjs';
+import config from '../config.json';
 
 
 const SignupNurse = ({ navigation }) => {
@@ -30,8 +31,8 @@ const SignupNurse = ({ navigation }) => {
     const [working_Area, setWorking_Area] = useState('');
     const handleSubmit = async () => {
       try {
-       
-        const response = await axios.post('http://192.168.100.25:3000/api/new-nurse', {
+        const ip = config.ip;
+        const response = await axios.post(`http://${ip}:3000/api/new-nurse`, {
           username: name,
           role:"nurse",
           fullname: name,

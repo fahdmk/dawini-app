@@ -18,6 +18,7 @@ import { TextInput } from "react-native-paper";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { StarRatingDisplay } from "react-native-star-rating-widget";
 import { useFocusEffect } from '@react-navigation/native';
+import config from '../../config.json';
 
 
 export default function HomeScreen({ navigation }) {
@@ -46,7 +47,7 @@ export default function HomeScreen({ navigation }) {
     );
 
     return () => {
-      // Clean up location subscription
+      // Clean up location subscriptio
       if (locationSubscription) {
         // locationSubscription.remove();
       }
@@ -56,7 +57,6 @@ export default function HomeScreen({ navigation }) {
     React.useCallback(() => {
       fetchNurses();
       return () => {
-        // Optionally: Any cleanup actions
       };
     }, [])
   );
@@ -87,13 +87,14 @@ export default function HomeScreen({ navigation }) {
 
   const fetchNurses = async () => {
     try {
-      const response = await fetch("http://192.168.100.25:3000/api/nurses");
+      const ip = config.ip;
+      const response = await fetch(`http://${ip}:3000/api/nurses`);
       if (!response.ok) {
         throw new Error("Failed to fetch nurses");
       }
       const data = await response.json();
 
-      const sortedNurses = data.sort((a, b) => b.rating - a.rating); // Sort nurses by descending rating
+      const sortedNurses = data.sort((a, b) => b.rating - a.rating); 
       setNurses(sortedNurses);
       setFilteredDataSource(sortedNurses);
 

@@ -17,6 +17,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import COLORS from "../constants/colors";
 import DatePicker from 'react-native-modern-datepicker';
+import config from '../config.json';
 
 
 export default function Messagescreen({ navigation, route }) {
@@ -38,6 +39,7 @@ export default function Messagescreen({ navigation, route }) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [date, setDate] = useState(Date);
   const [duration, setDuration] = useState("");
+  
   const handleDateChange = (params) => {
     setTempDate(params.date);
   };
@@ -53,10 +55,11 @@ if (role === "patient") {
     caretakerName = currentUser; 
 }
   const fetchCaretaker = async () => {
-    
+    const ip = config.ip;
+
     try {
       
-        const response = await fetch(`http://192.168.100.25:3000/api/caretakers/fullName/${caretakerName}`);
+        const response = await fetch(`http://${ip}:3000/api/caretakers/fullName/${caretakerName}`);
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || 'Failed to fetch');
         setCaretakerData(data)

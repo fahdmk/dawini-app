@@ -17,6 +17,7 @@ import Button from "../components/Button";
 import axios from 'axios';
 import dayjs from 'dayjs';
 import DatePicker from 'react-native-modern-datepicker';
+import config from '../config.json';
 
 const SignupPatient = ({ navigation }) => {
    
@@ -30,8 +31,8 @@ const SignupPatient = ({ navigation }) => {
     
     const handleSubmit = async () => {
       try {
-       
-        const response = await axios.post('http://192.168.100.25:3000/api/new-user', {
+        const ip = config.ip;
+        const response = await axios.post(`http://${ip}:3000/api/new-user`, {
           username: name,
           role: 'patient', 
           fullName: name,

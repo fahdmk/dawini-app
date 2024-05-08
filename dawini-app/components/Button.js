@@ -12,7 +12,7 @@ const Button = (props) => {
         <TouchableOpacity
             style={{
                 ...styles.button,
-                ...{ backgroundColor: bgColor },
+                ...{ backgroundColor: "green" },
                 ...props.style
             }}
             onPress={props.onPress}
@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
     button: {
         paddingBottom: 16,
         paddingVertical: 10,
-        borderColor: COLORS.primary,
+        borderColor: "green",
         borderWidth: 2,
         borderRadius: 12,
         alignItems: 'center',

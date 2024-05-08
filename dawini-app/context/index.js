@@ -16,11 +16,14 @@ function GlobalState({ children }) {
   const [id, setID] = useState("");
   const [role1, setRole1] = useState("");
   const [id1, setId1] = useState("");
+  const [ip, setIp] = useState("");
 
 
   return (
     <GlobalContext.Provider
       value={{
+        ip,
+        setIp,
         role1,
         setRole1,
         id1,

@@ -30,7 +30,7 @@ export const OverviewLatestProducts = (props) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:3001/product", { withCredentials: true });
+        const response = await axios.get("http://localhost:3000/product", { withCredentials: true });
         setproduct(response.data);
         console.log(response.data);
       } catch (error) {

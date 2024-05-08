@@ -1,16 +1,9 @@
 import React, { useState, useEffect, useContext } from "react";
 import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
-import { socket } from "../../utils";
-import { GlobalContext } from "../../context";
 import { Card } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import Modal from "react-native-modal";
-import StarRating from "react-native-star-rating-widget";
-import TextArea from "@freakycoder/react-native-text-area";
 import { StarRatingDisplay } from "react-native-star-rating-widget";
-import { AntDesign } from "@expo/vector-icons";
-
+import config from '../../config.json';
 const ProfileScreen = (tab) => {
   const { idtab, role } = tab.route.params;
 
@@ -25,8 +18,9 @@ const ProfileScreen = (tab) => {
     if (role == "nurse") {
       const fetchNurse = async () => {
         try {
+          const ip = config.ip;
           const response = await fetch(
-            `http://192.168.100.25:3000/api/nurses/${selectedNurse}`
+            `http://${ip}:3000/api/nurses/${selectedNurse}`
           );
           if (!response.ok) {
             throw new Error("Failed to fetch nurse information");
@@ -40,8 +34,9 @@ const ProfileScreen = (tab) => {
 
       const fetchReviews = async () => {
         try {
+          const ip = config.ip;
           const response = await fetch(
-            `http://192.168.100.25:3000/api/reviews/caretaker/${selectedNurse}`
+            `http://${ip}:3000/api/reviews/caretaker/${selectedNurse}`
           );
           if (!response.ok) {
             console.log("no reviews");
@@ -51,7 +46,7 @@ const ProfileScreen = (tab) => {
           setReviews(data);
         } catch (error) {
           console.error(error);
-          setReviews([]);
+          setReviews([]); 
         }
       };
 
@@ -60,8 +55,9 @@ const ProfileScreen = (tab) => {
     } else {
       const fetchUser = async () => {
         try {
+          const ip = config.ip;
           const response = await fetch(
-            `http://192.168.100.25:3000/api/users/${idtab}`
+            `http://${ip}:3000/api/users/${idtab}`
           );
           if (!response.ok) {
             throw new Error("Failed to fetch user information");
@@ -76,7 +72,7 @@ const ProfileScreen = (tab) => {
       fetchUser();
     }
   }, []);
-  console.log(user);
+  console.log(idtab);
   const imageSource = user && user.photo_uri
   ? { uri: user.photo_uri }
   : user && !user.photo_uri && user.role === "patient"

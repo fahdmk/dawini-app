@@ -14,6 +14,8 @@ import { Image } from "react-native-elements";
 import { COLORS } from "../../constants1";
 import { FontAwesome } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
+import config from "../../config.json";
+
 export default function BookingScreen(tab) {
   const [appointments, setAppointments] = useState([]);
   const [selectedAppointmentId, setSelectedAppointmentId] = useState([]);
@@ -62,8 +64,9 @@ export default function BookingScreen(tab) {
   };
   const fetchAppointments = async () => {
     try {
+      const ip = config.ip;
       const response = await fetch(
-        `http://192.168.100.25:3000/api/appointments?userId=${idtab}&role=${role}`
+        `http://${ip}:3000/api/appointments?userId=${idtab}&role=${role}`
       );
       const data = await response.json();
       setAppointments(data);
@@ -95,8 +98,9 @@ export default function BookingScreen(tab) {
       return;
     }
     try {
+      const ip = config.ip;
       const response = await fetch(
-        "http://192.168.100.25:3000/api/appointments/update-price",
+        `http://${ip}:3000/api/appointments/update-price`,
         {
           method: "POST",
           headers: {
@@ -111,13 +115,25 @@ export default function BookingScreen(tab) {
       const json = await response.json();
       // console.log(json);
       closeModal();
-      Refresh(); 
+      Refresh();
     } catch (error) {
       console.error("Failed to update price:", error);
     }
   };
-
+ 
   const renderAppointmentItem = ({ item }) => {
+    const getImageSource = () => {
+      let uri;
+      if (role === "patient" && item.Caretaker && item.Caretaker.photo_uri) {
+        uri = item.Caretaker.photo_uri;
+      } else if (role !== "patient" && item.Patient && item.Patient.photo_uri) {
+        uri = item.Patient.photo_uri;
+      }
+      if (uri) {
+        return { uri };
+      }
+      return require("../../assets/hero1.jpg");
+    };
     const { containerStyle, textStyle } = getStatusStyle(item.status);
     return (
       <>
@@ -173,15 +189,9 @@ export default function BookingScreen(tab) {
           <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <View style={styles.imageContainer}>
-                <Image
-                  source={{
-                    uri:
-                      role === "patient"
-                        ? item.Caretaker.photo_uri
-                        : item.Patient.photo_uri,
-                  }}
-                  style={styles.image}
-                />
+                <Image 
+                 source={getImageSource()}
+                 style={styles.image} />
               </View>
               <View style={{ flex: 0.7 }}>
                 <Text
@@ -284,18 +294,32 @@ export default function BookingScreen(tab) {
   return (
     <>
       <Header />
-      <View style={{flexDirection:"row",justifyContent: "center",alignSelf:"center"}}>
-      <Text style={{ fontSize:24, fontWeight: "bold",
-              justifyContent: "center",alignSelf:"center" }}>Appointments</Text>
-      <TouchableOpacity
-        onPress={Refresh}
-        style={{ margin: 15, alignSelf: "flex-end" }}
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "center",
+          alignSelf: "center",
+        }}
       >
-        <FontAwesome name="refresh" size={30} color="black" />
-      </TouchableOpacity>
+        <Text
+          style={{
+            fontSize: 24,
+            fontWeight: "bold",
+            justifyContent: "center",
+            alignSelf: "center",
+          }}
+        >
+          Appointments
+        </Text>
+        <TouchableOpacity
+          onPress={Refresh}
+          style={{ margin: 15, alignSelf: "flex-end" }}
+        >
+          <FontAwesome name="refresh" size={30} color="black" />
+        </TouchableOpacity>
       </View>
       {appointments.length === 0 ? (
-        <Text style={{alignSelf:"center"}}>No appointments yet!</Text>
+        <Text style={{ alignSelf: "center" }}>No appointments yet!</Text>
       ) : (
         <FlatList
           data={appointments}
@@ -303,8 +327,6 @@ export default function BookingScreen(tab) {
           keyExtractor={(item) => item.idAppointment.toString()}
         />
       )}
-
-      
     </>
   );
 }

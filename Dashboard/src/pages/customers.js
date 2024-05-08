@@ -14,7 +14,7 @@ import { applyPagination } from 'src/utils/apply-pagination';
 
 const useCustomers = async (page, rowsPerPage) => {
   try {
-    const response = await axios.get("http://localhost:3001/users", { withCredentials: true });
+    const response = await axios.get("http://localhost:3000/users", { withCredentials: true });
 
     const formattedUsers = response.data.map((user) => ({
       ...user,

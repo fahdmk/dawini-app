@@ -10,7 +10,8 @@ import {
   LinearProgress,
   Stack,
   SvgIcon,
-  Typography
+  Typography,
+  Text
 } from '@mui/material';
 const statusMap = {
   pending: "warning",
@@ -20,27 +21,27 @@ const statusMap = {
 
 const NbappointmentsComponent = (props) => {
   const { sx } = props;
-  const [nbrappointments, setnbrappointments] = useState([]);
+  const [nbrappointments, setnbrappointments] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const response = await axios.get("http://localhost:3001/nbappointments", { withCredentials: true });
-        setnbrappointments(response.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
+        try {
+            const response = await axios.get('http://localhost:3000/api/appointments/accepted-count', {
+                withCredentials: true
+            });
+            setnbrappointments(response.data.acceptedCount);  
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
     };
 
     fetchData();
-  }, []);
+}, []);
+  
   return (
     <Stack spacing={1}>
       <Typography variant="h4">
-        {nbrappointments &&
-          nbrappointments.map((appointment) => (
-            <span key={appointment.id}>{appointment.NumberOfAcceptedAppointments}</span>
-          ))}
+        {nbrappointments }
       </Typography>
     </Stack>
   );
