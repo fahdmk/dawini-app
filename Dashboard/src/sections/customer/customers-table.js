@@ -25,7 +25,7 @@ export const CustomersTable = (props) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:3001/users", { withCredentials: true });
+        const response = await axios.get("http://localhost:3000/users", { withCredentials: true });
         setusers(response.data);
         console.log(response.data);
       } catch (error) {
@@ -70,6 +70,8 @@ export const CustomersTable = (props) => {
                       }
                     }}
                   /> */}
+                </TableCell>
+                <TableCell>
                 </TableCell>
                 <TableCell>
                   Name
@@ -117,12 +119,15 @@ export const CustomersTable = (props) => {
                         spacing={2}
                       >
                         <Avatar src={users.avatar}>
-                          {getInitials(users.fullname)}
+                          {getInitials(users.fullName)}
                         </Avatar>
                         <Typography variant="subtitle2">
                           {users.fullname}
                         </Typography>
                       </Stack>
+                    </TableCell>
+                    <TableCell>
+                      {users.fullName}
                     </TableCell>
                     <TableCell>
                       {users.email}

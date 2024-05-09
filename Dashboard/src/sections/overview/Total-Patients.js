@@ -1,7 +1,5 @@
 import PropTypes from "prop-types";
 import { useState, useEffect } from "react";
-import ArrowDownIcon from "@heroicons/react/24/solid/ArrowDownIcon";
-import ArrowUpIcon from "@heroicons/react/24/solid/ArrowUpIcon";
 import UsersIcon from "@heroicons/react/24/solid/UsersIcon";
 import { Avatar, Card, CardContent, Stack, SvgIcon, Typography } from "@mui/material";
 import axios from "axios";
@@ -46,7 +44,7 @@ NbrUsersComponent.propTypes = {
   sx: PropTypes.object,
 };
 
-export const OverviewBudget = (props) => {
+export const TotalPatients = (props) => {
   const { difference, positive = false, sx } = props;
 
   return (
@@ -72,7 +70,7 @@ export const OverviewBudget = (props) => {
   );
 };
 
-OverviewBudget.propTypes = {
+TotalPatients.propTypes = {
   difference: PropTypes.number,
   positive: PropTypes.bool,
   sx: PropTypes.object,

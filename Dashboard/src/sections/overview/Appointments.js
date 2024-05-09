@@ -26,23 +26,24 @@ const statusMap = {
   refunded: 'error'
 };
 
-export const OverviewLatestOrders = (props) => {
+export const Appointments = (props) => {
   const { sx } = props;
-  const [orders, setorders] = useState([]);
+  const [appoint, setAppoint] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const response = await axios.get("http://localhost:3000/orders", { withCredentials: true });
-        setorders(response.data);
-        console.log(response.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
+        try {
+            const response = await axios.get('http://localhost:3000/api/appointments/all', {
+                withCredentials: true
+            });
+            setAppoint(response.data);  
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
     };
 
     fetchData();
-  }, []);
+}, []);
   return (
     <Card sx={sx}>
       <CardHeader title="Latest Orders" />
@@ -52,39 +53,39 @@ export const OverviewLatestOrders = (props) => {
             <TableHead>
               <TableRow>
                 <TableCell>
-                  Order
+                  Requested by
                 </TableCell>
                 <TableCell>
-                  Customer
+                  Nurse
                 </TableCell>
                 <TableCell sortDirection="desc">
-                  Date
+                  requested at
                 </TableCell>
                 <TableCell>
-                  Price
+                  Status
                 </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {orders.map((orders) => {
+              {appoint.map((appoint) => {
                 
                 return (
                   <TableRow
                     hover
-                    key={orders.ReceiptID}
+                    key={appoint.idAppointment}
                   >
                     <TableCell>
-                      {orders.ReceiptID}
+                      {appoint.Patient.fullName}
                     </TableCell>
                     <TableCell>
-                      {orders.Customer}
+                      {appoint.Caretaker.fullName}
                     </TableCell>
                     <TableCell>
-                      {orders.Time}
+                      {appoint.Date}
                     </TableCell>
                     <TableCell>
                       <SeverityPill>
-                        {orders.Price}
+                      {appoint.status}
                       </SeverityPill>
                     </TableCell>
                   </TableRow>
@@ -113,7 +114,7 @@ export const OverviewLatestOrders = (props) => {
   );
 };
 
-OverviewLatestOrders.prototype = {
+Appointments.prototype = {
   orders: PropTypes.array,
   sx: PropTypes.object
 };

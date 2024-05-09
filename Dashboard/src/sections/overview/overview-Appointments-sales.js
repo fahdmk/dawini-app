@@ -105,16 +105,16 @@ const useChartOptions = () => {
   };
 };
 
-export const OverviewSales = (props) => {
+export const OverviewAppointments = (props) => {
   
-  const {  sx } = props;
+  const { sx } = props;
   const chartOptions = useChartOptions();
   const [thisyear, setthisyear] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/thisyear", { withCredentials: true });
+        const response = await axios.get("http://localhost:3000/api/appointments/accepted-sum-per-month", { withCredentials: true });
         setthisyear(response.data);
         console.log(response.data);
       } catch (error) {
@@ -197,7 +197,7 @@ export const OverviewSales = (props) => {
   );
 };
 
-OverviewSales.protoTypes = {
+OverviewAppointments.protoTypes = {
   chartSeries: PropTypes.array.isRequired,
   sx: PropTypes.object
 };

@@ -38,6 +38,30 @@ sequelize
   .catch((error) => {
     console.error('Unable to connect to the database: ', error);
   });
+  app.get('/api/users/sorted-by-appointments', async (req, res) => {
+    try {
+        const users = await User.findAll({
+            include: [{
+                model: Appointment,
+                as: 'PatientAppointments',
+                attributes: [] 
+            }],
+            attributes: {
+                include: [
+                    [sequelize.fn('COUNT', sequelize.col('PatientAppointments.idAppointment')), 'appointmentCount']
+                ]
+            },
+            group: ['User.idUser'],  
+            order: [[sequelize.literal('appointmentCount'), 'DESC']],
+        });
+
+        res.json(users);
+    } catch (error) {
+        console.error('Failed to fetch users sorted by appointment count:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
   app.post('/api/appointments/update-price', async (req, res) => {
     const { idAppointment, Price } = req.body;
 
@@ -86,7 +110,6 @@ app.get('/api/caretaker/count', async (req, res) => {
 });
 app.get('/api/users/count', async (req, res) => {
   try {
-      // Use the count method provided by Sequelize on the User model
       const count = await User.count();
       res.json({ totalUsers: count });
   } catch (error) {
@@ -133,7 +156,6 @@ app.get('/api/users/count', async (req, res) => {
 
 app.get('/api/appointments/accepted-count', async (req, res) => {
   try {
-      // Counting only appointments with a status of 'accepted'
       const acceptedCount = await Appointment.count({
           where: { status: 'accepted' }
       });
@@ -197,7 +219,6 @@ app.get('/api/appointments/accepted-count', async (req, res) => {
   });
 app.post('/api/new-nurse', async (req, res) => {
   try {
-    // Destructure user data from request body
     const {
       username,
       role,
@@ -211,12 +232,10 @@ app.post('/api/new-nurse', async (req, res) => {
       cv
     } = req.body;
 
-    // Check if username and role are provided
     if (!username || !role) {
       return res.status(400).json({ error: 'Username and role are required' });
     }
 
-    // Create a new nurse record in the database using the Nurse model
     const newNurse = await Caretaker.create({
       username,
       role,
@@ -236,6 +255,21 @@ app.post('/api/new-nurse', async (req, res) => {
     res.status(500).json({ error: 'Error creating Nurse' });
   }
 });
+app.delete('/api/reviews/:idReview', async (req, res) => {
+  try {
+      const idReview = req.params.idReview;
+      const review = await Review.findByPk(idReview);
+      if (!review) {
+          return res.status(404).json({ message: 'Review not found' });
+      }
+
+      await review.destroy();
+      res.status(200).json({ message: 'Review deleted successfully' });
+  } catch (error) {
+      console.error('Error deleting review:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 app.get('/api/caretakers/fullName/:fullName', async (req, res) => {
   try {
       const caretaker = await Caretaker.findOne({
@@ -247,9 +281,98 @@ app.get('/api/caretakers/fullName/:fullName', async (req, res) => {
       res.status(500).json({ error: 'Internal server error' });
   }
 });
+app.get('/api/reviews', async (req, res) => {
+  try {
+      const reviews = await Review.findAll({
+          include: [
+              {
+                  model: Caretaker,
+                  as: 'Caretaker',
+                  attributes: ['idCare taker', 'fullName', 'photo_uri']
+              },
+              {
+                  model: User,
+                  as: 'User',
+                  attributes: ['idUser', 'fullName', 'photo_uri']
+              }
+          ]
+      });
+
+      if (reviews.length === 0) {
+          return res.status(404).json({ message: 'No reviews found' });
+      }
+
+      res.json(reviews);
+  } catch (error) {
+      console.error('Error fetching reviews:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.get('/api/appointments/all', async (req, res) => {
+  try {
+      const appointments = await Appointment.findAll({
+          include: [
+              { model: User, as: 'Patient', attributes: ['idUser', 'fullName', 'email', 'photo_uri'] },
+              { model: Caretaker, as: 'Caretaker', attributes: ['idCare taker', 'fullName', 'photo_uri'] }
+          ]
+      });
+
+      if (appointments.length === 0) {
+          return res.status(404).json({ message: 'No appointments found' });
+      }
+
+      res.json(appointments);
+  } catch (error) {
+      console.error('Error fetching all appointments:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+app.get('/api/appointments/accepted-sum-per-month', async (req, res) => {
+  try {
+    const results = await Appointment.findAll({
+      where: {
+        status: 'accepted'
+      },
+      attributes: [
+        [sequelize.fn('YEAR', sequelize.col('Date')), 'year'],
+        [sequelize.fn('MONTH', sequelize.col('Date')), 'month'],
+        [sequelize.fn('SUM', sequelize.cast(sequelize.col('Price'), 'decimal(10,2)')), 'totalSales']
+      ],
+      group: ['year', 'month'],
+      order: [
+        [sequelize.fn('YEAR', sequelize.col('Date')), 'ASC'],
+        [sequelize.fn('MONTH', sequelize.col('Date')), 'ASC']
+      ],
+      raw: true
+    });
+
+    const dataMap = {};
+    for (const result of results) {
+      dataMap[`${result.year}-${result.month}`] = result;
+    }
+
+    const currentYear = new Date().getFullYear();
+    const formattedResults = [];
+    for (let month = 1; month <= 12; month++) {
+      const key = `${currentYear}-${month}`;
+      const data = dataMap[key] || { month, year: currentYear, totalSales: '0.00' }; 
+      formattedResults.push({
+        month: data.month,
+        year: data.year,
+        totalSales: (Number(data.totalSales) || 0).toFixed(2)
+      });
+    }
+
+    res.json(formattedResults);
+  } catch (error) {
+    console.error('Failed to fetch monthly sums of accepted appointments:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 app.post('/api/new-user', async (req, res) => {
   try {
-    // Destructure user data from request body
     const {     
       username,
       role,
@@ -261,12 +384,10 @@ app.post('/api/new-user', async (req, res) => {
       birthday
     } = req.body;
 
-    // Check if username and role are provided
     if (!username || !role) {
       return res.status(400).json({ error: 'Username and role are required' });
     }
 
-    // Create a new user record in the database
     const newUser = await User.create({
       username,
       role,
@@ -288,16 +409,13 @@ app.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Check if email and password are present in the request body
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password are required' });
     }
 
-    // Check if the email exists in the User table
     let user = await User.findOne({ where: { email } });
     let userType = 'user';
 
-    // If the email doesn't exist in the User table, check the Caretaker table
     if (!user) {
       user = await Caretaker.findOne({ where: { email } });
       userType = 'caretaker';
@@ -310,7 +428,6 @@ app.post('/login', async (req, res) => {
     console.log('Entered password:', password);
     console.log('Stored hashed password:', user.password);
     
-    // Compare the entered password with the stored hashed password
     const isPasswordValid = (password == user.password);
 
     console.log('Is password valid?', isPasswordValid);
@@ -318,7 +435,6 @@ app.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid password' });
     }
 
-    // Create a JWT token
     const token = jwt.sign(
       { userId: user.id, email: user.email, userType },
       'your-secret-key',
@@ -327,7 +443,6 @@ app.post('/login', async (req, res) => {
 
     console.log('Generated token:', token);
 
-    // Return user details along with the token
     res.json({ token, user });
   } catch (error) {
     console.error(error);

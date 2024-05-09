@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import ArrowRightIcon from '@heroicons/react/24/solid/ArrowRightIcon';
 import { useState, useEffect } from "react";
 import axios from "axios";
+import Rating from '@mui/material/Rating';
 import {
   Box,
   Button,
@@ -29,13 +30,13 @@ const statusMap = {
   
 export const TopCareTakers = (props) => {
   const { sx } = props;
-  const [topcare, settopcare] = useState([]);
+  const [reviews, setReviews] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/caretaker", { withCredentials: true });
-        settopcare(response.data);
+        const response = await axios.get("http://localhost:3000/api/reviews", { withCredentials: true });
+        setReviews(response.data);
         console.log(response.data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -44,22 +45,23 @@ export const TopCareTakers = (props) => {
 
     fetchData();
   }, []);
+  console.log("eeeeeeeeeeee",reviews)
   return (
    <Card sx={sx}>
-      <CardHeader title="Top Care Takers" />
+      <CardHeader title="Reviews" />
       <Scrollbar sx={{ flexGrow: 1, maxHeight:315}}>
         <Box sx={{ minWidth: 800 }}>
           <Table>
             <TableHead>
               <TableRow>
                 <TableCell>
-                  Care Taker
+                  User
                 </TableCell>
                 <TableCell>
-                  nbr of appointments
+                  Stars
                 </TableCell>
                 <TableCell sortDirection="desc">
-                  working area
+                  Nurse
                 </TableCell>
                 <TableCell>
                   role
@@ -68,22 +70,23 @@ export const TopCareTakers = (props) => {
             </TableHead>
             
             <TableBody>
-              {topcare.map((careTaker) => (
+              {reviews.map((reviews) => (
                 <TableRow
                   hover
-                  key={careTaker.idCareTaker}
+                  key={reviews.idReview}
                 >
                   <TableCell>
-                    {careTaker.CaretakerName}
+                    {reviews.User.fullName}
                   </TableCell>
                   <TableCell>
-                    {careTaker.NumberOfAppointments}
+                  <Rating name="read-only" value={reviews.numberOfStars} readOnly />
                   </TableCell>
                   <TableCell>
-                    {careTaker.WorkingArea}
+                   {reviews.Caretaker.fullName}
                   </TableCell>
                   <TableCell>
-                    {careTaker.Role}
+                  {reviews.description}
+ 
                   </TableCell>
                 </TableRow>
               ))}

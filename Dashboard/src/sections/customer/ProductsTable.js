@@ -18,39 +18,37 @@ import {
 } from '@mui/material';
 import { Scrollbar } from 'src/components/scrollbar';
 import { getInitials } from 'src/utils/get-initials';
+import Rating from '@mui/material/Rating';
 import axios from "axios";
 export const ProductsTable = (props) => {
   
-  const [product, setproduct] = useState([]);
-
+  const [reviews, setReviews] = useState([]);
+  const fetchData = async () => {
+    try {
+      const response = await axios.get("http://localhost:3000/api/reviews", { withCredentials: true });
+      setReviews(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get("http://localhost:3001/product", { withCredentials: true });
-        setproduct(response.data);
-        console.log(response.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
     fetchData();
   }, []);
   
-  const handleDeleteSelected = () => {
-    const selectedIds = selected.map((productId) => productId);
-  
+  const handleDeleteSelected = async () => {
+    const deletePromises = selected.map(idReview => {
+        return axios.delete(`http://localhost:3000/api/reviews/${idReview}`);
+    });
 
-    axios.delete(`http://localhost:3001/product/${selectedIds[0]}`)
-      .then((response) => {
-        console.log(response.data);
-        // Handle success or update UI accordingly
-      })
-      .catch((error) => {
-        console.error('Error deleting products:', error);
-        // Handle error or update UI accordingly
-      });
-  };
+    try {
+        await Promise.all(deletePromises);
+        console.log('All selected reviews deleted successfully');
+        fetchData();
+    } catch (error) {
+        console.error('Error deleting reviews:', error);
+    }
+};
   
     const {
     count = 0,
@@ -65,9 +63,12 @@ export const ProductsTable = (props) => {
     rowsPerPage = 0,
     selected = [],
   } = props;
-  const selectedSome = (selected.length > 0) && (selected.length < product.length);
-  const selectedAll = (product.length > 0) && (selected.length === product.length);
-  return (
+  const selectedSome = (selected.length > 0) && (selected.length < reviews.length);
+  const selectedAll = (reviews.length > 0) && (selected.length === reviews.length);
+  return (<>
+  <Button variant="contained" color="secondary" onClick={handleDeleteSelected} style={{width:200, alignSelf:"flex-end"}}>
+    Delete Selected
+    </Button>
     <Card>
       <Scrollbar>
         <Box sx={{ minWidth: 800 }}>
@@ -88,26 +89,26 @@ export const ProductsTable = (props) => {
                   />
                 </TableCell>
                 
-                <TableCell>product name</TableCell>
-                <TableCell>Price</TableCell>
-                <TableCell>stock</TableCell>
-                <TableCell>discounts</TableCell>
-                <TableCell>last update</TableCell>
-                <Button variant="contained" color="secondary" onClick={handleDeleteSelected}>
-                  Delete Selected
-                  </Button>
+                <TableCell>User</TableCell>
+                <TableCell>Description</TableCell>
+                <TableCell>Nurse</TableCell>
+                <TableCell>Time</TableCell>
+                <TableCell>Rating</TableCell>
+               
               </TableRow>
             
             </TableHead>
             <TableBody>
-            {items.map((product) => {
-                const isSelected = selected.includes(product.idproducts);
+            
+            {items.map((review) => {
+                const isSelected = selected.includes(review.idReview);
     
 
-                return (
+                return (<>
+                
                   <TableRow
                   hover
-                  key={product.idproducts}  // Add a unique key using product.idproducts
+                  key={review.idReview}  // Add a unique key using product.idproducts
                   selected={isSelected}
                   >
                     <TableCell padding="checkbox">
@@ -115,28 +116,29 @@ export const ProductsTable = (props) => {
                         checked={isSelected}
                         onChange={(event) => {
                           if (event.target.checked) {
-                            onSelectOne?.(product.idproducts);
+                            onSelectOne?.(review.idReview);
                           } else {
-                            onDeselectOne?.(product.idproducts);
+                            onDeselectOne?.(review.idReview);
                           }
                         }}
                       />
                     </TableCell>
                     <TableCell>
                       <Stack alignItems="center" direction="row" spacing={2}>
-                        <Avatar src={product.avatar}>
-                          {getInitials(product.productName)}
+                        <Avatar src={review.User.photo_uri}>
+                          {getInitials(review.User.fullName)}
                         </Avatar>
-                        <Typography variant="subtitle2">{product.productName}</Typography>
+                        <Typography variant="subtitle2">{review.User.fullName}</Typography>
                       </Stack>
                     </TableCell>
-                    <TableCell>{product.Price}</TableCell>
-                    <TableCell>{product.Stock}</TableCell>
-                    <TableCell>{product.discounts}</TableCell>
-                    <TableCell>{new Date(product.lastupdate).toISOString().slice(0, 19).replace('T', ' ')}</TableCell>
+                    <TableCell>{review.description}</TableCell>
+                    <TableCell>{review.Caretaker.fullName}</TableCell>
+                    <TableCell>{new Date(review.reviewDate).toISOString().slice(0, 19).replace('T', ' ')}</TableCell>
+                    <TableCell><Rating name="read-only" value={review.numberOfStars} readOnly /></TableCell>
+
                   </TableRow>
                   
-                );
+                  </>);
               })}
             </TableBody>
           </Table>
@@ -152,7 +154,8 @@ export const ProductsTable = (props) => {
         rowsPerPageOptions={[5, 10, 25]}
       />
     </Card>
-  );
+    
+ </> );
 };
   
   ProductsTable.propTypes = {

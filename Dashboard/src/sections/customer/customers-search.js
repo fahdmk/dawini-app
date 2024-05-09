@@ -6,8 +6,8 @@ export const CustomersSearch = ({ onSearch }) => (
     <OutlinedInput
       defaultValue=""
       fullWidth
-      placeholder="Search customer"
-      onChange={(e) => onSearch(e.target.value)}  // Call onSearch when input changes
+      placeholder="Search review"
+      onChange={(e) => onSearch(e.target.value)} 
       startAdornment={(
         <InputAdornment position="start">
           <SvgIcon

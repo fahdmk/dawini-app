@@ -3,7 +3,7 @@ import mysql from "mysql2/promise";
 import cors from 'cors';
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3002;
 
 
 app.use(cors({ origin: 'http://localhost:3000', credentials: true }));

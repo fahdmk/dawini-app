@@ -2,11 +2,11 @@ import Head from 'next/head';
 import { subDays, subHours } from 'date-fns';
 import { Box, Container, Unstable_Grid2 as Grid } from '@mui/material';
 import { Layout as DashboardLayout } from 'src/layouts/dashboard/layout';
-import { OverviewBudget } from 'src/sections/overview/overview-budget';
+import { TotalPatients } from 'src/sections/overview/Total-Patients';
 import { TopCareTakers } from 'src/sections/overview/TopCareTakers';
-import { OverviewLatestOrders } from 'src/sections/overview/overview-latest-orders';
-import { OverviewLatestProducts } from 'src/sections/overview/overview-latest-products';
-import { OverviewSales } from 'src/sections/overview/overview-sales';
+import { Appointments } from 'src/sections/overview/Appointments';
+import { ActiveUsers } from 'src/sections/overview/Active-users';
+import { OverviewAppointments } from 'src/sections/overview/overview-Appointments-sales';
 import { OverviewTasksProgress } from 'src/sections/overview/overview-tasks-progress';
 import { OverviewTotalCustomers } from 'src/sections/overview/overview-total-customers';
 import { OverviewTotalProfit } from 'src/sections/overview/overview-total-profit';
@@ -39,7 +39,7 @@ const Page = () => (
             sm={6}
             lg={3}
           >
-            <OverviewBudget
+            <TotalPatients
               difference={12}
               positive
               sx={{ height: '100%' }}
@@ -81,7 +81,7 @@ const Page = () => (
             xs={12}
             lg={8}
           >
-            <OverviewSales
+            <OverviewAppointments
               
               sx={{ height: '100%' }}
             />
@@ -91,7 +91,7 @@ const Page = () => (
             md={6}
             lg={4}
           >
-            <OverviewLatestProducts
+            <ActiveUsers
               sx={{ height: 600 }}
             />
           </Grid>
@@ -100,7 +100,7 @@ const Page = () => (
             md={120}
             lg={80}
           >
-            <OverviewLatestOrders
+            <Appointments
               sx={{ height: 450 }}
             />
              </Grid>

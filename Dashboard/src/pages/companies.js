@@ -17,7 +17,7 @@ const now = new Date();
 const handleDeleteSelected = async () => {
   try {
   
-    const selectedIds = selected.map((productId) => productId);
+    const selectedIds = selected.map((reviewId) => reviewId);
 
     
     await axios.delete('http://localhost:3000/delete-products', {
@@ -30,37 +30,40 @@ const handleDeleteSelected = async () => {
     console.error('Error deleting products:', error);
   }
 };
-const useproducts = async (page, rowsPerPage) => {
-  try {
-    const response = await axios.get("http://localhost:3000/product", { withCredentials: true });
 
-    const formattedproduct = response.data.map((product) => ({
-      ...product,
-      creation_date: format(new Date(product.lastupdate), 'yyyy-MM-dd'),
+const usereviews = async (page, rowsPerPage) => {
+  try {
+    const response = await axios.get("http://localhost:3000/api/reviews", { withCredentials: true });
+
+    const formattedreview = response.data.map((review) => ({
+      ...review,
+      creation_date: format(new Date(review.reviewDate), 'yyyy-MM-dd'),
     }));
 
-    return applyPagination(formattedproduct, page, rowsPerPage);
+    return applyPagination(formattedreview, page, rowsPerPage);
   } catch (error) {
     console.error("Error fetching data:", error);
     return [];
   }
 };
 
-const useproductIds = (products) => {
+const usereviewIds = (reviews) => {
   return useMemo(
     () => {
-      return products.map((formattedproduct) => formattedproduct.id);
+      return reviews.map((formattedreview) => formattedreview.idReview);
     },
-    [products]
+    [reviews]
   );
 };
 
 const Page = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [product, setproduct] = useState([]);
-  const productsIds = useproductIds(product);
-  const productsSelection = useSelection(productsIds);
+  const [review, setReview] = useState([]);
+  const [reviews, setReviews] = useState([]);  
+  const [displayReviews, setDisplayReviews] = useState([]);
+  const reviewsIds = usereviewIds(review);
+  const reviewsSelection = useSelection(reviewsIds);
 
   const handlePageChange = useCallback(
     (event, value) => {
@@ -70,16 +73,19 @@ const Page = () => {
   );
   const handleSearch = useCallback(
     (query) => {
-      const filtered = product.filter((product) =>
-        product.productName.toLowerCase().includes(query.toLowerCase())
-      );
-      setproduct(filtered); 
-      setPage(0);
-      console.log(query);
+      if (query.trim() === '') {
+        setDisplayReviews(reviews);
+      } else {
+        const filtered = reviews.filter((review) =>
+          review.description.toLowerCase().includes(query.toLowerCase())
+        );
+        setDisplayReviews(filtered);
+        
+      }
+      setPage(0); 
     },
-    [product]
+    [reviews] 
   );
-
   const handleRowsPerPageChange = useCallback(
     (event) => {
       setRowsPerPage(event.target.value);
@@ -89,8 +95,9 @@ const Page = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const productData = await useproducts(page, rowsPerPage);
-      setproduct(productData);
+      const fetchedReviews = await usereviews(page, rowsPerPage);
+      setReviews(fetchedReviews);
+      setDisplayReviews(fetchedReviews);
     };
 
     fetchData();
@@ -101,7 +108,7 @@ const Page = () => {
     <>
       <Head>
         <title>
-          Products 
+          Reviews 
         </title>
       </Head>
       <Box
@@ -120,7 +127,7 @@ const Page = () => {
             >
               <Stack spacing={1}>
                 <Typography variant="h4">
-                  Products
+                  reviews
                 </Typography>
                 <Stack
                   alignItems="center"
@@ -133,19 +140,19 @@ const Page = () => {
             </Stack>
             <CustomersSearch onSearch={handleSearch} /> 
             <ProductsTable
-              count={product.length}
-              items={product}
-              onDeselectAll={productsSelection.handleDeselectAll}
-              onDeselectOne={productsSelection.handleDeselectOne}
+              count={displayReviews.length}
+              items={displayReviews}
+              onDeselectAll={reviewsSelection.handleDeselectAll}
+              onDeselectOne={reviewsSelection.handleDeselectOne}
               onPageChange={handlePageChange}
               onRowsPerPageChange={handleRowsPerPageChange}
-              onSelectAll={productsSelection.handleSelectAll}
-              onSelectOne={productsSelection.handleSelectOne}
+              onSelectAll={reviewsSelection.handleSelectAll}
+              onSelectOne={reviewsSelection.handleSelectOne}
               page={page}
               rowsPerPage={rowsPerPage}
-              selected={productsSelection.selected}
+              selected={reviewsSelection.selected}
             />
-           <CreateUserForm />
+           {/* <CreateUserForm /> */}
           </Stack>
         
         </Container>
