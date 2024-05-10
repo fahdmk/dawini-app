@@ -17,6 +17,7 @@ import Button from "../components/Button";
 import axios from 'axios';
 import dayjs from 'dayjs';
 import DatePicker from 'react-native-modern-datepicker';
+import DateTimePicker from 'react-native-ui-datepicker';
 import config from '../config.json';
 
 const SignupPatient = ({ navigation }) => {
@@ -245,7 +246,7 @@ const SignupPatient = ({ navigation }) => {
                   marginVertical: 8,
                 }}
               >
-                Adress
+                Address
               </Text>
               <View
                 style={{
@@ -263,7 +264,7 @@ const SignupPatient = ({ navigation }) => {
                 <TextInput
                   placeholder="Enter your home Adress"
                   placeholderTextColor={COLORS.black}
-                  keyboardType="numeric"
+                  keyboardType="email"
                   style={{
                     width: "80%",
                   }}
@@ -305,20 +306,14 @@ const SignupPatient = ({ navigation }) => {
             </View>
           </TouchableOpacity>
           {showDatePicker && (
-            <DatePicker
-            options={{
-              backgroundColor: '#fff',
-              textHeaderColor: 'green',
-              textDefaultColor: 'black',
-              selectedTextColor: '#fff',
-              mainColor: 'green',
-              textSecondaryColor: 'grey',
-              borderColor: 'rgba(122, 146, 165, 0.1)',
-            }}
-            mode="calendar"
+            <DateTimePicker
+            mode="single"
             date={date}
-            onSelectedChange={(date) => {setDate(date) ;setbirthday(date)}}
+            onChange={(params) =>{setDate(params.date) ;setbirthday(params.date)}}
+            color="green"
+            selectedItemColor="green"
           />
+           
           )}
               
               

@@ -9,6 +9,7 @@ import {
   View,
   TouchableOpacity,
   UIManager,
+  LogBox
 } from "react-native";
 import { GlobalContext } from "../context";
 import Messagecomponent from "../components/Messagecomponent";
@@ -21,6 +22,7 @@ import config from '../config.json';
 
 
 export default function Messagescreen({ navigation, route }) {
+  LogBox.ignoreAllLogs();
   const [tempDate, setTempDate] = useState(date);
   const messagesEndRef = useRef(false);
   const { currentGroupName, currentGroupID } = route.params;
